@@ -2,6 +2,7 @@
 
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import React from "react";
 
 interface StepperProps {
   steps: string[];
@@ -11,15 +12,15 @@ export function Stepper({ steps }: StepperProps) {
   const { currentStep } = useAppStore();
 
   return (
-    <div className="flex w-full items-center justify-between">
+    <div className="flex w-full items-center">
       {steps.map((step, index) => {
         const stepNumber = index + 1;
         const isCompleted = currentStep > stepNumber;
         const isActive = currentStep === stepNumber;
 
         return (
-          <div key={step} className="flex flex-1 items-center">
-            <div className="flex flex-col items-center">
+          <React.Fragment key={step}>
+            <div className="flex flex-col items-center text-center">
               <div
                 className={cn(
                   "flex h-10 w-10 items-center justify-center rounded-full font-bold",
@@ -34,7 +35,7 @@ export function Stepper({ steps }: StepperProps) {
               </div>
               <p
                 className={cn(
-                  "mt-2 text-sm text-center",
+                  "mt-2 text-sm",
                   isActive ? "font-bold text-primary" : "text-gray-500"
                 )}
               >
@@ -51,7 +52,7 @@ export function Stepper({ steps }: StepperProps) {
                 )}
               />
             )}
-          </div>
+          </React.Fragment>
         );
       })}
     </div>
