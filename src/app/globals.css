@@ -55,5 +55,14 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image: url('/background-mobile.jpg');
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+@media (min-width: 768px) {
+  body {
+    background-image: url('/background-desktop.jpg');
   }
 }
