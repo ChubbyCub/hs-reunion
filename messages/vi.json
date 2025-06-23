@@ -8,7 +8,8 @@
     "register": "Đăng ký",
     "merchandise": "Đặt hàng lưu niệm",
     "donate": "Quyên góp",
-    "payment": "Thanh toán"
+    "payment": "Thanh toán",
+    "checkmark": "✓"
   },
   "RegisterForm": {
     "title": "Thông tin cá nhân",

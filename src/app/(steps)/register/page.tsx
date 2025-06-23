@@ -6,6 +6,7 @@ import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,17 +31,30 @@ export default function RegisterPage() {
   const router = useRouter();
   const { formData, updateFormData, setStep } = useAppStore();
   const t = useTranslations('RegisterForm');
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  useEffect(() => {
+    setHasHydrated(true);
+  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: formData,
   });
 
+  useEffect(() => {
+    if (hasHydrated) {
+      form.reset(formData);
+    }
+  }, [hasHydrated]);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     updateFormData(values);
     setStep(2);
     router.push("/merchandise");
   }
+
+  if (!hasHydrated) return <div>Loading...</div>;
 
   return (
     <>

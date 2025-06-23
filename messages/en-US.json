@@ -8,7 +8,8 @@
     "register": "Register",
     "merchandise": "Merchandise",
     "donate": "Donate",
-    "payment": "Payment"
+    "payment": "Payment",
+    "checkmark": "✓"
   },
   "RegisterForm": {
     "title": "Personal Information",
