@@ -35,7 +35,7 @@ export default function Home() {
   }, []);
 
   return (
-      <main className="flex font-geist-mono min-h-screen flex-col items-center justify-center bg-black/40 p-24 uppercase md:justify-between md:bg-transparent">
+      <main className="flex min-h-screen flex-col items-center justify-center p-24 uppercase md:justify-between md:bg-transparent">
       <div>
         <motion.div
           initial={{ opacity: 0, x: -100 }}

@@ -62,7 +62,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ["var(--font-nunito)", "Nunito", "sans-serif"],
-        mono: ["var(--font-geist-mono)", "monospace"],
+        mono: ["monospace"],
         // Custom font families for semantic usage
         title: ["var(--font-nunito)", "Nunito", "sans-serif"],
         subtitle: ["var(--font-nunito)", "Nunito", "sans-serif"],
