@@ -3,13 +3,15 @@
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import React from "react";
+import { useTranslations } from 'next-intl';
 
 interface StepperProps {
-  steps: string[];
+  steps: string[]; // keys for translation
 }
 
 export function Stepper({ steps }: StepperProps) {
   const { currentStep } = useAppStore();
+  const t = useTranslations('Stepper');
 
   return (
     <div className="flex w-full items-center">
@@ -31,7 +33,7 @@ export function Stepper({ steps }: StepperProps) {
                     : "border-2 border-gray-300 bg-gray-100 text-gray-500"
                 )}
               >
-                {isCompleted ? "✓" : stepNumber}
+                {isCompleted ? t('checkmark', { defaultValue: '✓' }) : stepNumber}
               </div>
               <p
                 className={cn(
@@ -39,7 +41,7 @@ export function Stepper({ steps }: StepperProps) {
                   isActive ? "font-bold text-primary" : "text-gray-500"
                 )}
               >
-                {step}
+                {t(step)}
               </p>
             </div>
 

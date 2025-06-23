@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
+import { useTranslations } from 'next-intl';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ const formSchema = z.object({
 export default function RegisterPage() {
   const router = useRouter();
   const { formData, updateFormData, setStep } = useAppStore();
+  const t = useTranslations('RegisterForm');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,10 +46,10 @@ export default function RegisterPage() {
     <>
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-title tracking-tighter">
-          Personal Information
+          {t('title')}
         </h1>
         <p className="mt-2 text-muted-foreground font-legalese">
-          Please fill in your details to register for the event.
+          {t('description')}
         </p>
       </div>
       <Form {...form}>
@@ -57,9 +59,9 @@ export default function RegisterPage() {
             name="fullName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-form">Full Name</FormLabel>
+                <FormLabel className="font-form">{t('fullNameLabel')}</FormLabel>
                 <FormControl>
-                  <Input className="font-form" placeholder="Your full name" {...field} />
+                  <Input className="font-form" placeholder={t('fullNamePlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -70,9 +72,9 @@ export default function RegisterPage() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-form">Email Address</FormLabel>
+                <FormLabel className="font-form">{t('emailLabel')}</FormLabel>
                 <FormControl>
-                  <Input className="font-form" placeholder="Your email address" {...field} />
+                  <Input className="font-form" placeholder={t('emailPlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -83,9 +85,9 @@ export default function RegisterPage() {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-form">Phone Number</FormLabel>
+                <FormLabel className="font-form">{t('phoneLabel')}</FormLabel>
                 <FormControl>
-                  <Input className="font-form" placeholder="Your phone number" {...field} />
+                  <Input className="font-form" placeholder={t('phonePlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -96,9 +98,9 @@ export default function RegisterPage() {
             name="occupation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-form">Occupation</FormLabel>
+                <FormLabel className="font-form">{t('occupationLabel')}</FormLabel>
                 <FormControl>
-                  <Input className="font-form" placeholder="Your occupation (optional)" {...field} />
+                  <Input className="font-form" placeholder={t('occupationPlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -109,16 +111,16 @@ export default function RegisterPage() {
             name="workplace"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-form">Workplace</FormLabel>
+                <FormLabel className="font-form">{t('workplaceLabel')}</FormLabel>
                 <FormControl>
-                  <Input className="font-form" placeholder="Your workplace (optional)" {...field} />
+                  <Input className="font-form" placeholder={t('workplacePlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <div className="flex justify-end">
-            <Button type="submit" className="font-form">Next</Button>
+            <Button type="submit" className="font-form">{t('nextButton')}</Button>
           </div>
         </form>
       </Form>
