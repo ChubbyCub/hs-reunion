@@ -61,7 +61,13 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        "geist-mono": ["var(--font-geist-mono)"],
+        sans: ["var(--font-nunito)", "Nunito", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "monospace"],
+        // Custom font families for semantic usage
+        title: ["var(--font-nunito)", "Nunito", "sans-serif"],
+        subtitle: ["var(--font-nunito)", "Nunito", "sans-serif"],
+        legalese: ["var(--font-nunito)", "Nunito", "sans-serif"],
+        form: ["var(--font-nunito)", "Nunito", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {

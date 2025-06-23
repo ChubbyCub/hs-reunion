@@ -10,16 +10,16 @@ export default function DonationPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">Donation</h1>
-      <p>Donation form will go here.</p>
+      <h1 className="text-2xl font-title">Donation</h1>
+      <p className="font-legalese">Donation form will go here.</p>
        <div className="mt-8 flex justify-between">
-        <Button variant="outline" onClick={() => {
+        <Button variant="outline" className="font-form" onClick={() => {
             setStep(2);
             router.push("/merchandise");
         }}>
           Back
         </Button>
-        <Button onClick={() => {
+        <Button className="font-form" onClick={() => {
             setStep(4);
             router.push("/payment");
         }}>

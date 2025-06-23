@@ -26,6 +26,26 @@
     --radius: 0.5rem;
   }
 
+  html, body {
+    font-family: var(--font-nunito), Nunito, sans-serif;
+  }
+
+  /* Semantic font weight utilities */
+  .font-title {
+    font-weight: 800;
+  }
+  .font-subtitle {
+    font-weight: 700;
+  }
+  .font-legalese {
+    font-weight: 300;
+    font-size: 0.85em;
+    letter-spacing: 0.01em;
+  }
+  .font-form {
+    font-weight: 400;
+  }
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;

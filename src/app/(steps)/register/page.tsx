@@ -43,10 +43,10 @@ export default function RegisterPage() {
   return (
     <>
       <div className="mb-8 text-center">
-        <h1 className="text-2xl font-bold tracking-tighter">
+        <h1 className="text-2xl font-title tracking-tighter">
           Personal Information
         </h1>
-        <p className="mt-2 text-muted-foreground">
+        <p className="mt-2 text-muted-foreground font-legalese">
           Please fill in your details to register for the event.
         </p>
       </div>
@@ -57,9 +57,9 @@ export default function RegisterPage() {
             name="fullName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Full Name</FormLabel>
+                <FormLabel className="font-form">Full Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your full name" {...field} />
+                  <Input className="font-form" placeholder="Your full name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -70,9 +70,9 @@ export default function RegisterPage() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email Address</FormLabel>
+                <FormLabel className="font-form">Email Address</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your email address" {...field} />
+                  <Input className="font-form" placeholder="Your email address" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -83,9 +83,9 @@ export default function RegisterPage() {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone Number</FormLabel>
+                <FormLabel className="font-form">Phone Number</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your phone number" {...field} />
+                  <Input className="font-form" placeholder="Your phone number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -96,9 +96,9 @@ export default function RegisterPage() {
             name="occupation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Occupation</FormLabel>
+                <FormLabel className="font-form">Occupation</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your occupation (optional)" {...field} />
+                  <Input className="font-form" placeholder="Your occupation (optional)" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -109,16 +109,16 @@ export default function RegisterPage() {
             name="workplace"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Workplace</FormLabel>
+                <FormLabel className="font-form">Workplace</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your workplace (optional)" {...field} />
+                  <Input className="font-form" placeholder="Your workplace (optional)" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <div className="flex justify-end">
-            <Button type="submit">Next</Button>
+            <Button type="submit" className="font-form">Next</Button>
           </div>
         </form>
       </Form>
