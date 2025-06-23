@@ -61,7 +61,7 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        "freckle-face": ["var(--font-freckle-face)"],
+        "geist-mono": ["var(--font-geist-mono)"],
       },
       keyframes: {
         "accordion-down": {

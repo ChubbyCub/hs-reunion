@@ -1,0 +1,28 @@
+{
+  "HomePage": {
+    "title": "LHP Class 03-06 Reunion Starts In ...",
+    "days": "Days",
+    "registerNow": "Register Now"
+  },
+  "Stepper": {
+    "register": "Register",
+    "merchandise": "Merchandise",
+    "donate": "Donate",
+    "payment": "Payment"
+  },
+  "RegisterForm": {
+    "title": "Personal Information",
+    "description": "Please fill in your details to register for the event.",
+    "fullNameLabel": "Full Name",
+    "fullNamePlaceholder": "Your full name",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "Your email address",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "Your phone number",
+    "occupationLabel": "Occupation",
+    "occupationPlaceholder": "Your occupation (optional)",
+    "workplaceLabel": "Workplace",
+    "workplacePlaceholder": "Your workplace (optional)",
+    "nextButton": "Next"
+  }
+} 

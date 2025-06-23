@@ -1,0 +1,28 @@
+{
+  "HomePage": {
+    "title": "Họp mặt Cựu học sinh LHP khoá 03-06, còn ...",
+    "days": "Ngày",
+    "registerNow": "Đăng ký ngay"
+  },
+  "Stepper": {
+    "register": "Đăng ký",
+    "merchandise": "Đặt hàng lưu niệm",
+    "donate": "Quyên góp",
+    "payment": "Thanh toán"
+  },
+  "RegisterForm": {
+    "title": "Thông tin cá nhân",
+    "description": "Vui lòng điền thông tin chi tiết của bạn để đăng ký tham gia sự kiện.",
+    "fullNameLabel": "Họ và tên",
+    "fullNamePlaceholder": "Họ và tên của bạn",
+    "emailLabel": "Địa chỉ email",
+    "emailPlaceholder": "Địa chỉ email của bạn",
+    "phoneLabel": "Số điện thoại",
+    "phonePlaceholder": "Số điện thoại của bạn",
+    "occupationLabel": "Nghề nghiệp",
+    "occupationPlaceholder": "Nghề nghiệp của bạn (không bắt buộc)",
+    "workplaceLabel": "Nơi công tác",
+    "workplacePlaceholder": "Nơi công tác của bạn (không bắt buộc)",
+    "nextButton": "Tiếp theo"
+  }
+} 
