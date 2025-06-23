@@ -10,16 +10,16 @@ export default function MerchandisePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">Merchandise</h1>
-      <p>T-shirt order form will go here.</p>
+      <h1 className="text-2xl font-title">Merchandise</h1>
+      <p className="font-legalese">T-shirt order form will go here.</p>
        <div className="mt-8 flex justify-between">
-        <Button variant="outline" onClick={() => {
+        <Button variant="outline" className="font-form" onClick={() => {
             setStep(1);
             router.push("/register");
         }}>
           Back
         </Button>
-        <Button onClick={() => {
+        <Button className="font-form" onClick={() => {
             setStep(3);
             router.push("/donation");
         }}>
