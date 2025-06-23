@@ -36,6 +36,10 @@ export default function Home() {
 
   return (
       <main className="flex min-h-screen flex-col items-center justify-center p-24 uppercase md:justify-between md:bg-transparent">
+      <div className="absolute top-8 right-8 flex flex-col gap-3 z-10">
+        <Link href="/gallery" className="text-white text-lg font-semibold transition-colors hover:text-yellow-400">Gallery</Link>
+        <Link href="/faq" className="text-white text-lg font-semibold transition-colors hover:text-yellow-400">FAQ</Link>
+      </div>
       <div>
         <motion.div
           initial={{ opacity: 0, x: -100 }}
