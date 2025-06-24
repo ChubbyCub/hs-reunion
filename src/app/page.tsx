@@ -154,19 +154,21 @@ export default function Home() {
           </motion.div>
         </div>
         
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.5, ease: "easeInOut", delay: 1 }}
-          className="text-center"
-        >
-          <Link href="/register" className="group inline-flex items-center text-2xl font-semibold text-yellow-400 transition-colors hover:text-yellow-300">
-            {t("registerNow")}
-            <svg xmlns="http://www.w3.org/2000/svg" className="ml-3 h-6 w-6 animate-nudgeRight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </Link>
-        </motion.div>
+        {!(timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.5, ease: "easeInOut", delay: 1 }}
+            className="text-center"
+          >
+            <Link href="/register" className="group inline-flex items-center text-2xl font-semibold text-yellow-400 transition-colors hover:text-yellow-300">
+              {t("registerNow")}
+              <svg xmlns="http://www.w3.org/2000/svg" className="ml-3 h-6 w-6 animate-nudgeRight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </motion.div>
+        )}
       </main>
   );
 }
