@@ -39,6 +39,7 @@ export default function Home() {
       <div className="absolute top-8 right-8 flex flex-col gap-3 z-10">
         <Link href="/gallery" className="text-white text-lg font-semibold transition-colors hover:text-yellow-400">Gallery</Link>
         <Link href="/faq" className="text-white text-lg font-semibold transition-colors hover:text-yellow-400">FAQ</Link>
+        <Link href="/admin" className="text-white text-lg font-semibold transition-colors hover:text-yellow-400 hidden md:block">Admin</Link>
       </div>
       <div>
         <motion.div
@@ -59,35 +60,59 @@ export default function Home() {
           <h1 className="text-6xl md:text-8xl font-title">
             <div className="flex flex-col items-center mt-4">
               <div className="flex justify-center items-end">
-                <div className="flex flex-col items-center" style={{ width: '3.5rem' }}>
-                  <span className="text-4xl font-title leading-none">{timeLeft.days}</span>
-                </div>
-                <div className="flex flex-col items-center" style={{ width: '1.5rem' }}>
-                  <span className="text-4xl font-title leading-none">:</span>
-                </div>
-                <div className="flex flex-col items-center" style={{ width: '3.5rem' }}>
-                  <span className="text-4xl font-title leading-none">{timeLeft.hours}</span>
-                </div>
-                <div className="flex flex-col items-center" style={{ width: '1.5rem' }}>
-                  <span className="text-4xl font-title leading-none">:</span>
-                </div>
-                <div className="flex flex-col items-center" style={{ width: '3.5rem' }}>
-                  <span className="text-4xl font-title leading-none">{timeLeft.minutes}</span>
-                </div>
-                <div className="flex flex-col items-center" style={{ width: '1.5rem' }}>
-                  <span className="text-4xl font-title leading-none">:</span>
-                </div>
+                {timeLeft.days > 0 && (
+                  <>
+                    <div className="flex flex-col items-center" style={{ width: '3.5rem' }}>
+                      <span className="text-4xl font-title leading-none">{timeLeft.days}</span>
+                    </div>
+                    <div className="flex flex-col items-center" style={{ width: '1.5rem' }}>
+                      <span className="text-4xl font-title leading-none">:</span>
+                    </div>
+                  </>
+                )}
+                {((timeLeft.days > 0) || (timeLeft.hours > 0)) && (
+                  <>
+                    <div className="flex flex-col items-center" style={{ width: '3.5rem' }}>
+                      <span className="text-4xl font-title leading-none">{timeLeft.hours}</span>
+                    </div>
+                    <div className="flex flex-col items-center" style={{ width: '1.5rem' }}>
+                      <span className="text-4xl font-title leading-none">:</span>
+                    </div>
+                  </>
+                )}
+                {((timeLeft.days > 0) || (timeLeft.hours > 0) || (timeLeft.minutes > 0)) && (
+                  <>
+                    <div className="flex flex-col items-center" style={{ width: '3.5rem' }}>
+                      <span className="text-4xl font-title leading-none">{timeLeft.minutes}</span>
+                    </div>
+                    <div className="flex flex-col items-center" style={{ width: '1.5rem' }}>
+                      <span className="text-4xl font-title leading-none">:</span>
+                    </div>
+                  </>
+                )}
                 <div className="flex flex-col items-center" style={{ width: '3.5rem' }}>
                   <span className="text-4xl font-title leading-none">{timeLeft.seconds}</span>
                 </div>
               </div>
               <div className="flex justify-center items-start mt-1">
-                <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>days</div>
-                <div style={{ width: '1.5rem' }}></div>
-                <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>hours</div>
-                <div style={{ width: '1.5rem' }}></div>
-                <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>minutes</div>
-                <div style={{ width: '1.5rem' }}></div>
+                {timeLeft.days > 0 && (
+                  <>
+                    <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>days</div>
+                    <div style={{ width: '1.5rem' }}></div>
+                  </>
+                )}
+                {((timeLeft.days > 0) || (timeLeft.hours > 0)) && (
+                  <>
+                    <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>hours</div>
+                    <div style={{ width: '1.5rem' }}></div>
+                  </>
+                )}
+                {((timeLeft.days > 0) || (timeLeft.hours > 0) || (timeLeft.minutes > 0)) && (
+                  <>
+                    <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>minutes</div>
+                    <div style={{ width: '1.5rem' }}></div>
+                  </>
+                )}
                 <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>seconds</div>
               </div>
             </div>
