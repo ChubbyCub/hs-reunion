@@ -3,6 +3,7 @@ import "./globals.css";
 import {NextIntlClientProvider} from 'next-intl';
 import {getLocale} from 'next-intl/server';
 import { Nunito } from "next/font/google";
+import HomeLinkIfNotHome from "@/components/HomeLinkIfNotHome";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -24,12 +25,11 @@ export default async function RootLayout({
   const locale = await getLocale();
   return (
     <html lang={locale}>
-      <body
-        className={`${nunito.variable} antialiased`}
-      >
+      <body className={`${nunito.variable} antialiased`}>
         <NextIntlClientProvider>
+          <HomeLinkIfNotHome />
           {children}
-        </NextIntlClientProvider> 
+        </NextIntlClientProvider>
       </body>
     </html>
   );
