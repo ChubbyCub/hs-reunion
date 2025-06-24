@@ -39,7 +39,7 @@ export default function Home() {
       <div className="absolute top-8 right-8 flex flex-col gap-3 z-10">
         <Link href="/gallery" className="text-white text-lg font-semibold transition-colors hover:text-yellow-400">Gallery</Link>
         <Link href="/faq" className="text-white text-lg font-semibold transition-colors hover:text-yellow-400">FAQ</Link>
-        <Link href="/admin" className="text-white text-lg font-semibold transition-colors hover:text-yellow-400 hidden md:block">Admin</Link>
+        <Link href="/admin/dashboard" className="text-white text-lg font-semibold transition-colors hover:text-yellow-400 hidden md:block">Admin</Link>
       </div>
       <div>
         <motion.div
