@@ -48,9 +48,9 @@ export default function Home() {
           }}
         >
           {[
-            { href: "/gallery", label: "Gallery", className: "" },
-            { href: "/faq", label: "FAQ", className: "" },
-            { href: "/admin/dashboard", label: "Admin", className: "hidden md:block" }
+            { href: "/gallery", label: t("gallery"), className: "" },
+            { href: "/faq", label: t("faq"), className: "" },
+            { href: "/admin/dashboard", label: t("admin"), className: "hidden md:block" }
           ].map((item) => (
             <motion.div
               key={item.href}
@@ -131,23 +131,23 @@ export default function Home() {
                 <div className="flex justify-center items-start mt-1">
                   {timeLeft.days > 0 && (
                     <>
-                      <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>days</div>
+                      <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>{t("days")}</div>
                       <div style={{ width: '1.5rem' }}></div>
                     </>
                   )}
                   {((timeLeft.days > 0) || (timeLeft.hours > 0)) && (
                     <>
-                      <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>hours</div>
+                      <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>{t("hours")}</div>
                       <div style={{ width: '1.5rem' }}></div>
                     </>
                   )}
                   {((timeLeft.days > 0) || (timeLeft.hours > 0) || (timeLeft.minutes > 0)) && (
                     <>
-                      <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>minutes</div>
+                      <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>{t("minutes")}</div>
                       <div style={{ width: '1.5rem' }}></div>
                     </>
                   )}
-                  <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>seconds</div>
+                  <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>{t("seconds")}</div>
                 </div>
               </div>
             </h1>

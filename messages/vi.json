@@ -2,7 +2,13 @@
   "HomePage": {
     "title": "Họp mặt cựu học sinh LHP khoá 03-06, còn ...",
     "days": "ngày",
-    "registerNow": "Đăng ký ngay"
+    "hours": "giờ",
+    "minutes": "phút",
+    "seconds": "giây",
+    "registerNow": "Đăng ký ngay",
+    "admin": "Quản trị",
+    "gallery": "Thư viện ảnh",
+    "faq": "Hỏi đáp"
   },
   "Stepper": {
     "personalInfo": "Thông tin cá nhân",

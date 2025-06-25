@@ -2,7 +2,13 @@
   "HomePage": {
     "title": "LHP Class 03-06 Reunion Starts In ...",
     "days": "Days",
-    "registerNow": "Register Now"
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "registerNow": "Register Now",
+    "admin": "Admin",
+    "gallery": "Gallery",
+    "faq": "FAQ"
   },
   "Stepper": {
     "personalInfo": "Personal Information",
