@@ -50,7 +50,7 @@ export default function Home() {
           {[
             { href: "/gallery", label: t("gallery"), className: "" },
             { href: "/faq", label: t("faq"), className: "" },
-            { href: "/admin/dashboard", label: t("admin"), className: "hidden md:block" }
+            { href: "/admin/dashboard", label: t("admin"), className: "hidden md:inline" }
           ].map((item) => (
             <motion.div
               key={item.href}
@@ -75,7 +75,7 @@ export default function Home() {
             </motion.div>
           ))}
         </motion.div>
-        <div>
+        <div className="mt-14 md:mt-20">
           <motion.div
             initial={{ opacity: 0, x: -100 }}
             animate={{ opacity: 1, x: 0 }}
@@ -149,26 +149,34 @@ export default function Home() {
                   )}
                   <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>{t("seconds")}</div>
                 </div>
+                {!(timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1.5, ease: "easeInOut", delay: 1 }}
+                    className="text-center mt-4"
+                  >
+                    <Link
+                      href="/register"
+                      className="group inline-flex items-center text-2xl font-semibold text-yellow-400 transition-colors hover:text-yellow-300"
+                    >
+                      <motion.span
+                        whileHover={{ scale: 1.08, filter: "brightness(1.2)" }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                        className="inline-block"
+                      >
+                        {t("registerNow")}
+                      </motion.span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="ml-3 h-6 w-6 animate-nudgeRight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </Link>
+                  </motion.div>
+                )}
               </div>
             </h1>
           </motion.div>
         </div>
-        
-        {!(timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) && (
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.5, ease: "easeInOut", delay: 1 }}
-            className="text-center"
-          >
-            <Link href="/register" className="group inline-flex items-center text-2xl font-semibold text-yellow-400 transition-colors hover:text-yellow-300">
-              {t("registerNow")}
-              <svg xmlns="http://www.w3.org/2000/svg" className="ml-3 h-6 w-6 animate-nudgeRight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
-          </motion.div>
-        )}
       </main>
   );
 }
