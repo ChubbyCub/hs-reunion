@@ -97,10 +97,10 @@ export default function DonationPage() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-title text-gray-900 mb-4">
-              {t('title', { defaultValue: 'Donation' })}
+              {t('title')}
             </h1>
             <p className="mt-2 text-muted-foreground font-legalese">
-              {t('description', { defaultValue: 'Please select your donation amount. A minimum donation of 500,000 VND is required.' })}
+              {t('description')}
             </p>
           </div>
 
@@ -109,7 +109,7 @@ export default function DonationPage() {
             {/* Minimum Required Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                {t('minimumRequired', { defaultValue: 'Minimum Required' })}
+                {t('minimumRequired')}
               </h2>
               <Card 
                 className={`cursor-pointer transition-all duration-200 ${
@@ -143,7 +143,7 @@ export default function DonationPage() {
             {/* Optional Choices Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                {t('optionalChoices', { defaultValue: 'Additional Options' })}
+                {t('optionalChoices')}
               </h2>
               <div className="space-y-3">
                 {donationOptions.slice(1).map((option) => (
@@ -182,7 +182,7 @@ export default function DonationPage() {
             {/* Custom Amount Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                {t('customAmount', { defaultValue: 'Custom Amount' })}
+                {t('customAmount')}
               </h2>
               <Card 
                 className={`transition-all duration-200 ${
@@ -195,12 +195,12 @@ export default function DonationPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <h3 className="text-base font-semibold text-gray-900 mb-2">
-                        {t('customAmountTitle', { defaultValue: 'Enter your own amount' })}
+                        {t('customAmountTitle')}
                       </h3>
                       <div className="flex items-center space-x-2">
                         <Input
                           type="text"
-                          placeholder={t('customAmountPlaceholder', { defaultValue: 'Enter amount in VND' })}
+                          placeholder={t('customAmountPlaceholder')}
                           value={customAmount}
                           onChange={(e) => handleCustomAmountChange(e.target.value)}
                           className={`flex-1 font-form ${validationError ? 'border-red-500 focus:border-red-500' : ''}`}
@@ -210,11 +210,11 @@ export default function DonationPage() {
                       </div>
                       {validationError && (
                         <p className="text-sm text-red-600 mt-1">
-                          {t('validationError', { defaultValue: 'Minimum donation amount is 500,000 VND' })}
+                          {t('validationError')}
                         </p>
                       )}
                       <p className="text-sm text-gray-600 mt-1">
-                        {t('minimumRequiredText', { defaultValue: 'Minimum 500,000 VND required' })}
+                        {t('minimumRequiredText')}
                       </p>
                     </div>
                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ml-4 ${
@@ -235,7 +235,7 @@ export default function DonationPage() {
           {/* Selected Amount Display */}
           <div className="mt-8 p-4 bg-gray-50 rounded-lg">
             <div className="text-center">
-              <p className="text-sm text-gray-600 mb-1">Selected Amount:</p>
+              <p className="text-sm text-gray-600 mb-1">Số tiền đã chọn:</p>
               <p className="text-xl font-bold text-gray-900">
                 {formatAmount(selectedAmount)}
               </p>
@@ -249,14 +249,14 @@ export default function DonationPage() {
               className="font-form px-8 py-3"
               onClick={handleBack}
             >
-              {t('backButton', { defaultValue: 'Back' })}
+              {t('backButton')}
             </Button>
             <Button 
               className="font-form px-8 py-3"
               onClick={handleNext}
               disabled={selectedAmount < 500000}
             >
-              {t('nextButton', { defaultValue: 'Next' })}
+              {t('nextButton')}
             </Button>
           </div>
         </div>

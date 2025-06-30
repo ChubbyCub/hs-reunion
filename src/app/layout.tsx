@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import {NextIntlClientProvider} from 'next-intl';
-import {getLocale, getMessages} from 'next-intl/server';
 import { Nunito } from "next/font/google";
 import HomeLinkIfNotHome from "@/components/HomeLinkIfNotHome";
+import viMessages from '../../messages/vi.json';
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -17,21 +17,18 @@ export const metadata: Metadata = {
   description: "Made by class 03-06",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await getLocale();
-  const messages = await getMessages();
-  
   return (
-    <html lang={locale}>
+    <html lang="vi">
       <head>
         <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
       </head>
       <body className={`${nunito.variable} antialiased`}>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={viMessages}>
           <HomeLinkIfNotHome />
           {children}
         </NextIntlClientProvider>

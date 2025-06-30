@@ -33,7 +33,7 @@ export function Stepper({ steps }: StepperProps) {
                     : "border-2 border-gray-300 bg-gray-100 text-gray-500"
                 )}
               >
-                {isCompleted ? t('checkmark', { defaultValue: '✓' }) : stepNumber}
+                {isCompleted ? t('checkmark') : stepNumber}
               </div>
               <p
                 className={cn(

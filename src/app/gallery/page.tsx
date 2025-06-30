@@ -48,7 +48,7 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-blue-500">
       <div className="container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -57,7 +57,7 @@ export default function GalleryPage() {
           className="text-center mb-12"
         >
           <h1 className="text-4xl md:text-5xl font-title mb-4 text-foreground">
-            Photo Gallery
+            Thư viện ảnh
           </h1>
           
           {/* Google Drive Link */}
@@ -74,7 +74,7 @@ export default function GalleryPage() {
               className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors duration-200 shadow-lg hover:shadow-xl font-subtitle"
             >
               <ExternalLink size={20} />
-              View More Photos on Google Drive
+                Xem thêm hình ảnh tại Google Drive
             </a>
           </motion.div>
         </motion.div>
