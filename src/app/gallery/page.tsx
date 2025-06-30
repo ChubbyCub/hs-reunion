@@ -10,11 +10,21 @@ interface ImageData {
   src: string;
   width: number;
   height: number;
+  tags?: string[];
 }
 
 export default function GalleryPage() {
   const [selectedImage, setSelectedImage] = useState<ImageData | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [search, setSearch] = useState('');
+
+  // Filter images by search
+  const filteredImages = search.trim() === ''
+    ? galleryData
+    : galleryData.filter(img =>
+        Array.isArray(img.tags) &&
+        img.tags.some(tag => tag.toLowerCase().includes(search.trim().toLowerCase()))
+      );
 
   const openLightbox = (image: ImageData, index: number) => {
     setSelectedImage(image);
@@ -59,29 +69,21 @@ export default function GalleryPage() {
           <h1 className="text-4xl md:text-5xl font-title mb-4 text-foreground">
             Thư viện ảnh
           </h1>
-          
-          {/* Google Drive Link */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mb-8"
-          >
-            <a
-              href="https://drive.google.com/drive/folders/1JqD9ZPK5n65qLrgVlTFaf6fcpJi-L-Ln?usp=sharing"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors duration-200 shadow-lg hover:shadow-xl font-subtitle"
-            >
-              <ExternalLink size={20} />
-                Xem thêm hình ảnh tại Google Drive
-            </a>
-          </motion.div>
+          {/* Search Bar */}
+          <div className="flex justify-center mb-8">
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Tìm theo tên lớp..."
+              className="w-full max-w-5xl px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-base"
+            />
+          </div>
         </motion.div>
 
         {/* Masonry Grid */}
         <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
-          {galleryData.map((image, index) => (
+          {filteredImages.map((image, index) => (
             <motion.div
               key={image.src}
               initial={{ opacity: 0, scale: 0.8 }}
@@ -111,18 +113,41 @@ export default function GalleryPage() {
                   blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="bg-white bg-opacity-90 rounded-full p-2">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center">
+                    <div className="bg-white bg-opacity-90 rounded-full p-2 mb-2">
                       <svg className="w-6 h-6 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                       </svg>
                     </div>
+                    {Array.isArray(image.tags) && image.tags.length > 0 && (
+                      <div className="mt-1 px-3 py-1 rounded-full bg-blue-600 bg-opacity-90 text-white text-sm font-semibold shadow">
+                        {image.tags.join(', ')}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
+
+        {/* Google Drive Link at the bottom */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-12 flex justify-center"
+        >
+          <a
+            href="https://drive.google.com/drive/folders/1JqD9ZPK5n65qLrgVlTFaf6fcpJi-L-Ln?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors duration-200 shadow-lg hover:shadow-xl font-subtitle"
+          >
+            <ExternalLink size={20} />
+              Xem thêm hình ảnh tại Google Drive
+          </a>
+        </motion.div>
 
         {/* Lightbox */}
         <AnimatePresence>
