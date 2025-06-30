@@ -14,14 +14,14 @@ export default function MerchandisePage() {
       <p className="font-legalese">T-shirt order form will go here.</p>
        <div className="mt-8 flex justify-between">
         <Button variant="outline" className="font-form" onClick={() => {
-            setStep(1);
-            router.push("/register");
+            setStep(2);
+            router.push("/donation");
         }}>
           Back
         </Button>
         <Button className="font-form" onClick={() => {
-            setStep(3);
-            router.push("/donation");
+            setStep(4);
+            router.push("/payment");
         }}>
           Next
         </Button>

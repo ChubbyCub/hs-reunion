@@ -8,7 +8,8 @@ interface FormData {
   phone: string;
   occupation?: string;
   workplace?: string;
-  // We'll add more fields for merchandise and donation later
+  donationAmount: number;
+  // We'll add more fields for merchandise later
 }
 
 // Define the shape of your store
@@ -29,6 +30,7 @@ const initialState: { currentStep: number; formData: FormData; hydrated?: boolea
     phone: '',
     occupation: '',
     workplace: '',
+    donationAmount: 500000,
   },
   hydrated: false,
 };

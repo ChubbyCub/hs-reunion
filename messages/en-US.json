@@ -31,5 +31,13 @@
     "workplaceLabel": "Workplace",
     "workplacePlaceholder": "Your workplace (optional)",
     "nextButton": "Next"
+  },
+  "DonationForm": {
+    "title": "Donation",
+    "description": "Please select your donation amount. A minimum donation of 500,000 VND is required.",
+    "minimumRequired": "Minimum Required",
+    "optionalChoices": "Additional Options",
+    "nextButton": "Next",
+    "backButton": "Back"
   }
 } 

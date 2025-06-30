@@ -31,5 +31,13 @@
     "workplaceLabel": "Nơi công tác",
     "workplacePlaceholder": "Nơi công tác của bạn (không bắt buộc)",
     "nextButton": "Tiếp theo"
+  },
+  "DonationForm": {
+    "title": "Quyên góp",
+    "description": "Vui lòng chọn số tiền quyên góp. Số tiền tối thiểu là 500,000 VND.",
+    "minimumRequired": "Bắt buộc tối thiểu",
+    "optionalChoices": "Tùy chọn bổ sung",
+    "nextButton": "Tiếp theo",
+    "backButton": "Quay lại"
   }
 } 
