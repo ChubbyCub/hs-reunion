@@ -37,6 +37,11 @@
     "description": "Vui lòng chọn số tiền quyên góp. Số tiền tối thiểu là 500,000 VND.",
     "minimumRequired": "Bắt buộc tối thiểu",
     "optionalChoices": "Tùy chọn bổ sung",
+    "customAmount": "Số tiền tùy chọn",
+    "customAmountTitle": "Nhập số tiền của bạn",
+    "customAmountPlaceholder": "Nhập số tiền bằng VND",
+    "minimumRequiredText": "Tối thiểu 500.000 VND",
+    "validationError": "Số tiền quyên góp tối thiểu là 500.000 VND",
     "nextButton": "Tiếp theo",
     "backButton": "Quay lại"
   }

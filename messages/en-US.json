@@ -37,6 +37,11 @@
     "description": "Please select your donation amount. A minimum donation of 500,000 VND is required.",
     "minimumRequired": "Minimum Required",
     "optionalChoices": "Additional Options",
+    "customAmount": "Custom Amount",
+    "customAmountTitle": "Enter your own amount",
+    "customAmountPlaceholder": "Enter amount in VND",
+    "minimumRequiredText": "Minimum 500,000 VND required",
+    "validationError": "Minimum donation amount is 500,000 VND",
     "nextButton": "Next",
     "backButton": "Back"
   }

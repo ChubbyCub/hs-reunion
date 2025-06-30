@@ -62,7 +62,7 @@ export default function DonationPage() {
     } else if (numValue > 0) {
       setSelectedAmount(numValue);
       setIsCustomSelected(true);
-      setValidationError('Minimum donation amount is 500.000 VND');
+      setValidationError('error');
     } else {
       setIsCustomSelected(false);
       setValidationError('');
@@ -73,7 +73,7 @@ export default function DonationPage() {
     const finalAmount = isCustomSelected && customAmount ? parseInt(customAmount.replace(/[.,]/g, '')) : selectedAmount;
     
     if (finalAmount < 500000) {
-      setValidationError('Minimum donation amount is 500.000 VND');
+      setValidationError('error');
       return;
     }
     
@@ -125,9 +125,6 @@ export default function DonationPage() {
                       <h3 className="text-base font-semibold text-gray-900">
                         {formatAmount(500000)} VND
                       </h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Minimum required donation
-                      </p>
                     </div>
                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                       selectedAmount === 500000 && !isCustomSelected
@@ -165,9 +162,6 @@ export default function DonationPage() {
                           <h3 className="text-base font-semibold text-gray-900">
                             {formatAmount(option.amount)} VND
                           </h3>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Optional higher amount
-                          </p>
                         </div>
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                           selectedAmount === option.amount && !isCustomSelected
@@ -188,7 +182,7 @@ export default function DonationPage() {
             {/* Custom Amount Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Custom Amount
+                {t('customAmount', { defaultValue: 'Custom Amount' })}
               </h2>
               <Card 
                 className={`transition-all duration-200 ${
@@ -201,12 +195,12 @@ export default function DonationPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <h3 className="text-base font-semibold text-gray-900 mb-2">
-                        Enter your own amount
+                        {t('customAmountTitle', { defaultValue: 'Enter your own amount' })}
                       </h3>
                       <div className="flex items-center space-x-2">
                         <Input
                           type="text"
-                          placeholder="Enter amount in VND"
+                          placeholder={t('customAmountPlaceholder', { defaultValue: 'Enter amount in VND' })}
                           value={customAmount}
                           onChange={(e) => handleCustomAmountChange(e.target.value)}
                           className={`flex-1 font-form ${validationError ? 'border-red-500 focus:border-red-500' : ''}`}
@@ -216,11 +210,11 @@ export default function DonationPage() {
                       </div>
                       {validationError && (
                         <p className="text-sm text-red-600 mt-1">
-                          {validationError}
+                          {t('validationError', { defaultValue: 'Minimum donation amount is 500,000 VND' })}
                         </p>
                       )}
                       <p className="text-sm text-gray-600 mt-1">
-                        Minimum 500.000 VND required
+                        {t('minimumRequiredText', { defaultValue: 'Minimum 500,000 VND required' })}
                       </p>
                     </div>
                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ml-4 ${
