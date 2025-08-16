@@ -2,7 +2,7 @@
 
 import { Stepper } from "@/components/ui/stepper";
 
-const steps = ["personalInfo", "donate", "merchandise", "payment"];
+const steps = ["personalInfo", "merchandise", "donate", "payment"];
 
 export default function StepsLayout({
   children,
