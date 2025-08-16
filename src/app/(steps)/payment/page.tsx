@@ -15,7 +15,7 @@ export default function PaymentPage() {
        <div className="mt-8 flex justify-between">
         <Button variant="outline" className="font-form" onClick={() => {
             setStep(3);
-            router.push("/merchandise");
+            router.push("/donation");
         }}>
           Back
         </Button>

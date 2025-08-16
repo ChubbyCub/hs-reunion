@@ -79,13 +79,13 @@ export default function DonationPage() {
     
     setValidationError('');
     updateFormData({ donationAmount: finalAmount });
-    setStep(3);
-    router.push("/merchandise");
+    setStep(4);
+    router.push("/payment");
   };
 
   const handleBack = () => {
-    setStep(1);
-    router.push("/register");
+    setStep(2);
+    router.push("/merchandise");
   };
 
   if (!hasHydrated) return <div>Loading...</div>;

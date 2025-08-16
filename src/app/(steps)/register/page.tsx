@@ -51,7 +51,7 @@ export default function RegisterPage() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     updateFormData(values);
     setStep(2);
-    router.push("/donation");
+    router.push("/merchandise");
   }
 
   if (!hasHydrated) return <div>Loading...</div>;
