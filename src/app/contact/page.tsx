@@ -28,25 +28,8 @@ export default function ContactPage() {
                 </h2>
               </div>
 
-              {/* Email BTC */}
-                                        <div className="text-center mb-8">
-                            <a
-                              href="mailto:lhp0306@gmail.com"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-2xl font-medium text-primary hover:text-primary/80 transition-colors"
-                            >
-                              lhp0306@gmail.com
-                            </a>
-                          </div>
-
               {/* Direct Contact - Organizing Committee */}
               <div className="mb-8">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center flex items-center justify-center">
-                  <Phone className="h-6 w-6 text-primary mr-2" />
-                  Liên hệ trực tiếp:
-                </h3>
-                
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Nguyễn Công Hoàng Yến */}
                   <Card className="hover:shadow-lg transition-shadow duration-200">
@@ -56,13 +39,13 @@ export default function ContactPage() {
                       </h4>
                       <div className="space-y-3">
                         <div className="flex items-center justify-center">
-                          <Phone className="h-7 w-7 text-primary mr-2 flex-shrink-0" />
+                          <Phone className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
                           <a href="https://zalo.me/0909023864" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-primary transition-colors">
                             0909 023 864
                           </a>
                         </div>
                         <div className="flex items-center justify-center">
-                          <Mail className="h-7 w-7 text-primary mr-2 flex-shrink-0" />
+                          <Mail className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
                           <a href="mailto:yennguyen020814@gmail.com" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-primary transition-colors text-sm">
                             yennguyen020814@gmail.com
                           </a>
@@ -79,13 +62,13 @@ export default function ContactPage() {
                       </h4>
                       <div className="space-y-3">
                         <div className="flex items-center justify-center">
-                          <Phone className="h-7 w-7 text-primary mr-2 flex-shrink-0" />
+                          <Phone className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
                           <a href="https://zalo.me/0908506586" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-primary transition-colors">
                             0908 506 586
                           </a>
                         </div>
                         <div className="flex items-center justify-center">
-                          <Mail className="h-7 w-7 text-primary mr-2 flex-shrink-0" />
+                          <Mail className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
                           <a href="mailto:ptminhtran@gmail.com" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-primary transition-colors text-sm">
                             ptminhtran@gmail.com
                           </a>
@@ -102,13 +85,13 @@ export default function ContactPage() {
                       </h4>
                       <div className="space-y-3">
                         <div className="flex items-center justify-center">
-                          <Phone className="h-7 w-7 text-primary mr-2 flex-shrink-0" />
+                          <Phone className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
                           <a href="https://zalo.me/0913659477" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-primary transition-colors">
                             0913 659 477
                           </a>
                         </div>
                         <div className="flex items-center justify-center">
-                          <Mail className="h-7 w-7 text-primary mr-2 flex-shrink-0" />
+                          <Mail className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
                           <a href="mailto:nhakieu.khong@gmail.com" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-primary transition-colors text-sm">
                             nhakieu.khong@gmail.com
                           </a>
@@ -126,39 +109,57 @@ export default function ContactPage() {
                   Kết nối cộng đồng:
                 </h3>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Email Contact */}
+                  <Card className="hover:shadow-lg transition-shadow duration-200">
+                    <CardContent className="p-4 text-center">
+                      <div className="flex items-center justify-center mb-2">
+                        <Mail className="h-5 w-5 text-red-500 mr-2" />
+                        <h4 className="font-semibold text-gray-900 text-sm">Email BTC</h4>
+                      </div>
+                      <a 
+                        href="mailto:lhp0306@gmail.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:text-primary/80 transition-colors text-sm break-all"
+                      >
+                        lhp0306@gmail.com
+                      </a>
+                    </CardContent>
+                  </Card>
+
                   {/* Zalo Group */}
                   <Card className="hover:shadow-lg transition-shadow duration-200">
-                    <CardContent className="p-6 text-center">
-                      <div className="flex items-center justify-center mb-3">
-                        <MessageCircle className="h-6 w-6 text-blue-500 mr-2" />
-                        <h4 className="font-semibold text-gray-900">Zalo Group (CHS LHP 0306)</h4>
+                    <CardContent className="p-4 text-center">
+                      <div className="flex items-center justify-center mb-2">
+                        <MessageCircle className="h-5 w-5 text-blue-500 mr-2" />
+                        <h4 className="font-semibold text-gray-900 text-sm">Zalo Group</h4>
                       </div>
                       <a 
                         href="https://zalo.me/g/yrzikb642" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-primary hover:text-primary/80 transition-colors"
+                        className="text-primary hover:text-primary/80 transition-colors text-xs break-all"
                       >
-                        https://zalo.me/g/yrzikb642
+                        zalo.me/g/yrzikb642
                       </a>
                     </CardContent>
                   </Card>
 
                   {/* Facebook Group */}
                   <Card className="hover:shadow-lg transition-shadow duration-200">
-                    <CardContent className="p-6 text-center">
-                      <div className="flex items-center justify-center mb-3">
-                        <Facebook className="h-6 w-6 text-blue-600 mr-2" />
-                        <h4 className="font-semibold text-gray-900">Facebook Group</h4>
+                    <CardContent className="p-4 text-center">
+                      <div className="flex items-center justify-center mb-2">
+                        <Facebook className="h-5 w-5 text-blue-600 mr-2" />
+                        <h4 className="font-semibold text-gray-900 text-sm">Facebook Group</h4>
                       </div>
                       <a 
                         href="https://web.facebook.com/groups/lhp0306" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-primary hover:text-primary/80 transition-colors"
+                        className="text-primary hover:text-primary/80 transition-colors text-xs break-all"
                       >
-                        https://web.facebook.com/groups/lhp0306
+                        facebook.com/groups/lhp0306
                       </a>
                     </CardContent>
                   </Card>
@@ -171,17 +172,11 @@ export default function ContactPage() {
                   <Heart className="h-6 w-6 text-red-500 mr-2" />
                   <span className="text-lg font-semibold text-gray-900">Cảm ơn bạn!</span>
                 </div>
-                <p className="text-gray-700 mb-3">
-                  Mỗi đóng góp nhỏ của bạn sẽ góp phần làm nên kỷ niệm lớn của chúng ta.
-                </p>
-                <p className="text-lg font-semibold text-primary">
-                  Hẹn gặp lại tại Trạm Ký Ức – Chạm Ước Mơ 0306!
-                </p>
+                <p className="text-gray-700 mb-3">Mỗi đóng góp nhỏ của bạn sẽ góp phần làm nên kỷ niệm lớn của chúng ta.</p>
+                <p className="text-lg font-semibold text-primary">Hẹn gặp lại tại Trạm Ký Ức – Chạm Ước Mơ 0306!</p>
               </div>
             </CardContent>
           </Card>
-
-
         </div>
       </div>
     </div>
