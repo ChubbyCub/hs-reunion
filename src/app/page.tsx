@@ -50,6 +50,7 @@ export default function Home() {
           {[
             { href: "/gallery", label: t("gallery"), className: "" },
             { href: "/faq", label: t("faq"), className: "" },
+            { href: "/contact", label: t("contact"), className: "" },
             { href: "/admin/dashboard", label: t("admin"), className: "hidden md:inline" }
           ].map((item) => (
             <motion.div
