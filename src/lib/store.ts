@@ -6,6 +6,7 @@ interface FormData {
   fullName: string;
   email: string;
   phone: string;
+  class?: string;
   occupation?: string;
   workplace?: string;
   donationAmount: number;
@@ -28,6 +29,7 @@ const initialState: { currentStep: number; formData: FormData; hydrated?: boolea
     fullName: '',
     email: '',
     phone: '',
+    class: '',
     occupation: '',
     workplace: '',
     donationAmount: 500000,

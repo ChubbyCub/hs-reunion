@@ -155,14 +155,14 @@ export default function MerchandisePage() {
             {merchandiseItems.map((item) => (
               <Card key={item.id} className="hover:shadow-lg transition-shadow duration-200">
                 <CardContent className="p-6">
-                  <div className="flex items-center space-x-6">
+                                    <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-6">
                     {/* Image Placeholder */}
-                    <div className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-20 h-20 md:w-24 md:h-24 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 mx-auto md:mx-0">
                       <span className="text-gray-500 text-sm">Hình ảnh</span>
                     </div>
                     
                     {/* Item Details */}
-                    <div className="flex-1">
+                    <div className="flex-1 text-center md:text-left">
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">
                         {item.name}
                       </h3>
@@ -170,57 +170,57 @@ export default function MerchandisePage() {
                         {item.description}
                       </p>
                       
-                                              {/* Size and Gender Selection for T-shirt */}
-                        <div className="flex space-x-4 mb-3">
-                          {item.sizes && (
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">Kích thước:</label>
-                              <select
-                                value={item.selectedSize}
-                                onChange={(e) => updateSize(item.id, e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                              >
-                                {item.sizes.map(size => (
-                                  <option key={size} value={size}>{size}</option>
-                                ))}
-                              </select>
-                            </div>
-                          )}
-                          
-                          {item.genders && (
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">Giới tính:</label>
-                              <select
-                                value={item.selectedGender}
-                                onChange={(e) => updateGender(item.id, e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                              >
-                                {item.genders.map(gender => (
-                                  <option key={gender} value={gender}>{gender}</option>
-                                ))}
-                              </select>
-                            </div>
-                          )}
-                        </div>
-                        
-                        {/* Size measurements - Full width */}
+                      {/* Size and Gender Selection for T-shirt */}
+                      <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 mb-3">
                         {item.sizes && (
-                          <div className="mb-3">
-                            <div className="text-xs text-gray-500">
-                              {item.selectedSize === "S" && "Kích thước S: 46cm x 66cm (rộng x dài)"}
-                              {item.selectedSize === "M" && "Kích thước M: 48cm x 68cm (rộng x dài)"}
-                              {item.selectedSize === "L" && "Kích thước L: 50cm x 70cm (rộng x dài)"}
-                              {item.selectedSize === "XL" && "Kích thước XL: 52cm x 72cm (rộng x dài)"}
-                              {item.selectedSize === "XXL" && "Kích thước XXL: 54cm x 74cm (rộng x dài)"}
-                              {item.selectedSize === "3XL" && "Kích thước 3XL: 56cm x 76cm (rộng x dài)"}
-                              {item.selectedSize === "4XL" && "Kích thước 4XL: 58cm x 78cm (rộng x dài)"}
-                            </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Kích thước:</label>
+                            <select
+                              value={item.selectedSize}
+                              onChange={(e) => updateSize(item.id, e.target.value)}
+                              className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            >
+                              {item.sizes.map(size => (
+                                <option key={size} value={size}>{size}</option>
+                              ))}
+                            </select>
                           </div>
                         )}
+                        
+                        {item.genders && (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Giới tính:</label>
+                            <select
+                              value={item.selectedGender}
+                              onChange={(e) => updateGender(item.id, e.target.value)}
+                              className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            >
+                              {item.genders.map(gender => (
+                                <option key={gender} value={gender}>{gender}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Size measurements - Full width */}
+                      {item.sizes && (
+                        <div className="mb-3">
+                          <div className="text-xs text-gray-500">
+                            {item.selectedSize === "S" && "Kích thước S: 46cm x 66cm (rộng x dài)"}
+                            {item.selectedSize === "M" && "Kích thước M: 48cm x 68cm (rộng x dài)"}
+                            {item.selectedSize === "L" && "Kích thước L: 50cm x 70cm (rộng x dài)"}
+                            {item.selectedSize === "XL" && "Kích thước XL: 52cm x 72cm (rộng x dài)"}
+                            {item.selectedSize === "XXL" && "Kích thước XXL: 54cm x 74cm (rộng x dài)"}
+                            {item.selectedSize === "3XL" && "Kích thước 3XL: 56cm x 76cm (rộng x dài)"}
+                            {item.selectedSize === "4XL" && "Kích thước 4XL: 58cm x 78cm (rộng x dài)"}
+                          </div>
+                        </div>
+                      )}
                     </div>
                     
                     {/* Price and Quantity */}
-                    <div className="text-right flex-shrink-0">
+                    <div className="text-center md:text-right flex-shrink-0">
                       {/* Price Display */}
                       <p className="text-xl font-bold text-primary mb-4">
                         {`${item.price.toLocaleString('vi-VN')} VND`}
@@ -233,16 +233,16 @@ export default function MerchandisePage() {
                           size="sm"
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
                           disabled={item.quantity <= 0}
-                          className="w-8 h-8 p-0"
+                          className="w-10 h-10 md:w-8 md:h-8 p-0 text-lg md:text-base"
                         >
                           -
                         </Button>
-                        <span className="w-12 text-center font-medium">{item.quantity}</span>
+                        <span className="w-16 md:w-12 text-center font-medium text-lg md:text-base">{item.quantity}</span>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="w-8 h-8 p-0"
+                          className="w-10 h-10 md:w-8 md:h-8 p-0 text-lg md:text-base"
                         >
                           +
                         </Button>
@@ -298,16 +298,16 @@ export default function MerchandisePage() {
           </Card>
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between">
+          <div className="flex flex-col sm:flex-row justify-between space-y-3 sm:space-y-0">
             <Button 
               variant="outline" 
-              className="font-form px-8 py-3"
+              className="font-form px-6 py-3 w-full sm:w-auto"
               onClick={handleBack}
             >
               Quay lại
             </Button>
             <Button 
-              className="font-form px-8 py-3"
+              className="font-form px-6 py-3 w-full sm:w-auto"
               onClick={handleNext}
             >
               Tiếp theo

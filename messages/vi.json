@@ -26,6 +26,8 @@
     "emailPlaceholder": "Địa chỉ email của bạn",
     "phoneLabel": "Số điện thoại",
     "phonePlaceholder": "Số điện thoại của bạn",
+    "classLabel": "Lớp",
+    "classPlaceholder": "Chọn lớp học của bạn",
     "occupationLabel": "Nghề nghiệp",
     "occupationPlaceholder": "Nghề nghiệp của bạn (không bắt buộc)",
     "workplaceLabel": "Nơi công tác",

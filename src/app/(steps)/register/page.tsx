@@ -23,6 +23,7 @@ const formSchema = z.object({
   fullName: z.string().min(1, { message: "Full name is required." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
   phone: z.string().min(1, { message: "Phone number is required." }),
+  class: z.string().min(1, { message: "Please select your class." }),
   occupation: z.string().optional(),
   workplace: z.string().optional(),
 });
@@ -102,6 +103,53 @@ export default function RegisterPage() {
                 <FormLabel className="font-form">{t('phoneLabel')}</FormLabel>
                 <FormControl>
                   <Input className="font-form" placeholder={t('phonePlaceholder')} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="class"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-form">{t('classLabel')}</FormLabel>
+                <FormControl>
+                  <select
+                    {...field}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-form"
+                  >
+                    <option value="">{t('classPlaceholder')}</option>
+                    <option value="12A1">12A1</option>
+                    <option value="12A2">12A2</option>
+                    <option value="12A3">12A3</option>
+                    <option value="12A4">12A4</option>
+                    <option value="12A5">12A5</option>
+                    <option value="12A6">12A6</option>
+                    <option value="12A7">12A7</option>
+                    <option value="12A8">12A8</option>
+                    <option value="12B1">12B1</option>
+                    <option value="12B2">12B2</option>
+                    <option value="12B3">12B3</option>
+                    <option value="12B4">12B4</option>
+                    <option value="12B5">12B5</option>
+                    <option value="12C">12C</option>
+                    <option value="12CA">12CA</option>
+                    <option value="12CH">12CH</option>
+                    <option value="12CL">12CL</option>
+                    <option value="12CS">12CS</option>
+                    <option value="12CT">12CT</option>
+                    <option value="12CTC">12CTC</option>
+                    <option value="12CTIN">12CTIN</option>
+                    <option value="12D1">12D1</option>
+                    <option value="12D2">12D2</option>
+                    <option value="12D3">12D3</option>
+                    <option value="12D4">12D4</option>
+                    <option value="12D5">12D5</option>
+                    <option value="12NT">12NT</option>
+                    <option value="12SN1">12SN1</option>
+                    <option value="12SN2">12SN2</option>
+                  </select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
