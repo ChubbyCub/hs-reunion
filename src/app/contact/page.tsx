@@ -1,8 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Mail, Phone, MapPin, Users, Calendar, MessageCircle, Heart, Globe, Facebook } from "lucide-react";
+import { Mail, Phone, MessageCircle, Heart, Globe, Facebook } from "lucide-react";
 
 export default function ContactPage() {
   return (
