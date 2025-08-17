@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import {NextIntlClientProvider} from 'next-intl';
 import { Nunito } from "next/font/google";
-import HomeLinkIfNotHome from "@/components/HomeLinkIfNotHome";
 import viMessages from '../../messages/vi.json';
 
 const nunito = Nunito({
@@ -29,7 +28,6 @@ export default function RootLayout({
       </head>
       <body className={`${nunito.variable} antialiased`}>
         <NextIntlClientProvider messages={viMessages}>
-          <HomeLinkIfNotHome />
           {children}
         </NextIntlClientProvider>
       </body>

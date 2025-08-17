@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Phone, MessageCircle, Heart, Globe, Facebook } from "lucide-react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export default function ContactPage() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -14,8 +16,9 @@ export default function ContactPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="w-full px-3 sm:px-6 py-6 sm:py-8">
+    <div className="min-h-screen bg-white flex flex-col">
+      <Header />
+      <div className="flex-1 w-full px-3 sm:px-6 py-6 sm:py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div 
@@ -261,6 +264,7 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

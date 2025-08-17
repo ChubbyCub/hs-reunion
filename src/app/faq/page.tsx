@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 // Simple chevron icons as SVG components
 const ChevronDownIcon = ({ className }: { className?: string }) => (
@@ -80,8 +82,9 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="w-full px-3 sm:px-6 py-6 sm:py-8">
+    <div className="min-h-screen bg-white flex flex-col">
+      <Header />
+      <div className="flex-1 w-full px-3 sm:px-6 py-6 sm:py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div 
@@ -200,6 +203,7 @@ export default function FAQPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 } 

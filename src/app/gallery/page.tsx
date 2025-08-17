@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import galleryData from '../../../gallery.json';
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 interface ImageData {
   src: string;
@@ -58,15 +60,16 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-500">
-      <div className="container mx-auto px-4 py-16">
+    <div className="min-h-screen bg-white flex flex-col">
+      <Header />
+      <div className="flex-1 container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl md:text-5xl font-title mb-4 text-foreground">
+          <h1 className="text-4xl md:text-5xl font-title mb-4 text-gray-900">
             Thư viện ảnh
           </h1>
           {/* Search Bar */}
@@ -76,7 +79,7 @@ export default function GalleryPage() {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Tìm theo tên lớp..."
-              className="w-full max-w-5xl px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-base"
+              className="w-full max-w-5xl px-4 py-2 rounded-lg border border-gray-300 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 outline-none text-base"
             />
           </div>
         </motion.div>
@@ -220,6 +223,7 @@ export default function GalleryPage() {
           )}
         </AnimatePresence>
       </div>
+      <Footer />
     </div>
   );
 } 
