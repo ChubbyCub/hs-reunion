@@ -117,9 +117,9 @@ export default function RegisterPage() {
                 <FormControl>
                   <select
                     {...field}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-form"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 font-form text-base md:text-sm"
                   >
-                    <option value="">{t('classPlaceholder')}</option>
+                    <option value="" className="text-muted-foreground">{t('classPlaceholder')}</option>
                     <option value="12A1">12A1</option>
                     <option value="12A2">12A2</option>
                     <option value="12A3">12A3</option>
