@@ -10,6 +10,7 @@ interface EventbriteWidgetProps {
   eventLocation?: string;
   onTicketPurchase?: () => void;
   onError?: (error: string) => void;
+  onRegistrationComplete?: () => void;
 }
 
 export function EventbriteWidget({
@@ -18,7 +19,8 @@ export function EventbriteWidget({
   eventDate = "[NGÀY]",
   eventLocation = "[ĐỊA ĐIỂM]",
   onTicketPurchase,
-  onError
+  onError,
+  onRegistrationComplete
 }: EventbriteWidgetProps) {
   const [ready, setReady] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -90,14 +92,17 @@ export function EventbriteWidget({
         eventId,
         modal: true,
         modalTriggerElementId: "eventbrite-widget-trigger",
-        onOrderComplete: () => onTicketPurchase?.(),
+        onOrderComplete: () => {
+          onTicketPurchase?.();
+          onRegistrationComplete?.();
+        },
       });
       createdRef.current = true; // avoid duplicate binding in Strict Mode/dev
     } catch {
       setHasError(true);
       onError?.("Không thể tạo widget Eventbrite.");
     }
-  }, [ready, eventId, onTicketPurchase, hasError]);
+  }, [ready, eventId, onTicketPurchase, hasError, onRegistrationComplete]);
 
   if (hasError) {
     return (

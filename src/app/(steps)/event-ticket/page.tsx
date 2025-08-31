@@ -4,6 +4,7 @@ import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { EventbriteWidget } from "@/components/EventbriteWidget";
+import { RegistrationComplete } from "@/components/RegistrationComplete";
 import { eventbriteConfig } from "@/config/eventbrite";
 import { useEffect, useState } from "react";
 
@@ -11,6 +12,7 @@ export default function EventTicketPage() {
     const router = useRouter();
     const { setStep, reset } = useAppStore();
     const [isDevelopment, setIsDevelopment] = useState(false);
+    const [showCelebration, setShowCelebration] = useState(false);
 
     useEffect(() => {
         // Check if we're in development (HTTP) or production (HTTPS)
@@ -30,11 +32,30 @@ export default function EventTicketPage() {
         console.error("Eventbrite widget error:", error);
     };
 
+    const handleRegistrationComplete = () => {
+        console.log("Registration completed! Showing celebration...");
+        setShowCelebration(true);
+        // Reset the app state to complete the registration flow
+        reset();
+    };
+
     const handleDirectEventbrite = () => {
         // Open Eventbrite in a new tab for development
         const fallbackUrl = eventbriteConfig.development.fallbackUrl.replace('1431313209339', eventbriteConfig.eventId);
         window.open(fallbackUrl, '_blank');
     };
+
+    // Show celebration overlay if registration is complete
+    if (showCelebration) {
+        return (
+            <RegistrationComplete 
+                onComplete={() => {
+                    setShowCelebration(false);
+                    router.push("/");
+                }}
+            />
+        );
+    }
 
     return (
         <div>
@@ -79,6 +100,7 @@ export default function EventTicketPage() {
                     eventLocation={eventbriteConfig.event.location}
                     onTicketPurchase={handleTicketPurchase}
                     onError={handleError}
+                    onRegistrationComplete={handleRegistrationComplete}
                 />
             )}
 
