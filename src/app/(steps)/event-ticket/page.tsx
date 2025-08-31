@@ -4,15 +4,13 @@ import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { EventbriteWidget } from "@/components/EventbriteWidget";
-import { RegistrationComplete } from "@/components/RegistrationComplete";
 import { eventbriteConfig } from "@/config/eventbrite";
 import { useEffect, useState } from "react";
 
 export default function EventTicketPage() {
     const router = useRouter();
-    const { setStep, reset } = useAppStore();
+    const { setStep } = useAppStore();
     const [isDevelopment, setIsDevelopment] = useState(false);
-    const [showCelebration, setShowCelebration] = useState(false);
 
     useEffect(() => {
         // Check if we're in development (HTTP) or production (HTTPS)
@@ -33,10 +31,9 @@ export default function EventTicketPage() {
     };
 
     const handleRegistrationComplete = () => {
-        console.log("Registration completed! Showing celebration...");
-        setShowCelebration(true);
-        // Reset the app state to complete the registration flow
-        reset();
+        console.log("Registration completed! Redirecting to completion page...");
+        // Redirect to completion page instead of showing overlay
+        router.push("/complete");
     };
 
     const handleDirectEventbrite = () => {
@@ -44,18 +41,6 @@ export default function EventTicketPage() {
         const fallbackUrl = eventbriteConfig.development.fallbackUrl.replace('1431313209339', eventbriteConfig.eventId);
         window.open(fallbackUrl, '_blank');
     };
-
-    // Show celebration overlay if registration is complete
-    if (showCelebration) {
-        return (
-            <RegistrationComplete 
-                onComplete={() => {
-                    setShowCelebration(false);
-                    router.push("/");
-                }}
-            />
-        );
-    }
 
     return (
         <div>
@@ -128,7 +113,6 @@ export default function EventTicketPage() {
                     className="font-form bg-green-600 hover:bg-green-700" 
                     onClick={() => {
                         alert("Cảm ơn bạn đã hoàn tất đăng ký! Vui lòng kiểm tra email để xác nhận vé.");
-                        reset();
                         router.push("/");
                     }}
                 >
