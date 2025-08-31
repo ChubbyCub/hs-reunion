@@ -1,93 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import Lottie from "lottie-react";
-
-// Simple confetti animation data
-const fallbackAnimation = {
-  v: "5.7.4",
-  fr: 30,
-  ip: 0,
-  op: 90,
-  w: 400,
-  h: 400,
-  nm: "Confetti",
-  ddd: 0,
-  assets: [],
-  layers: [
-    {
-      ddd: 0,
-      ind: 1,
-      ty: 4,
-      nm: "Confetti",
-      sr: 1,
-      ks: {
-        o: { a: 0, k: 100 },
-        r: { a: 0, k: 0 },
-        p: { a: 0, k: [200, 200, 0] },
-        a: { a: 0, k: [0, 0, 0] },
-        s: { a: 0, k: [100, 100, 100] }
-      },
-      ao: 0,
-      shapes: [],
-      ip: 0,
-      op: 90,
-      st: 0,
-      bm: 0
-    }
-  ]
-};
 
 export default function CompletePage() {
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [animationError, setAnimationError] = useState(false);
   const router = useRouter();
 
+  // Confetti starts immediately when page loads
   useEffect(() => {
-    // Trigger confetti after a short delay
-    const timer = setTimeout(() => {
-      setShowConfetti(true);
-    }, 500);
-
-    return () => clearTimeout(timer);
+    console.log("Completion page loaded - confetti starting immediately");
   }, []);
 
   const handleGoHome = () => {
     router.push("/");
   };
 
-  const handleAnimationError = () => {
-    console.warn("Lottie animation failed to load, using fallback");
-    setAnimationError(true);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-      {/* Confetti Animation Background */}
-      {showConfetti && !animationError && (
-        <div className="fixed inset-0 pointer-events-none z-10">
-          <Lottie
-            animationData={fallbackAnimation}
-            loop={false}
-            autoplay={true}
-            style={{ width: "100%", height: "100%" }}
-            onError={handleAnimationError}
-          />
-        </div>
-      )}
-
-      {/* Fallback confetti effect if animation fails */}
-      {showConfetti && animationError && (
-        <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
-          <div className="animate-bounce absolute top-0 left-1/4 text-2xl">🎊</div>
-          <div className="animate-bounce absolute top-0 left-1/2 text-2xl" style={{ animationDelay: '0.2s' }}>🎉</div>
-          <div className="animate-bounce absolute top-0 left-3/4 text-2xl" style={{ animationDelay: '0.4s' }}>✨</div>
-          <div className="animate-bounce absolute top-1/4 left-1/3 text-2xl" style={{ animationDelay: '0.6s' }}>🎊</div>
-          <div className="animate-bounce absolute top-1/4 right-1/3 text-2xl" style={{ animationDelay: '0.8s' }}>🎉</div>
-        </div>
-      )}
+      {/* Simple CSS confetti effect - always visible */}
+      <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
+        <div className="animate-bounce absolute top-0 left-1/4 text-2xl">🎊</div>
+        <div className="animate-bounce absolute top-0 left-1/2 text-2xl" style={{ animationDelay: '0.2s' }}>🎉</div>
+        <div className="animate-bounce absolute top-0 left-3/4 text-2xl" style={{ animationDelay: '0.4s' }}>✨</div>
+        <div className="animate-bounce absolute top-1/4 left-1/3 text-2xl" style={{ animationDelay: '0.6s' }}>🎊</div>
+        <div className="animate-bounce absolute top-1/4 right-1/3 text-2xl" style={{ animationDelay: '0.8s' }}>🎉</div>
+        <div className="animate-bounce absolute top-1/2 left-1/6 text-2xl" style={{ animationDelay: '1.0s' }}>🎊</div>
+        <div className="animate-bounce absolute top-1/2 right-1/6 text-2xl" style={{ animationDelay: '1.2s' }}>🎉</div>
+      </div>
 
       <div className="container mx-auto px-4 py-12 relative z-20">
         <div className="max-w-4xl mx-auto">
