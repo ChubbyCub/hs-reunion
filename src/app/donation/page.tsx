@@ -1,47 +1,28 @@
 "use client";
 
-import { useAppStore } from "@/lib/store";
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from 'react';
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const donationOptions = [
-  { amount: 500000, required: true },
+  { amount: 500000, required: false },
   { amount: 1000000, required: false },
   { amount: 1500000, required: false },
   { amount: 2000000, required: false },
 ];
 
 export default function DonationPage() {
-  const router = useRouter();
-  const { formData, updateFormData, setStep } = useAppStore();
-  const [selectedAmount, setSelectedAmount] = useState(formData.donationAmount || 500000);
+  const [selectedAmount, setSelectedAmount] = useState(500000);
   const [customAmount, setCustomAmount] = useState('');
   const [isCustomSelected, setIsCustomSelected] = useState(false);
-  const [hasHydrated, setHasHydrated] = useState(false);
   const [validationError, setValidationError] = useState('');
 
   const formatAmount = (amount: number) => {
     return amount.toLocaleString('vi-VN');
   };
-
-  useEffect(() => {
-    setHasHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (hasHydrated && formData.donationAmount) {
-      setSelectedAmount(formData.donationAmount);
-      // Check if the amount is not one of the predefined options
-      const isCustom = !donationOptions.some(option => option.amount === formData.donationAmount);
-      if (isCustom) {
-        setIsCustomSelected(true);
-        setCustomAmount(formData.donationAmount.toString());
-      }
-    }
-  }, [hasHydrated, formData.donationAmount]);
 
   const handleAmountSelect = (amount: number) => {
     setSelectedAmount(amount);
@@ -67,7 +48,7 @@ export default function DonationPage() {
     }
   };
 
-  const handleNext = () => {
+  const handleSubmit = () => {
     const finalAmount = isCustomSelected && customAmount ? parseInt(customAmount.replace(/[.,]/g, '')) : selectedAmount;
     
     if (finalAmount < 500000) {
@@ -76,75 +57,34 @@ export default function DonationPage() {
     }
     
     setValidationError('');
-    updateFormData({ donationAmount: finalAmount });
-    setStep(4);
-    router.push("/payment");
+    // TODO: Handle donation submission
+    alert(`Cảm ơn bạn đã quyên góp ${formatAmount(finalAmount)} VND!`);
   };
-
-  const handleBack = () => {
-    setStep(2);
-    router.push("/merchandise");
-  };
-
-  if (!hasHydrated) return <div>Đang tải...</div>;
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-white flex flex-col">
+      <Header />
+      <div className="flex-1 w-full px-3 sm:px-6 py-6 sm:py-8">
         <div className="max-w-2xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-title text-gray-900 mb-4">
+            <h1 className="text-2xl sm:text-3xl font-title text-gray-900 mb-3 sm:mb-4">
               Quyên góp
             </h1>
-            <p className="mt-2 text-muted-foreground font-legalese">
-              Vui lòng chọn số tiền quyên góp. Số tiền tối thiểu là 500,000 VND.
+            <p className="text-base sm:text-lg text-muted-foreground font-legalese px-2">
+              Hỗ trợ sự kiện họp mặt cựu học sinh LHP khóa 2003-2006
             </p>
           </div>
 
           {/* Donation Options */}
           <div className="space-y-6">
-            {/* Minimum Required Section */}
+            {/* Suggested Amounts Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Bắt buộc tối thiểu
-              </h2>
-              <Card 
-                className={`cursor-pointer transition-all duration-200 ${
-                  selectedAmount === 500000 && !isCustomSelected
-                    ? 'ring-2 ring-blue-500 bg-blue-50 border-blue-200' 
-                    : 'hover:shadow-md border-gray-200'
-                }`}
-                onClick={() => handleAmountSelect(500000)}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-base font-semibold text-gray-900">
-                        {formatAmount(500000)} VND
-                      </h3>
-                    </div>
-                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
-                      selectedAmount === 500000 && !isCustomSelected
-                        ? 'bg-blue-500 border-blue-500 shadow-md' 
-                        : 'border-gray-300 bg-white hover:border-gray-400'
-                    }`}>
-                      {selectedAmount === 500000 && !isCustomSelected && (
-                        <div className="w-3 h-3 bg-white rounded-full shadow-sm"></div>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Optional Choices Section */}
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Tùy chọn bổ sung
+                Số tiền gợi ý
               </h2>
               <div className="space-y-3">
-                {donationOptions.slice(1).map((option) => (
+                {donationOptions.map((option) => (
                   <Card 
                     key={option.amount}
                     className={`cursor-pointer transition-all duration-200 ${
@@ -240,25 +180,25 @@ export default function DonationPage() {
             </div>
           </div>
 
-          {/* Navigation Buttons */}
-          <div className="mt-8 flex justify-between">
+          {/* Submit Button */}
+          <div className="mt-8 text-center">
             <Button 
-              variant="outline" 
-              className="font-form px-8 py-3"
-              onClick={handleBack}
-            >
-              Quay lại
-            </Button>
-            <Button 
-              className="font-form px-8 py-3"
-              onClick={handleNext}
+              className="font-form px-8 py-3 text-lg"
+              onClick={handleSubmit}
               disabled={selectedAmount < 500000}
             >
-              Tiếp theo
+              Quyên góp ngay
             </Button>
+          </div>
+
+          {/* Additional Info */}
+          <div className="mt-8 text-center text-sm text-gray-600">
+            <p>Mọi đóng góp của bạn sẽ được sử dụng để tổ chức sự kiện một cách tốt nhất.</p>
+            <p className="mt-2">Liên hệ Ban Tổ Chức nếu bạn cần hỗ trợ thêm.</p>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
-} 
+}

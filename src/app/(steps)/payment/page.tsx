@@ -14,8 +14,8 @@ export default function PaymentPage() {
       <p className="font-legalese">Các tùy chọn thanh toán sẽ được hiển thị tại đây.</p>
        <div className="mt-8 flex justify-between">
         <Button variant="outline" className="font-form" onClick={() => {
-            setStep(3);
-            router.push("/donation");
+            setStep(2);
+            router.push("/merchandise");
         }}>
           Quay lại
         </Button>

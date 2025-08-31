@@ -9,7 +9,6 @@ interface FormData {
   class?: string;
   occupation?: string;
   workplace?: string;
-  donationAmount: number;
   // We'll add more fields for merchandise later
 }
 
@@ -32,7 +31,6 @@ const initialState: { currentStep: number; formData: FormData; hydrated?: boolea
     class: '',
     occupation: '',
     workplace: '',
-    donationAmount: 500000,
   },
   hydrated: false,
 };

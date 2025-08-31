@@ -26,7 +26,7 @@ export default function MerchandisePage() {
   const [merchandiseItems, setMerchandiseItems] = useState<MerchandiseItem[]>([
     {
       id: "tshirt",
-      name: "Áo thun kỷ niệm",
+      name: "Áo thun",
       description: "Áo thun cotton cao cấp với logo trường",
       price: 150000,
       defaultQuantity: 0,
@@ -38,7 +38,7 @@ export default function MerchandisePage() {
     },
     {
       id: "hat",
-      name: "Nón kỷ niệm",
+      name: "Nón",
       description: "Nón bóng chày với logo trường",
       price: 80000,
       defaultQuantity: 0,
@@ -126,7 +126,7 @@ export default function MerchandisePage() {
   const handleNext = () => {
     // TODO: Save merchandise selections to store
     setStep(3);
-    router.push("/donation");
+    router.push("/payment");
   };
 
   const handleBack = () => {
