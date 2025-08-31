@@ -44,7 +44,7 @@ export default function Home() {
   return (
       <main className="flex min-h-screen flex-col items-center justify-center p-24 uppercase md:justify-between md:bg-transparent">
         <motion.div
-          className="absolute top-8 right-8 z-10"
+          className="absolute top-4 right-4 md:top-8 md:right-8 z-10"
           initial="hidden"
           animate="visible"
           variants={{
@@ -57,18 +57,19 @@ export default function Home() {
             {/* 3 Horizontal Lines Icon */}
             <button 
               onClick={toggleMenu}
-              className="text-white hover:text-yellow-400 transition-all duration-300 p-2"
+              className="text-white hover:text-yellow-400 transition-colors duration-200 p-3 md:p-2 touch-manipulation"
+              aria-label="Toggle menu"
             >
-              <div className="w-6 h-5 relative">
+              <div className="w-7 h-6 md:w-6 md:h-5 relative">
                 {/* Hamburger Lines */}
                 <div className={`absolute w-full h-0.5 bg-current rounded transition-all duration-300 transform ${
-                  isMenuOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-1 -translate-y-1/2'
+                  isMenuOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0.5 -translate-y-1/2'
                 }`}></div>
                 <div className={`absolute w-full h-0.5 bg-current rounded transition-all duration-300 transform ${
                   isMenuOpen ? 'top-1/2 -translate-y-1/2 opacity-0' : 'top-1/2 -translate-y-1/2'
                 }`}></div>
                 <div className={`absolute w-full h-0.5 bg-current rounded transition-all duration-300 transform ${
-                  isMenuOpen ? 'top-1/2 -translate-y-1/2 -rotate-45' : 'top-4 -translate-y-1/2'
+                  isMenuOpen ? 'top-1/2 -translate-y-1/2 -rotate-45' : 'top-[calc(100%-2px)] -translate-y-1/2'
                 }`}></div>
               </div>
             </button>
@@ -80,7 +81,7 @@ export default function Home() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute right-0 mt-2 w-56 bg-transparent backdrop-blur-sm rounded-lg"
+                className="absolute right-0 mt-2 w-64 md:w-56 bg-transparent backdrop-blur-sm rounded-lg"
               >
                 <div className="py-2">
                   {[
@@ -94,7 +95,7 @@ export default function Home() {
                       key={item.href}
                       href={item.href}
                       onClick={closeMenu}
-                      className="flex items-center justify-end px-4 py-2 text-white hover:bg-white/20 hover:text-yellow-400 transition-colors duration-150 rounded mx-2 text-right"
+                      className="flex items-center justify-end px-4 py-3 md:py-2 text-white hover:bg-white/20 hover:text-yellow-400 transition-colors duration-150 rounded mx-2 text-right text-sm md:text-base touch-manipulation"
                     >
                       <span className="font-medium">{item.label}</span>
                     </Link>
