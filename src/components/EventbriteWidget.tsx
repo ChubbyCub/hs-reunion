@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { eventbriteConfig } from "@/config/eventbrite";
 
 interface EventbriteWidgetProps {
   eventId: string;
@@ -28,6 +27,7 @@ export function EventbriteWidget({
   useEffect(() => {
     let script: HTMLScriptElement | null = null;
     let timeoutId: NodeJS.Timeout;
+    let widgetCreated = false;
 
     const loadWidget = () => {
       try {
@@ -47,6 +47,12 @@ export function EventbriteWidget({
 
         console.log('EventbriteWidget: Production environment detected, loading widget...');
         console.log('EventbriteWidget: Event ID:', eventId);
+
+        // Check if widget is already created
+        if (widgetCreated) {
+          console.log('EventbriteWidget: Widget already created, skipping...');
+          return;
+        }
 
         // Check if script is already loaded
         if (window.EBWidgets) {
@@ -96,19 +102,19 @@ export function EventbriteWidget({
     const initializeWidget = () => {
       try {
         console.log('EventbriteWidget: Initializing widget...');
-        if (window.EBWidgets) {
+        if (window.EBWidgets && !widgetCreated) {
           console.log('EventbriteWidget: Creating widget with config:', {
             widgetType: 'checkout',
             eventId: eventId,
-            modal: eventbriteConfig.widget.modal,
-            modalTriggerElementId: eventbriteConfig.widget.modalTriggerElementId
+            modal: true,
+            modalTriggerElementId: 'eventbrite-widget-trigger'
           });
           
           window.EBWidgets.createWidget({
             widgetType: 'checkout',
             eventId: eventId,
-            modal: eventbriteConfig.widget.modal,
-            modalTriggerElementId: eventbriteConfig.widget.modalTriggerElementId,
+            modal: true,
+            modalTriggerElementId: 'eventbrite-widget-trigger',
             onOrderComplete: () => {
               console.log('EventbriteWidget: Order completed successfully');
               onTicketPurchase?.();
@@ -121,8 +127,9 @@ export function EventbriteWidget({
           });
           
           console.log('EventbriteWidget: Widget created successfully');
+          widgetCreated = true;
         } else {
-          console.error('EventbriteWidget: EBWidgets not available');
+          console.error('EventbriteWidget: EBWidgets not available or widget already created');
         }
       } catch (error) {
         console.error('EventbriteWidget: Failed to initialize widget:', error);
@@ -182,6 +189,17 @@ export function EventbriteWidget({
           id="eventbrite-widget-trigger"
           className="font-form bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 text-lg"
           disabled={!widgetLoaded}
+          onClick={() => {
+            console.log('EventbriteWidget: Button clicked!');
+            console.log('EventbriteWidget: Widget loaded state:', widgetLoaded);
+            console.log('EventbriteWidget: EBWidgets available:', !!window.EBWidgets);
+            
+            // Fallback: if widget doesn't work, open Eventbrite directly
+            if (!window.EBWidgets) {
+              console.log('EventbriteWidget: Opening Eventbrite directly as fallback');
+              window.open(`https://www.eventbrite.com/e/${eventId}`, '_blank');
+            }
+          }}
         >
           🎫 Đặt vé 
         </Button>
