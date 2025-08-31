@@ -1,16 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export default function CompletePage() {
   const router = useRouter();
-
-  // Confetti starts immediately when page loads
-  useEffect(() => {
-    console.log("Completion page loaded - confetti starting immediately");
-  }, []);
 
   const handleGoHome = () => {
     router.push("/");
@@ -18,18 +12,7 @@ export default function CompletePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-      {/* Simple CSS confetti effect - always visible */}
-      <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
-        <div className="animate-bounce absolute top-0 left-1/4 text-2xl">🎊</div>
-        <div className="animate-bounce absolute top-0 left-1/2 text-2xl" style={{ animationDelay: '0.2s' }}>🎉</div>
-        <div className="animate-bounce absolute top-0 left-3/4 text-2xl" style={{ animationDelay: '0.4s' }}>✨</div>
-        <div className="animate-bounce absolute top-1/4 left-1/3 text-2xl" style={{ animationDelay: '0.6s' }}>🎊</div>
-        <div className="animate-bounce absolute top-1/4 right-1/3 text-2xl" style={{ animationDelay: '0.8s' }}>🎉</div>
-        <div className="animate-bounce absolute top-1/2 left-1/6 text-2xl" style={{ animationDelay: '1.0s' }}>🎊</div>
-        <div className="animate-bounce absolute top-1/2 right-1/6 text-2xl" style={{ animationDelay: '1.2s' }}>🎉</div>
-      </div>
-
-      <div className="container mx-auto px-4 py-12 relative z-20">
+      <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
