@@ -46,10 +46,10 @@ export default function DebugEventbritePage() {
         <div className="bg-blue-50 p-4 rounded border-l-4 border-blue-400">
           <ol className="list-decimal list-inside space-y-2">
             <li>Open browser console (F12)</li>
-            <li>Look for "EventbriteWidget:" log messages</li>
+            <li>Look for &quot;EventbriteWidget:&quot; log messages</li>
             <li>Check for any error messages</li>
             <li>Verify the widget button appears and is clickable</li>
-            <li>Click the "🎫 Đặt vé" button to test</li>
+            <li>Click the &quot;🎫 Đặt vé&quot; button to test</li>
           </ol>
         </div>
       </div>
