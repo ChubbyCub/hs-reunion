@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 export default function PaymentPage() {
     const router = useRouter();
-    const { setStep, reset } = useAppStore();
+    const { setStep } = useAppStore();
 
   return (
     <div>
@@ -20,11 +20,10 @@ export default function PaymentPage() {
           Quay lại
         </Button>
         <Button className="font-form" onClick={() => {
-            alert("Cảm ơn bạn đã đăng ký!");
-            reset();
-            router.push("/");
+            setStep(4);
+            router.push("/event-ticket");
         }}>
-          Hoàn thành
+          Tiếp tục đến đặt vé
         </Button>
       </div>
     </div>
