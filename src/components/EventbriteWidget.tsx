@@ -22,7 +22,6 @@ export function EventbriteWidget({
 }: EventbriteWidgetProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [widgetLoaded, setWidgetLoaded] = useState(false);
   const [widgetCreated, setWidgetCreated] = useState(false);
 
   const handleButtonClick = async () => {
@@ -80,7 +79,7 @@ export function EventbriteWidget({
       
       script.onload = () => {
         console.log('EventbriteWidget: Script loaded successfully');
-        setWidgetLoaded(true);
+        setWidgetCreated(true);
         initializeWidget();
         setIsLoading(false);
         resolve();
@@ -110,7 +109,7 @@ export function EventbriteWidget({
       script.onload = () => {
         clearTimeout(timeoutId);
         console.log('EventbriteWidget: Script loaded successfully');
-        setWidgetLoaded(true);
+        setWidgetCreated(true);
         initializeWidget();
         setIsLoading(false);
         resolve();
@@ -195,12 +194,12 @@ export function EventbriteWidget({
         <Button 
           id="eventbrite-widget-trigger"
           className="font-form bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 text-lg"
-          disabled={!widgetLoaded}
+          disabled={isLoading}
           onClick={handleButtonClick}
         >
           🎫 Đặt vé 
         </Button>
-        {!widgetLoaded && (
+        {isLoading && (
           <p className="text-sm text-gray-500 mt-2">Đang chuẩn bị...</p>
         )}
       </div>
