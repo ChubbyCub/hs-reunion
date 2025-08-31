@@ -14,7 +14,11 @@ export default function EventTicketPage() {
 
     useEffect(() => {
         // Check if we're in development (HTTP) or production (HTTPS)
-        setIsDevelopment(window.location.protocol === 'http:' && window.location.hostname === 'localhost');
+        // In production, we should show the widget, not the fallback
+        const isLocalDev = window.location.protocol === 'http:' && 
+                          (window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1');
+        setIsDevelopment(isLocalDev);
     }, []);
 
     const handleTicketPurchase = () => {

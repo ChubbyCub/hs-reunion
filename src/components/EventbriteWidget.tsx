@@ -31,32 +31,45 @@ export function EventbriteWidget({
 
     const loadWidget = () => {
       try {
+        console.log('EventbriteWidget: Starting to load widget...');
+        console.log('EventbriteWidget: Current protocol:', window.location.protocol);
+        console.log('EventbriteWidget: Current hostname:', window.location.hostname);
+        
         // Check if we're in development (HTTP) - Eventbrite requires HTTPS
-        if (window.location.protocol === 'http:' && window.location.hostname === 'localhost') {
+        if (window.location.protocol === 'http:' && 
+            (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+          console.log('EventbriteWidget: Detected local development, showing error');
           setIsLoading(false);
           setHasError(true);
           onError?.("Widget Eventbrite yêu cầu HTTPS để hoạt động. Vui lòng sử dụng môi trường production hoặc truy cập trực tiếp Eventbrite.");
           return;
         }
 
+        console.log('EventbriteWidget: Production environment detected, loading widget...');
+        console.log('EventbriteWidget: Event ID:', eventId);
+
         // Check if script is already loaded
         if (window.EBWidgets) {
+          console.log('EventbriteWidget: EBWidgets already available, initializing...');
           initializeWidget();
           return;
         }
 
+        console.log('EventbriteWidget: Loading Eventbrite script...');
         // Load Eventbrite widget script
         script = document.createElement('script');
         script.src = 'https://www.eventbrite.com/static/widgets/eb_widgets.js';
         script.async = true;
         
         script.onload = () => {
+          console.log('EventbriteWidget: Script loaded successfully');
           setIsLoading(false);
           setWidgetLoaded(true);
           initializeWidget();
         };
 
         script.onerror = () => {
+          console.error('EventbriteWidget: Script failed to load');
           setIsLoading(false);
           setHasError(true);
           onError?.("Không thể tải widget Eventbrite. Vui lòng thử lại sau.");
@@ -82,23 +95,37 @@ export function EventbriteWidget({
 
     const initializeWidget = () => {
       try {
+        console.log('EventbriteWidget: Initializing widget...');
         if (window.EBWidgets) {
+          console.log('EventbriteWidget: Creating widget with config:', {
+            widgetType: 'checkout',
+            eventId: eventId,
+            modal: eventbriteConfig.widget.modal,
+            modalTriggerElementId: eventbriteConfig.widget.modalTriggerElementId
+          });
+          
           window.EBWidgets.createWidget({
             widgetType: 'checkout',
             eventId: eventId,
             modal: eventbriteConfig.widget.modal,
             modalTriggerElementId: eventbriteConfig.widget.modalTriggerElementId,
             onOrderComplete: () => {
+              console.log('EventbriteWidget: Order completed successfully');
               onTicketPurchase?.();
             },
             onWidgetError: (error: { message?: string }) => {
-              console.error('Eventbrite widget error:', error);
+              console.error('EventbriteWidget: Widget error:', error);
               setHasError(true);
               onError?.(`Widget error: ${error.message || 'Unknown error'}`);
             }
           });
+          
+          console.log('EventbriteWidget: Widget created successfully');
+        } else {
+          console.error('EventbriteWidget: EBWidgets not available');
         }
-      } catch {
+      } catch (error) {
+        console.error('EventbriteWidget: Failed to initialize widget:', error);
         setHasError(true);
         onError?.("Không thể khởi tạo widget Eventbrite.");
       }
