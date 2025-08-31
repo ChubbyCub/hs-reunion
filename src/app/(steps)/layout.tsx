@@ -2,7 +2,7 @@
 
 import { Stepper } from "@/components/ui/stepper";
 
-const steps = ["personalInfo", "merchandise", "donate", "payment"];
+const steps = ["Thông tin cá nhân", "Đặt hàng lưu niệm", "Quyên góp", "Thanh toán"];
 
 export default function StepsLayout({
   children,

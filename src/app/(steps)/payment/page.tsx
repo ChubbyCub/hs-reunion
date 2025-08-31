@@ -10,21 +10,21 @@ export default function PaymentPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-title">Payment</h1>
-      <p className="font-legalese">Payment options will go here.</p>
+      <h1 className="text-2xl font-title">Thanh toán</h1>
+      <p className="font-legalese">Các tùy chọn thanh toán sẽ được hiển thị tại đây.</p>
        <div className="mt-8 flex justify-between">
         <Button variant="outline" className="font-form" onClick={() => {
             setStep(3);
             router.push("/donation");
         }}>
-          Back
+          Quay lại
         </Button>
         <Button className="font-form" onClick={() => {
-            alert("Thank you for registering!");
+            alert("Cảm ơn bạn đã đăng ký!");
             reset();
             router.push("/");
         }}>
-          Finish
+          Hoàn thành
         </Button>
       </div>
     </div>

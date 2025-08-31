@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
-import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { Button } from "@/components/ui/button";
@@ -20,10 +19,10 @@ import {
 } from "@/components/ui/form";
 
 const formSchema = z.object({
-  fullName: z.string().min(1, { message: "Full name is required." }),
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  phone: z.string().min(1, { message: "Phone number is required." }),
-  class: z.string().min(1, { message: "Please select your class." }),
+  fullName: z.string().min(1, { message: "Họ và tên là bắt buộc." }),
+  email: z.string().email({ message: "Vui lòng nhập địa chỉ email hợp lệ." }),
+  phone: z.string().min(1, { message: "Số điện thoại là bắt buộc." }),
+  class: z.string().min(1, { message: "Vui lòng chọn lớp học của bạn." }),
   occupation: z.string().optional(),
   workplace: z.string().optional(),
 });
@@ -31,7 +30,6 @@ const formSchema = z.object({
 export default function RegisterPage() {
   const router = useRouter();
   const { formData, updateFormData, setStep } = useAppStore();
-  const t = useTranslations('RegisterForm');
   const [hasHydrated, setHasHydrated] = useState(false);
 
   useEffect(() => {
@@ -55,16 +53,16 @@ export default function RegisterPage() {
     router.push("/merchandise");
   }
 
-  if (!hasHydrated) return <div>Loading...</div>;
+  if (!hasHydrated) return <div>Đang tải...</div>;
 
   return (
     <>
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-title tracking-tighter">
-          {t('title')}
+          Thông tin cá nhân
         </h1>
         <p className="mt-2 text-muted-foreground font-legalese">
-          {t('description')}
+          Vui lòng điền thông tin chi tiết của bạn để đăng ký tham gia sự kiện.
         </p>
       </div>
       <Form {...form}>
@@ -74,9 +72,9 @@ export default function RegisterPage() {
             name="fullName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-form">{t('fullNameLabel')}</FormLabel>
+                <FormLabel className="font-form">Họ và tên</FormLabel>
                 <FormControl>
-                  <Input className="font-form" placeholder={t('fullNamePlaceholder')} {...field} />
+                  <Input className="font-form" placeholder="Họ và tên của bạn" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -87,9 +85,9 @@ export default function RegisterPage() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-form">{t('emailLabel')}</FormLabel>
+                <FormLabel className="font-form">Địa chỉ email</FormLabel>
                 <FormControl>
-                  <Input className="font-form" placeholder={t('emailPlaceholder')} {...field} />
+                  <Input className="font-form" placeholder="Địa chỉ email của bạn" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -100,9 +98,9 @@ export default function RegisterPage() {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-form">{t('phoneLabel')}</FormLabel>
+                <FormLabel className="font-form">Số điện thoại</FormLabel>
                 <FormControl>
-                  <Input className="font-form" placeholder={t('phonePlaceholder')} {...field} />
+                  <Input className="font-form" placeholder="Số điện thoại của bạn" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -113,13 +111,13 @@ export default function RegisterPage() {
             name="class"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-form">{t('classLabel')}</FormLabel>
+                <FormLabel className="font-form">Lớp</FormLabel>
                 <FormControl>
                   <select
                     {...field}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 font-form text-base md:text-sm"
                   >
-                    <option value="" className="text-muted-foreground">{t('classPlaceholder')}</option>
+                    <option value="" className="text-muted-foreground">Chọn lớp học của bạn</option>
                     <option value="12A1">12A1</option>
                     <option value="12A2">12A2</option>
                     <option value="12A3">12A3</option>
@@ -160,9 +158,9 @@ export default function RegisterPage() {
             name="occupation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-form">{t('occupationLabel')}</FormLabel>
+                <FormLabel className="font-form">Nghề nghiệp</FormLabel>
                 <FormControl>
-                  <Input className="font-form" placeholder={t('occupationPlaceholder')} {...field} />
+                  <Input className="font-form" placeholder="Nghề nghiệp của bạn (không bắt buộc)" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -173,16 +171,16 @@ export default function RegisterPage() {
             name="workplace"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-form">{t('workplaceLabel')}</FormLabel>
+                <FormLabel className="font-form">Nơi công tác</FormLabel>
                 <FormControl>
-                  <Input className="font-form" placeholder={t('workplacePlaceholder')} {...field} />
+                  <Input className="font-form" placeholder="Nơi công tác của bạn (không bắt buộc)" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <div className="flex justify-end">
-            <Button type="submit" className="font-form">{t('nextButton')}</Button>
+            <Button type="submit" className="font-form">Tiếp theo</Button>
           </div>
         </form>
       </Form>

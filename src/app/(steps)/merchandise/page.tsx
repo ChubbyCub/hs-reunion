@@ -4,7 +4,6 @@ import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface MerchandiseItem {
@@ -23,7 +22,6 @@ interface MerchandiseItem {
 export default function MerchandisePage() {
   const router = useRouter();
   const { setStep } = useAppStore();
-  const t = useTranslations('Stepper');
 
   const [merchandiseItems, setMerchandiseItems] = useState<MerchandiseItem[]>([
     {
@@ -143,7 +141,7 @@ export default function MerchandisePage() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-title text-gray-900 mb-4">
-              {t('merchandise')}
+              Đặt hàng lưu niệm
             </h1>
             <p className="mt-2 text-muted-foreground font-legalese">
               Chọn các sản phẩm lưu niệm để đặt hàng. Bao lì xì sẽ được tặng kèm cho tất cả người tham dự.

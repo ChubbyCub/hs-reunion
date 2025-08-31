@@ -11,8 +11,8 @@ export default function AdminDashboard() {
         style={{ background: "none" }}
         className="flex-1 flex flex-col items-center justify-center p-24 !bg-transparent"
       >
-        <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
-        <p className="text-lg">Welcome to the admin dashboard. Here you can manage the site.</p>
+        <h1 className="text-3xl font-bold mb-4">Bảng điều khiển quản trị</h1>
+        <p className="text-lg">Chào mừng đến với bảng điều khiển quản trị. Tại đây bạn có thể quản lý trang web.</p>
       </main>
       <Footer />
     </div>

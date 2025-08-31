@@ -2,11 +2,9 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {useTranslations} from 'next-intl';
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const t = useTranslations("HomePage");
   const eventDate = new Date("2026-01-11T08:00:00");
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -48,10 +46,10 @@ export default function Home() {
           }}
         >
           {[
-            { href: "/gallery", label: t("gallery"), className: "" },
-            { href: "/faq", label: t("faq"), className: "" },
-            { href: "/contact", label: t("contact"), className: "" },
-            { href: "/admin/dashboard", label: t("admin"), className: "hidden md:inline" }
+            { href: "/gallery", label: "Thư viện ảnh", className: "" },
+            { href: "/faq", label: "Hỏi đáp", className: "" },
+            { href: "/contact", label: "Liên lạc", className: "" },
+            { href: "/admin/dashboard", label: "Quản trị", className: "hidden md:inline" }
           ].map((item) => (
             <motion.div
               key={item.href}
@@ -81,9 +79,14 @@ export default function Home() {
             initial={{ opacity: 0, x: -100 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="text-center text-white"
+            className="text-center text-white mb-8"
           >
-            <p className="text-3xl tracking-wide">{t("title")}</p>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-wide mb-4">
+              Hành trình 20 năm
+            </h1>
+            <p className="text-xl md:text-2xl tracking-wide text-yellow-100 max-w-4xl mx-auto leading-relaxed">
+              Từ ngôi trường mang tên Lê Hồng Phong, chúng ta trở lại nơi từng ghi dấu những ngày thanh xuân tươi đẹp...
+            </p>
           </motion.div>
 
           <motion.div
@@ -132,23 +135,23 @@ export default function Home() {
                 <div className="flex justify-center items-start mt-1">
                   {timeLeft.days > 0 && (
                     <>
-                      <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>{t("days")}</div>
+                      <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>ngày</div>
                       <div style={{ width: '1.5rem' }}></div>
                     </>
                   )}
                   {((timeLeft.days > 0) || (timeLeft.hours > 0)) && (
                     <>
-                      <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>{t("hours")}</div>
+                      <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>giờ</div>
                       <div style={{ width: '1.5rem' }}></div>
                     </>
                   )}
                   {((timeLeft.days > 0) || (timeLeft.hours > 0) || (timeLeft.minutes > 0)) && (
                     <>
-                      <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>{t("minutes")}</div>
+                      <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>phút</div>
                       <div style={{ width: '1.5rem' }}></div>
                     </>
                   )}
-                  <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>{t("seconds")}</div>
+                  <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>giây</div>
                 </div>
                 {!(timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) && (
                   <motion.div
@@ -166,7 +169,7 @@ export default function Home() {
                         transition={{ type: "spring", stiffness: 300 }}
                         className="inline-block"
                       >
-                        {t("registerNow")}
+                        Đăng ký ngay
                       </motion.span>
                       <svg xmlns="http://www.w3.org/2000/svg" className="ml-3 h-6 w-6 animate-nudgeRight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />

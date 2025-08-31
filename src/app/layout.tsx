@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import {NextIntlClientProvider} from 'next-intl';
 import { Nunito } from "next/font/google";
-import viMessages from '../../messages/vi.json';
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -12,8 +10,8 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Class 03-06 Reunion Page",
-  description: "Made by class 03-06",
+  title: "Họp mặt cựu học sinh LHP khóa 03-06",
+  description: "Trang web họp mặt cựu học sinh Trường THPT Chuyên Lê Hồng Phong khóa 2003-2006",
 };
 
 export default function RootLayout({
@@ -27,9 +25,7 @@ export default function RootLayout({
         <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
       </head>
       <body className={`${nunito.variable} antialiased`}>
-        <NextIntlClientProvider messages={viMessages}>
-          {children}
-        </NextIntlClientProvider>
+        {children}
       </body>
     </html>
   );

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { useTranslations } from 'next-intl';
 import { useState, useEffect } from 'react';
 
 const donationOptions = [
@@ -18,7 +17,6 @@ const donationOptions = [
 export default function DonationPage() {
   const router = useRouter();
   const { formData, updateFormData, setStep } = useAppStore();
-  const t = useTranslations('DonationForm');
   const [selectedAmount, setSelectedAmount] = useState(formData.donationAmount || 500000);
   const [customAmount, setCustomAmount] = useState('');
   const [isCustomSelected, setIsCustomSelected] = useState(false);
@@ -88,7 +86,7 @@ export default function DonationPage() {
     router.push("/merchandise");
   };
 
-  if (!hasHydrated) return <div>Loading...</div>;
+  if (!hasHydrated) return <div>Đang tải...</div>;
 
   return (
     <div className="min-h-screen bg-white">
@@ -97,10 +95,10 @@ export default function DonationPage() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-title text-gray-900 mb-4">
-              {t('title')}
+              Quyên góp
             </h1>
             <p className="mt-2 text-muted-foreground font-legalese">
-              {t('description')}
+              Vui lòng chọn số tiền quyên góp. Số tiền tối thiểu là 500,000 VND.
             </p>
           </div>
 
@@ -109,7 +107,7 @@ export default function DonationPage() {
             {/* Minimum Required Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                {t('minimumRequired')}
+                Bắt buộc tối thiểu
               </h2>
               <Card 
                 className={`cursor-pointer transition-all duration-200 ${
@@ -143,7 +141,7 @@ export default function DonationPage() {
             {/* Optional Choices Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                {t('optionalChoices')}
+                Tùy chọn bổ sung
               </h2>
               <div className="space-y-3">
                 {donationOptions.slice(1).map((option) => (
@@ -182,7 +180,7 @@ export default function DonationPage() {
             {/* Custom Amount Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                {t('customAmount')}
+                Số tiền tùy chọn
               </h2>
               <Card 
                 className={`transition-all duration-200 ${
@@ -195,12 +193,12 @@ export default function DonationPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <h3 className="text-base font-semibold text-gray-900 mb-2">
-                        {t('customAmountTitle')}
+                        Nhập số tiền của bạn
                       </h3>
                       <div className="flex items-center space-x-2">
                         <Input
                           type="text"
-                          placeholder={t('customAmountPlaceholder')}
+                          placeholder="Nhập số tiền bằng VND"
                           value={customAmount}
                           onChange={(e) => handleCustomAmountChange(e.target.value)}
                           className={`flex-1 font-form ${validationError ? 'border-red-500 focus:border-red-500' : ''}`}
@@ -210,11 +208,11 @@ export default function DonationPage() {
                       </div>
                       {validationError && (
                         <p className="text-sm text-red-600 mt-1">
-                          {t('validationError')}
+                          Số tiền quyên góp tối thiểu là 500.000 VND
                         </p>
                       )}
                       <p className="text-sm text-gray-600 mt-1">
-                        {t('minimumRequiredText')}
+                        Tối thiểu 500.000 VND
                       </p>
                     </div>
                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ml-4 ${
@@ -249,14 +247,14 @@ export default function DonationPage() {
               className="font-form px-8 py-3"
               onClick={handleBack}
             >
-              {t('backButton')}
+              Quay lại
             </Button>
             <Button 
               className="font-form px-8 py-3"
               onClick={handleNext}
               disabled={selectedAmount < 500000}
             >
-              {t('nextButton')}
+              Tiếp theo
             </Button>
           </div>
         </div>
