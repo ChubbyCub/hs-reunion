@@ -19,12 +19,14 @@ import {
 } from "@/components/ui/form";
 
 const formSchema = z.object({
-  fullName: z.string().min(1, { message: "Họ và tên là bắt buộc." }),
+  firstName: z.string().min(1, { message: "Tên là bắt buộc." }),
+  lastName: z.string().min(1, { message: "Họ là bắt buộc." }),
   email: z.string().email({ message: "Vui lòng nhập địa chỉ email hợp lệ." }),
   phone: z.string().min(1, { message: "Số điện thoại là bắt buộc." }),
   class: z.string().min(1, { message: "Vui lòng chọn lớp học của bạn." }),
   occupation: z.string().optional(),
   workplace: z.string().optional(),
+  receiveUpdates: z.boolean(),
 });
 
 export default function RegisterPage() {
@@ -38,14 +40,17 @@ export default function RegisterPage() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: formData,
+    defaultValues: {
+      ...formData,
+      receiveUpdates: formData.receiveUpdates || false,
+    },
   });
 
   useEffect(() => {
     if (hasHydrated) {
       form.reset(formData);
     }
-  }, [hasHydrated]);
+  }, [hasHydrated, form, formData]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     updateFormData(values);
@@ -67,19 +72,34 @@ export default function RegisterPage() {
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="font-form">Họ và tên</FormLabel>
-                <FormControl>
-                  <Input className="font-form" placeholder="Họ và tên của bạn" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-form">Tên</FormLabel>
+                  <FormControl>
+                    <Input className="font-form" placeholder="Tên của bạn" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-form">Họ</FormLabel>
+                  <FormControl>
+                    <Input className="font-form" placeholder="Họ của bạn" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
             name="email"
@@ -179,6 +199,32 @@ export default function RegisterPage() {
               </FormItem>
             )}
           />
+          {/* Newsletter Subscription Checkbox */}
+          <FormField
+            control={form.control}
+            name="receiveUpdates"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <input
+                    type="checkbox"
+                    checked={field.value}
+                    onChange={field.onChange}
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary mt-1"
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel className="font-form text-sm">
+                    Tôi muốn nhận thông tin sự kiện qua email hoặc Zalo
+                  </FormLabel>
+                  <p className="text-xs text-muted-foreground">
+                    Chúng tôi sẽ gửi thông tin cập nhật về sự kiện và các hoạt động liên quan
+                  </p>
+                </div>
+              </FormItem>
+            )}
+          />
+          
           <div className="flex justify-end">
             <Button type="submit" className="font-form">Tiếp theo</Button>
           </div>

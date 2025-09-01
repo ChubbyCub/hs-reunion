@@ -3,12 +3,14 @@ import { persist } from 'zustand/middleware';
 
 // Define the shape of your form data
 interface FormData {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   class?: string;
   occupation?: string;
   workplace?: string;
+  receiveUpdates: boolean;
   // We'll add more fields for merchandise later
 }
 
@@ -25,12 +27,14 @@ interface AppState {
 const initialState: { currentStep: number; formData: FormData; hydrated?: boolean } = {
   currentStep: 1,
   formData: {
-    fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
     class: '',
     occupation: '',
     workplace: '',
+    receiveUpdates: false,
   },
   hydrated: false,
 };
