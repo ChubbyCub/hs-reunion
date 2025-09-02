@@ -20,6 +20,7 @@ interface AppState {
   formData: FormData;
   setStep: (step: number) => void;
   updateFormData: (data: Partial<FormData>) => void;
+  saveToDatabase: () => Promise<{ success: boolean; error?: string }>;
   reset: () => void;
   hydrated?: boolean;
 }
@@ -42,13 +43,38 @@ const initialState: { currentStep: number; formData: FormData; hydrated?: boolea
 // Create the store with persistence and 1-day expiration
 export const useAppStore = create<AppState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...initialState,
       setStep: (step) => set({ currentStep: step }),
       updateFormData: (data) =>
         set((state) => ({
           formData: { ...state.formData, ...data },
         })),
+      saveToDatabase: async () => {
+        const { formData } = get();
+        
+        try {
+          const response = await fetch('/api/attendees', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+          });
+
+          const result = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(result.error || 'Failed to save to database');
+          }
+          
+          return result;
+          
+        } catch (error) {
+          console.error('Error saving to database:', error);
+          throw error;
+        }
+      },
       reset: () => {
         set(initialState);
         // Also remove from localStorage

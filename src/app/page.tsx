@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 export default function Home() {
-  const eventDate = new Date("2026-02-01T08:00:00");
+  const eventDate = useMemo(() => new Date("2026-02-01T08:00:00"), []);
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -31,7 +31,7 @@ export default function Home() {
     updateCountdown();
     const timer = setInterval(updateCountdown, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [eventDate]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

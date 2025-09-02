@@ -10,10 +10,12 @@ import Image from "next/image";
 
 export default function EventTicketPage() {
     const router = useRouter();
-    const { setStep, formData } = useAppStore();
+    const { setStep, formData, saveToDatabase } = useAppStore();
     const [qrUrl, setQrUrl] = useState<string>("");
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
     const [qrError, setQrError] = useState<string>("");
+    const [isSaving, setIsSaving] = useState<boolean>(false);
+    const [saveStatus, setSaveStatus] = useState<{ success?: boolean; message?: string }>({});
 
     const attendeePayload = useMemo(() => {
         const payload = {
@@ -21,10 +23,12 @@ export default function EventTicketPage() {
             ph: formData.phone || "",
             fn: formData.firstName || "",
             ln: formData.lastName || "",
-            cl: formData.class || "",
+            oc: formData.occupation || "",
+            emr: formData.workplace || "",
+            ac: formData.receiveUpdates || false,
         };
         return JSON.stringify(payload);
-    }, [formData.email, formData.phone, formData.firstName, formData.lastName, formData.class]);
+    }, [formData.email, formData.phone, formData.firstName, formData.lastName, formData.occupation, formData.workplace, formData.receiveUpdates]);
 
     useEffect(() => {
         let cancelled = false;
@@ -51,8 +55,25 @@ export default function EventTicketPage() {
         };
     }, [attendeePayload]);
 
-    const handleRegistrationComplete = () => {
-        router.push("/complete");
+    const handleRegistrationComplete = async () => {
+        setIsSaving(true);
+        setSaveStatus({});
+        
+        try {
+            const result = await saveToDatabase();
+            if (result.success) {
+                setSaveStatus({ success: true, message: "Đăng ký thành công! Dữ liệu đã được lưu vào cơ sở dữ liệu." });
+                setTimeout(() => {
+                    router.push("/complete");
+                }, 2000);
+            } else {
+                setSaveStatus({ success: false, message: `Lỗi khi lưu dữ liệu: ${result.error}` });
+            }
+        } catch {
+            setSaveStatus({ success: false, message: "Lỗi không xác định khi lưu dữ liệu." });
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -67,7 +88,8 @@ export default function EventTicketPage() {
                     <p className="font-semibold">
                         {formData.firstName} {formData.lastName}
                     </p>
-                    <p className="text-sm text-gray-600">{formData.class}</p>
+                    <p className="text-sm text-gray-600">{formData.occupation || 'N/A'}</p>
+                    <p className="text-sm text-gray-600">{formData.workplace || 'N/A'}</p>
                     <p className="text-sm text-gray-600">{formData.email}</p>
                     <p className="text-sm text-gray-600">{formData.phone}</p>
                 </div>
@@ -103,6 +125,16 @@ export default function EventTicketPage() {
                 )}
             </div>
 
+            {saveStatus.message && (
+                <div className={`p-4 rounded-lg border-l-4 mb-6 ${
+                    saveStatus.success 
+                        ? 'bg-green-50 border-green-400 text-green-800' 
+                        : 'bg-red-50 border-red-400 text-red-800'
+                }`}>
+                    <p className="font-semibold">{saveStatus.message}</p>
+                </div>
+            )}
+
             <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400 mb-6">
                 <h3 className="font-semibold text-blue-800 mb-2">Lưu ý quan trọng:</h3>
                 <ul className="text-blue-700 text-sm space-y-1">
@@ -120,17 +152,16 @@ export default function EventTicketPage() {
                         setStep(3);
                         router.push("/payment");
                     }}
+                    disabled={isSaving}
                 >
                     Quay lại
                 </Button>
                 <Button 
                     className="font-form bg-green-600 hover:bg-green-700" 
-                    onClick={() => {
-                        alert("Cảm ơn bạn! Vui lòng lưu lại mã QR để sử dụng khi check-in.");
-                        handleRegistrationComplete();
-                    }}
+                    onClick={handleRegistrationComplete}
+                    disabled={isSaving}
                 >
-                    Hoàn thành đăng ký
+                    {isSaving ? "Đang lưu..." : "Hoàn thành đăng ký"}
                 </Button>
             </div>
         </div>
