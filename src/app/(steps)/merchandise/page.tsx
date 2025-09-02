@@ -4,314 +4,415 @@ import { useAppStore } from "@/stores/app-store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import { useState } from 'react';
-
-interface MerchandiseItem {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  defaultQuantity: number;
-  sizes?: string[];
-  selectedSize?: string;
-  genders?: string[];
-  selectedGender?: string;
-  quantity: number;
-}
+import { useEffect, useState } from 'react';
+import { MerchandiseService } from "@/services/database/merchandise";
+import type { Merchandise, CartItem } from "@/types/common";
 
 export default function MerchandisePage() {
   const router = useRouter();
-  const { setStep } = useAppStore();
+  const { setStep, updateFormData } = useAppStore();
+  const [merchandise, setMerchandise] = useState<Merchandise[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // T-shirt selection state
+  const [selectedGender, setSelectedGender] = useState<string>('');
+  const [selectedSize, setSelectedSize] = useState<string>('');
+  const [tshirtQuantity, setTshirtQuantity] = useState(1);
+  
+  // Quantity state for other items
+  const [itemQuantities, setItemQuantities] = useState<{[key: number]: number}>({});
 
-  const [merchandiseItems, setMerchandiseItems] = useState<MerchandiseItem[]>([
-    {
-      id: "tshirt",
-      name: "Áo thun",
-      description: "Áo thun cotton cao cấp với logo trường",
-      price: 150000,
-      defaultQuantity: 0,
-      sizes: ["S", "M", "L", "XL", "XXL", "3XL", "4XL"],
-      selectedSize: "M",
-      genders: ["Nam", "Nữ"],
-      selectedGender: "Nam",
-      quantity: 0
-    },
-    {
-      id: "hat",
-      name: "Nón",
-      description: "Nón bóng chày với logo trường",
-      price: 80000,
-      defaultQuantity: 0,
-      quantity: 0
-    },
-    {
-      id: "fan",
-      name: "Quạt xếp",
-      description: "Quạt xếp gấp với logo trường",
-      price: 50000,
-      defaultQuantity: 0,
-      quantity: 0
-    },
-    {
-      id: "scarf",
-      name: "Khăn lụa",
-      description: "Khăn lụa cao cấp với logo trường",
-      price: 120000,
-      defaultQuantity: 0,
-      quantity: 0
-    },
-    {
-      id: "tote",
-      name: "Túi tote",
-      description: "Túi tote canvas với logo trường",
-      price: 100000,
-      defaultQuantity: 0,
-      quantity: 0
-    },
-    {
-      id: "redEnvelope",
-      name: "Bao lì xì (1 set 6 cái)",
-      description: "Bao lì xì truyền thống với logo trường (miễn phí set đầu tiên)",
-      price: 50000,
-      defaultQuantity: 1,
-      quantity: 1
+  useEffect(() => {
+    loadMerchandise();
+  }, []);
+
+  const loadMerchandise = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const result = await MerchandiseService.getAllMerchandise();
+      
+      if (result.success && result.data) {
+        setMerchandise(result.data);
+      } else {
+        setError(result.error || 'Failed to load merchandise');
+      }
+    } catch {
+      setError('Error loading merchandise');
+    } finally {
+      setIsLoading(false);
     }
-  ]);
-
-  const updateQuantity = (id: string, newQuantity: number) => {
-    setMerchandiseItems(items => 
-      items.map(item => 
-        item.id === id 
-          ? { ...item, quantity: Math.max(0, newQuantity) }
-          : item
-      )
-    );
   };
 
-  const updateSize = (id: string, newSize: string) => {
-    setMerchandiseItems(items => 
-      items.map(item => 
-        item.id === id 
-          ? { ...item, selectedSize: newSize }
-          : item
-      )
+  const addToCart = (item: Merchandise) => {
+    const existingItem = cart.find(cartItem => 
+      cartItem.merchandiseId === item.id
     );
+
+    if (existingItem) {
+      setCart(cart.map(cartItem => 
+        cartItem.merchandiseId === item.id 
+          ? { ...cartItem, quantity: cartItem.quantity + 1 }
+          : cartItem
+      ));
+    } else {
+      setCart([...cart, {
+        merchandiseId: item.id,
+        quantity: 1,
+        name: item.name,
+        price: item.price,
+        gender: item.gender,
+        size: item.size
+      }]);
+    }
   };
 
-  const updateGender = (id: string, newGender: string) => {
-    setMerchandiseItems(items => 
-      items.map(item => 
-        item.id === id 
-          ? { ...item, selectedGender: newGender }
-          : item
-      )
+  const addTshirtToCart = () => {
+    if (!selectedGender || !selectedSize) return;
+    
+    // Find the T-shirt with selected gender and size
+    const tshirt = merchandise.find(item => 
+      item.name.toLowerCase() === 'áo thun' && 
+      item.gender === selectedGender && 
+      item.size === selectedSize
     );
+    
+    if (tshirt) {
+      // Add the selected quantity of T-shirts
+      for (let i = 0; i < tshirtQuantity; i++) {
+        addToCart(tshirt);
+      }
+      // Reset selection
+      setSelectedGender('');
+      setSelectedSize('');
+      setTshirtQuantity(1);
+    }
   };
+
+
+
+
 
   const getTotalPrice = () => {
-    return merchandiseItems.reduce((total, item) => {
-      if (item.id === "redEnvelope") {
-        // First set is free, additional sets cost 50,000 VND each
-        const additionalSets = Math.max(0, item.quantity - 1);
-        return total + (item.price * additionalSets);
-      }
-      return total + (item.price * item.quantity);
-    }, 0);
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
-  const getSelectedItems = () => {
-    return merchandiseItems.filter(item => item.quantity > 0);
-  };
-
-  const handleNext = () => {
-    // TODO: Save merchandise selections to store
-    setStep(3);
+  const handleContinue = () => {
+    // Save cart to store for next step
+    updateFormData({ merchandise: cart });
+    setStep(4);
     router.push("/payment");
   };
 
   const handleBack = () => {
-    setStep(1);
+    setStep(2);
     router.push("/register");
   };
 
-  return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-title text-gray-900 mb-4">
-              Đặt hàng lưu niệm
-            </h1>
-            <p className="mt-2 text-muted-foreground font-legalese">
-              Chọn các sản phẩm lưu niệm để đặt hàng. Bao lì xì sẽ được tặng kèm cho tất cả người tham dự.
-            </p>
-          </div>
+  // Separate T-shirts from other items
+  const tshirts = merchandise.filter(item => 
+    item.name.toLowerCase() === 'áo thun'
+  );
+  const otherItems = merchandise.filter(item => 
+    item.name.toLowerCase() !== 'áo thun'
+  );
 
-          {/* Merchandise Items - Row Layout */}
-          <div className="space-y-4 mb-8">
-            {merchandiseItems.map((item) => (
-              <Card key={item.id} className="hover:shadow-lg transition-shadow duration-200">
-                <CardContent className="p-6">
-                                    <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-6">
-                    {/* Image Placeholder */}
-                    <div className="w-20 h-20 md:w-24 md:h-24 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 mx-auto md:mx-0">
-                      <span className="text-gray-500 text-sm">Hình ảnh</span>
+  // Get unique genders and sizes from T-shirts
+  const genders = [...new Set(tshirts.map(item => item.gender))];
+  const sizes = [...new Set(tshirts.map(item => item.size))];
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-6 max-w-4xl">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Đang tải đồ lưu niệm...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-6 max-w-4xl">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <Button onClick={loadMerchandise} variant="outline">
+            Thử lại
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto p-6 max-w-6xl">
+      <h1 className="text-2xl font-title mb-6">Đồ Lưu Niệm</h1>
+      <p className="font-legalese mb-6">
+        Hãy ủng hộ sự kiện của chúng tôi bằng cách mua đồ lưu niệm! 
+      </p>
+
+            <div className="grid grid-cols-1 gap-6">
+        {/* Merchandise Grid */}
+        <div>
+          {/* T-shirts Section */}
+          {tshirts.length > 0 && (
+            <div className="mb-8">
+              <Card className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <p className="text-xl font-semibold mb-1">Áo Thun</p>
+                    <p className="text-gray-600">Chọn kiểu dáng và kích thước bạn thích</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-2xl mb-3">
+                      {tshirts.length > 0 ? `${tshirts[0].price.toLocaleString()} VND` : 'Giá chưa xác định'}
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-medium text-gray-700">Số lượng:</span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setTshirtQuantity(Math.max(1, tshirtQuantity - 1))}
+                        className="w-10 h-10 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
+                      >
+                        -
+                      </Button>
+                      <span className="w-12 text-center font-medium">{tshirtQuantity}</span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setTshirtQuantity(tshirtQuantity + 1)}
+                        className="w-10 h-10 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
+                      >
+                        +
+                      </Button>
                     </div>
-                    
-                    {/* Item Details */}
-                    <div className="flex-1 text-center md:text-left">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        {item.name}
-                      </h3>
-                      <p className="text-gray-600 mb-3 text-sm">
-                        {item.description}
-                      </p>
-                      
-                      {/* Size and Gender Selection for T-shirt */}
-                      <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 mb-3">
-                        {item.sizes && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Kích thước:</label>
-                            <select
-                              value={item.selectedSize}
-                              onChange={(e) => updateSize(item.id, e.target.value)}
-                              className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                            >
-                              {item.sizes.map(size => (
-                                <option key={size} value={size}>{size}</option>
-                              ))}
-                            </select>
-                          </div>
-                        )}
-                        
-                        {item.genders && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Giới tính:</label>
-                            <select
-                              value={item.selectedGender}
-                              onChange={(e) => updateGender(item.id, e.target.value)}
-                              className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                            >
-                              {item.genders.map(gender => (
-                                <option key={gender} value={gender}>{gender}</option>
-                              ))}
-                            </select>
-                          </div>
-                        )}
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Giới tính</label>
+                    <select
+                      value={selectedGender}
+                      onChange={(e) => setSelectedGender(e.target.value)}
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">Chọn giới tính</option>
+                      {genders.map(gender => (
+                        <option key={gender} value={gender}>{gender === 'men' ? 'Nam' : gender === 'women' ? 'Nữ' : gender === 'unisex' ? 'Unisex' : gender}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Kích thước</label>
+                    <select
+                      value={selectedSize}
+                      onChange={(e) => setSelectedSize(e.target.value)}
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">Chọn kích thước</option>
+                      {sizes.map(size => (
+                        <option key={size} value={size}>{size}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="flex items-end justify-end">
+                    <Button 
+                      onClick={addTshirtToCart}
+                      disabled={!selectedGender || !selectedSize}
+                      size="lg"
+                      className="h-12"
+                    >
+                      Thêm vào giỏ hàng
+                    </Button>
+                  </div>
+                </div>
+                
+                {selectedSize && (
+                  <div className="col-span-full mt-4">
+                    <p className="text-sm text-gray-600 text-center">
+                      {selectedSize === "S" && "Kích thước S: 46cm x 66cm (rộng x dài)"}
+                      {selectedSize === "M" && "Kích thước M: 48cm x 68cm (rộng x dài)"}
+                      {selectedSize === "L" && "Kích thước L: 50cm x 70cm (rộng x dài)"}
+                      {selectedSize === "XL" && "Kích thước XL: 52cm x 72cm (rộng x dài)"}
+                      {selectedSize === "XXL" && "Kích thước XXL: 54cm x 74cm (rộng x dài)"}
+                      {selectedSize === "3XL" && "Kích thước 3XL: 56cm x 76cm (rộng x dài)"}
+                      {selectedSize === "4XL" && "Kích thước 4XL: 58cm x 78cm (rộng x dài)"}
+                    </p>
+                  </div>
+                )}
+              </Card>
+            </div>
+          )}
+
+          {/* Other Items Section */}
+          {otherItems.length > 0 && (
+            <div>
+              <div className="grid grid-cols-1 gap-6">
+                {otherItems.map((item) => (
+                  <Card key={item.id} className="hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div className="md:col-span-2">
+                          <h3 className="font-semibold text-xl mb-2">{item.name}</h3>
+                          {item.gender && item.size && (
+                            <p className="text-sm text-gray-600 capitalize">
+                              {item.gender} • {item.size}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-2xl">{item.price.toLocaleString()} VND</p>
+                        </div>
                       </div>
                       
-                      {/* Size measurements - Full width */}
-                      {item.sizes && (
-                        <div className="mb-3">
-                          <div className="text-xs text-gray-500">
-                            {item.selectedSize === "S" && "Kích thước S: 46cm x 66cm (rộng x dài)"}
-                            {item.selectedSize === "M" && "Kích thước M: 48cm x 68cm (rộng x dài)"}
-                            {item.selectedSize === "L" && "Kích thước L: 50cm x 70cm (rộng x dài)"}
-                            {item.selectedSize === "XL" && "Kích thước XL: 52cm x 72cm (rộng x dài)"}
-                            {item.selectedSize === "XXL" && "Kích thước XXL: 54cm x 74cm (rộng x dài)"}
-                            {item.selectedSize === "3XL" && "Kích thước 3XL: 56cm x 76cm (rộng x dài)"}
-                            {item.selectedSize === "4XL" && "Kích thước 4XL: 58cm x 78cm (rộng x dài)"}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Price and Quantity */}
-                    <div className="text-center md:text-right flex-shrink-0">
-                      {/* Price Display */}
-                      <p className="text-xl font-bold text-primary mb-4">
-                        {`${item.price.toLocaleString('vi-VN')} VND`}
-                      </p>
-
-                      {/* Quantity Selection */}
-                      <div className="flex items-center justify-center space-x-2 mb-2">
-                        <Button
-                          variant="outline"
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-medium text-gray-700">Số lượng:</span>
+                                                                                                     <Button
                           size="sm"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          disabled={item.quantity <= 0}
-                          className="w-10 h-10 md:w-8 md:h-8 p-0 text-lg md:text-base"
+                          variant="outline"
+                          onClick={() => setItemQuantities(prev => ({
+                            ...prev,
+                            [item.id]: Math.max(1, (prev[item.id] || 1) - 1)
+                          }))}
+                          className="w-10 h-10 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
                         >
                           -
                         </Button>
-                        <span className="w-16 md:w-12 text-center font-medium text-lg md:text-base">{item.quantity}</span>
+                        <span className="w-12 text-center font-medium">{itemQuantities[item.id] || 1}</span>
                         <Button
-                          variant="outline"
                           size="sm"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="w-10 h-10 md:w-8 md:h-8 p-0 text-lg md:text-base"
+                          variant="outline"
+                          onClick={() => setItemQuantities(prev => ({
+                            ...prev,
+                            [item.id]: (prev[item.id] || 1) + 1
+                          }))}
+                          className="w-10 h-10 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
+                        >
+                          +
+                        </Button>
+                        </div>
+                        
+                        <Button 
+                          onClick={() => {
+                            const quantity = itemQuantities[item.id] || 1;
+                            for (let i = 0; i < quantity; i++) {
+                              addToCart(item);
+                            }
+                            setItemQuantities(prev => ({ ...prev, [item.id]: 1 }));
+                          }}
+                          className="h-12"
+                          size="lg"
+                        >
+                          Thêm vào giỏ hàng
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {merchandise.length === 0 && (
+            <p className="text-gray-500 text-center py-8">Hiện tại không có đồ lưu niệm nào.</p>
+          )}
+        </div>
+
+        {/* Shopping Cart */}
+        <div>
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <h2 className="text-xl font-semibold mb-4">Giỏ hàng</h2>
+            
+            {cart.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">Giỏ hàng của bạn trống</p>
+            ) : (
+              <>
+                <div className="space-y-3 mb-4">
+                  {cart.map((item) => (
+                    <div key={item.merchandiseId} className="flex justify-between items-center p-3 bg-white rounded border">
+                      <div className="flex-1">
+                        <p className="font-medium">{item.name}</p>
+                        {item.gender && item.size && (
+                          <p className="text-sm text-gray-600 capitalize">
+                            {item.gender} • {item.size}
+                            </p>
+                        )}
+                        <p className="text-sm text-gray-600">
+                          {item.price.toLocaleString()} VND × {item.quantity}
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 ml-3">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            if (item.quantity > 1) {
+                              setCart(cart.map(cartItem => 
+                                cartItem.merchandiseId === item.merchandiseId 
+                                  ? { ...cartItem, quantity: cartItem.quantity - 1 }
+                                  : cartItem
+                              ));
+                            } else {
+                              setCart(cart.filter(cartItem => cartItem.merchandiseId !== item.merchandiseId));
+                            }
+                          }}
+                          className="w-8 h-8 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
+                        >
+                          -
+                        </Button>
+                        <span className="w-8 text-center font-medium">{item.quantity}</span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setCart(cart.map(cartItem => 
+                              cartItem.merchandiseId === item.merchandiseId 
+                                ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                                : cartItem
+                            ));
+                          }}
+                          className="w-8 h-8 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
                         >
                           +
                         </Button>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Cart Summary */}
-          <Card className="mb-8">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Giỏ hàng</h3>
-              {getSelectedItems().length === 0 ? (
-                <p className="text-gray-500 text-center py-4">Chưa có sản phẩm nào được chọn</p>
-              ) : (
-                <div className="space-y-3">
-                  {getSelectedItems().map((item) => (
-                    <div key={item.id} className="flex justify-between items-center text-sm">
-                      <div className="flex-1">
-                        <span className="font-medium">{item.name}</span>
-                        {item.sizes && item.selectedSize && (
-                          <span className="text-gray-500 ml-2">(Size: {item.selectedSize})</span>
-                        )}
-                        {item.genders && item.selectedGender && (
-                          <span className="text-gray-500 ml-2">({item.selectedGender})</span>
-                        )}
-                        {item.quantity > 1 && (
-                          <span className="text-gray-500 ml-2">x{item.quantity}</span>
-                        )}
-                      </div>
-                      <span className="font-medium">
-                        {item.id === "redEnvelope" && item.quantity === 1
-                          ? "Miễn phí"
-                          : item.id === "redEnvelope" && item.quantity > 1
-                          ? `${(item.price * (item.quantity - 1)).toLocaleString('vi-VN')} VND (set đầu tiên miễn phí)`
-                          : `${(item.price * item.quantity).toLocaleString('vi-VN')} VND`
-                        }
-                      </span>
-                    </div>
                   ))}
-                  <div className="border-t pt-3">
-                    <div className="flex justify-between font-semibold text-lg">
-                      <span>Tổng cộng:</span>
-                      <span>{getTotalPrice().toLocaleString('vi-VN')} VND</span>
-                    </div>
+                </div>
+                
+                <div className="border-t pt-4">
+                  <div className="flex justify-between items-center text-lg font-semibold">
+                    <span>Tổng cộng:</span>
+                    <span>{getTotalPrice().toLocaleString()} VND</span>
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Navigation Buttons */}
-          <div className="flex flex-col sm:flex-row justify-between space-y-3 sm:space-y-0">
-            <Button 
-              variant="outline" 
-              className="font-form px-6 py-3 w-full sm:w-auto"
-              onClick={handleBack}
-            >
-              Quay lại
-            </Button>
-            <Button 
-              className="font-form px-6 py-3 w-full sm:w-auto"
-              onClick={handleNext}
-            >
-              Tiếp theo
-            </Button>
+              </>
+            )}
           </div>
         </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="mt-8 flex justify-between">
+        <Button variant="outline" onClick={handleBack}>
+          Quay lại
+        </Button>
+        <Button 
+          onClick={handleContinue}
+          disabled={cart.length === 0}
+        >
+          Tiếp tục
+        </Button>
       </div>
     </div>
   );

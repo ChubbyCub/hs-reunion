@@ -8,6 +8,7 @@ export interface FormData {
   occupation?: string;
   workplace?: string;
   receiveUpdates: boolean;
+  merchandise?: CartItem[];
 }
 
 export interface CheckInStatus {
@@ -46,4 +47,24 @@ export interface QRCodeData {
   oc: string;    // occupation
   emr: string;   // employer
   ac: boolean;   // allow contact
+}
+
+// Merchandise types
+export interface Merchandise {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  name: string;
+  price: number;
+  gender: 'men' | 'women' | 'unisex';
+  size: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'ONE_SIZE';
+}
+
+export interface CartItem {
+  merchandiseId: number;
+  quantity: number;
+  name: string;
+  price: number;
+  gender: string;
+  size: string;
 }
