@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CheckInService, AttendeeSummary, CheckInStats } from "@/lib/checkin";
+import { CheckInService } from "@/services/database/checkin";
+import type { AttendeeSummary, CheckInStats } from "@/types/common";
 import QRScanner from "@/components/QRScanner";
 
 export default function CheckInPage() {

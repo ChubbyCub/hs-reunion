@@ -1,29 +1,10 @@
-export interface CheckInData {
-  attendee_id: number;
-  check_in_method: 'qr_scan' | 'manual' | 'admin';
-  notes?: string;
-}
-
-export interface CheckInStatus {
-  isCheckedIn: boolean;
-  checkInTime?: string;
-  checkInMethod?: string;
-  notes?: string;
-}
-
-export interface AttendeeSummary {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone_number: string;
-  occupation: string | null;
-  employer: string | null;
-  checked_in: boolean;
-  check_in_time: string | null;
-  check_in_method: string | null;
-  check_in_notes: string | null;
-}
+import { supabase } from './supabase';
+import type { 
+  CheckInStatus, 
+  AttendeeSummary, 
+  CheckInStats,
+  QRCodeData 
+} from '../../types/common';
 
 export class CheckInService {
   /**
@@ -31,26 +12,46 @@ export class CheckInService {
    */
   static async checkInAttendee(qrData: string): Promise<{ success: boolean; error?: string }> {
     try {
-      const response = await fetch('/api/checkin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ qrData }),
-      });
-
-      const result = await response.json();
+      // Parse QR data
+      const attendeeInfo: QRCodeData = JSON.parse(qrData);
       
-      if (!response.ok) {
-        return { success: false, error: result.error || 'Check-in failed' };
+      // Find attendee by email
+      const { data: attendee, error: findError } = await supabase
+        .from('Attendees')
+        .select('id, checked_in')
+        .eq('email', attendeeInfo.em)
+        .single();
+      
+      if (findError || !attendee) {
+        return { success: false, error: 'Attendee not found' };
       }
       
-      return result;
+      // Check if already checked in
+      if (attendee.checked_in) {
+        return { success: false, error: 'Attendee is already checked in' };
+      }
+      
+      // Perform check-in
+      const { error: updateError } = await supabase
+        .from('Attendees')
+        .update({
+          checked_in: true,
+          check_in_time: new Date().toISOString(),
+          check_in_method: 'qr_scan',
+          check_in_notes: `QR scan - ${attendeeInfo.fn} ${attendeeInfo.ln}`,
+        })
+        .eq('id', attendee.id);
+      
+      if (updateError) {
+        return { success: false, error: updateError.message };
+      }
+      
+      return { success: true };
       
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Network error during check-in' 
+        error: error instanceof Error ? error.message : 'Unknown error during check-in' 
       };
     }
   }
@@ -138,11 +139,4 @@ export class CheckInService {
       };
     }
   }
-}
-
-// Type definitions for the data structures
-export interface CheckInStats {
-  totalCheckedIn: number;
-  totalAttendees: number;
-  checkInRate: number;
 }

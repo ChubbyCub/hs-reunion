@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppStore } from "@/lib/store";
+import { useAppStore } from "@/stores/app-store";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 

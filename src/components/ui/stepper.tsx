@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppStore } from "@/lib/store";
+import { useAppStore } from "@/stores/app-store";
 import { cn } from "@/lib/utils";
 import React from "react";
 

@@ -1,18 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-// Define the shape of your form data
-interface FormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  class?: string;
-  occupation?: string;
-  workplace?: string;
-  receiveUpdates: boolean;
-  // We'll add more fields for merchandise later
-}
+import type { FormData } from '../types/common';
 
 // Define the shape of your store
 interface AppState {
