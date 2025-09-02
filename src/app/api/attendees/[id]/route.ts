@@ -8,10 +8,11 @@ const supabase = createClient(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const attendeeId = parseInt(params.id);
+    const { id } = await params;
+    const attendeeId = parseInt(id);
     const updateData = await request.json();
 
     if (!attendeeId || isNaN(attendeeId)) {
@@ -20,9 +21,6 @@ export async function PUT(
         { status: 400 }
       );
     }
-
-    // Remove attendeeId from update data if it exists
-    const { attendeeId: _, ...dataToUpdate } = updateData;
 
     // Map the form fields to database column names
     const mappedData = {

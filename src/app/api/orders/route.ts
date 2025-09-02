@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       if (!orderError) {
         console.log('Order created successfully without quotes');
       }
-    } catch (e) {
+    } catch {
       console.log('First attempt failed, trying with quotes...');
       const result = await supabase
         .from('"Order"')
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       if (!merchOrderError) {
         console.log('Merchandise orders created successfully without quotes');
       }
-    } catch (e) {
+    } catch {
       console.log('First attempt failed for Merch_Order, trying with quotes...');
       const result = await supabase
         .from('"Merch_Order"')
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       // Try to delete the order if merchandise orders fail
       try {
         await supabase.from('Order').delete().eq('id', order.id);
-      } catch (e) {
+      } catch {
         await supabase.from('"Order"').delete().eq('id', order.id);
       }
       return NextResponse.json(

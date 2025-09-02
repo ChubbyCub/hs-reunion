@@ -28,14 +28,14 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 flex flex-col items-center justify-center p-24">
-        <form onSubmit={handleSubmit} className="bg-white/90 rounded-lg shadow-md p-8 w-full max-w-sm">
-          <h1 className="text-2xl font-bold mb-6 text-center">Đăng nhập quản trị</h1>
+      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 lg:p-24">
+        <form onSubmit={handleSubmit} className="bg-white/90 rounded-lg shadow-md p-6 sm:p-8 w-full max-w-sm mx-4">
+          <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center">Đăng nhập quản trị</h1>
           <div className="mb-4">
-            <label className="block mb-1 font-semibold">Tên đăng nhập</label>
+            <label className="block mb-1 font-semibold text-sm sm:text-base">Tên đăng nhập</label>
             <input
               type="text"
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 text-sm sm:text-base"
               value={username}
               onChange={e => setUsername(e.target.value)}
               autoComplete="username"
@@ -43,18 +43,18 @@ export default function AdminLogin() {
             />
           </div>
           <div className="mb-6">
-            <label className="block mb-1 font-semibold">Mật khẩu</label>
+            <label className="block mb-1 font-semibold text-sm sm:text-base">Mật khẩu</label>
             <input
               type="password"
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 text-sm sm:text-base"
               value={password}
               onChange={e => setPassword(e.target.value)}
               autoComplete="current-password"
               required
             />
           </div>
-          {error && <div className="mb-4 text-red-600 text-center">{error}</div>}
-          <button type="submit" className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded">Đăng nhập</button>
+          {error && <div className="mb-4 text-red-600 text-center text-sm sm:text-base">{error}</div>}
+          <button type="submit" className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded text-sm sm:text-base">Đăng nhập</button>
         </form>
       </main>
       <Footer />
