@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CheckInService, AttendeeSummary, CheckInStats } from "@/lib/checkin";
+import QRScanner from "@/components/QRScanner";
 
 export default function CheckInPage() {
   const [qrData, setQrData] = useState("");
@@ -12,6 +13,7 @@ export default function CheckInPage() {
   const [checkedInAttendees, setCheckedInAttendees] = useState<AttendeeSummary[]>([]);
   const [stats, setStats] = useState<CheckInStats | null>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [showScanner, setShowScanner] = useState(false);
 
   useEffect(() => {
     loadCheckedInAttendees();
@@ -34,8 +36,8 @@ export default function CheckInPage() {
     setIsLoadingStats(false);
   };
 
-  const handleCheckIn = async () => {
-    if (!qrData.trim()) {
+  const handleCheckIn = async (data: string) => {
+    if (!data.trim()) {
       setMessage({ type: 'error', text: 'Vui lòng nhập dữ liệu QR' });
       return;
     }
@@ -44,7 +46,7 @@ export default function CheckInPage() {
     setMessage(null);
 
     try {
-      const result = await CheckInService.checkInAttendee(qrData);
+      const result = await CheckInService.checkInAttendee(data);
       
       if (result.success) {
         setMessage({ 
@@ -52,6 +54,7 @@ export default function CheckInPage() {
           text: 'Check-in thành công!' 
         });
         setQrData("");
+        setShowScanner(false);
         // Reload data
         await loadCheckedInAttendees();
         await loadStats();
@@ -64,21 +67,30 @@ export default function CheckInPage() {
     } catch (error) {
       setMessage({ 
         type: 'error', 
-        text: 'Lỗi không xác định trong quá trình check-in' 
+        text: `Lỗi không xác định trong quá trình check-in: ${error instanceof Error ? error.message : 'Unknown error'}` 
       });
     } finally {
       setIsProcessing(false);
     }
   };
 
+  const handleQRScan = (data: string) => {
+    setQrData(data);
+    handleCheckIn(data);
+  };
+
+  const handleScannerError = (error: string) => {
+    setMessage({ type: 'error', text: error });
+  };
+
   const clearMessage = () => setMessage(null);
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
-      <h1 className="text-3xl font-bold mb-8 text-center">Hệ thống Check-in</h1>
+    <div className="container mx-auto p-4 max-w-4xl">
+      <h1 className="text-3xl font-bold mb-6 text-center">Hệ thống Check-in</h1>
       
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-blue-100 p-4 rounded-lg text-center">
           <div className="text-2xl font-bold text-blue-800">
             {isLoadingStats ? '...' : stats?.totalAttendees || 0}
@@ -99,31 +111,83 @@ export default function CheckInPage() {
         </div>
       </div>
 
-      {/* Check-in Form */}
-      <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+      {/* Check-in Methods */}
+      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
         <h2 className="text-xl font-semibold mb-4">Check-in Attendee</h2>
         
-        <div className="flex gap-4 mb-4">
-          <Input
-            type="text"
-            placeholder="Nhập dữ liệu QR hoặc email"
-            value={qrData}
-            onChange={(e) => setQrData(e.target.value)}
-            className="flex-1"
-            onKeyPress={(e) => e.key === 'Enter' && handleCheckIn()}
-          />
-          <Button 
-            onClick={handleCheckIn}
-            disabled={isProcessing || !qrData.trim()}
-            className="px-8"
-          >
-            {isProcessing ? 'Đang xử lý...' : 'Check-in'}
-          </Button>
+        {/* Test QR Code Display */}
+        <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+          <h3 className="text-sm font-medium text-gray-700 mb-2">🧪 Test QR Code</h3>
+          <div className="text-xs text-gray-600 mb-2">
+            Use this sample data to test the check-in system:
+          </div>
+          <div className="bg-white p-2 rounded border font-mono text-xs break-all">
+            {JSON.stringify({
+              em: "test@example.com",
+              ph: "123456789",
+              fn: "Test",
+              ln: "User",
+              oc: "Developer",
+              emr: "Test Company",
+              ac: true
+            })}
+          </div>
         </div>
         
-        <p className="text-sm text-gray-600">
-          Nhập dữ liệu QR code hoặc email của attendee để check-in
-        </p>
+        {/* Method Selection */}
+        <div className="flex gap-2 mb-4">
+          <Button 
+            onClick={() => setShowScanner(true)}
+            variant={showScanner ? "default" : "outline"}
+            className="flex-1"
+          >
+            📱 Camera Scanner
+          </Button>
+          <Button 
+            onClick={() => setShowScanner(false)}
+            variant={!showScanner ? "default" : "outline"}
+            className="flex-1"
+          >
+            ⌨️ Manual Input
+          </Button>
+        </div>
+
+        {/* QR Scanner */}
+        {showScanner && (
+          <div className="mb-4">
+            <QRScanner 
+              onScan={handleQRScan}
+              onError={handleScannerError}
+            />
+          </div>
+        )}
+
+        {/* Manual Input */}
+        {!showScanner && (
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <Input
+                type="text"
+                placeholder="Nhập dữ liệu QR hoặc email"
+                value={qrData}
+                onChange={(e) => setQrData(e.target.value)}
+                className="flex-1"
+                onKeyPress={(e) => e.key === 'Enter' && handleCheckIn(qrData)}
+              />
+              <Button 
+                onClick={() => handleCheckIn(qrData)}
+                disabled={isProcessing || !qrData.trim()}
+                className="px-8"
+              >
+                {isProcessing ? 'Đang xử lý...' : 'Check-in'}
+              </Button>
+            </div>
+            
+            <p className="text-sm text-gray-600">
+              Nhập dữ liệu QR code hoặc email của attendee để check-in
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Message Display */}
