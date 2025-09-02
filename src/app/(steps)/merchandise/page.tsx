@@ -100,11 +100,56 @@ export default function MerchandisePage() {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
-  const handleContinue = () => {
-    // Save cart to store for next step
-    updateFormData({ merchandise: cart });
-    setStep(4);
-    router.push("/payment");
+  const handleContinue = async () => {
+    try {
+      // Save cart to store for next step
+      updateFormData({ merchandise: cart });
+      
+      // Save order to database if we have attendee ID
+      const { formData } = useAppStore.getState();
+      console.log('Form data in handleContinue:', formData);
+      console.log('Cart in handleContinue:', cart);
+      
+      if (formData.attendeeId && cart.length > 0) {
+        const orderData = {
+          attendeeId: formData.attendeeId,
+          items: cart.map(item => ({
+            merchandiseId: item.merchandiseId,
+            quantity: item.quantity
+            // Note: price comes from the Merchandise table, but quantity is needed for Merch_Order
+          }))
+        };
+        
+        console.log('Sending order data:', orderData);
+        
+        const response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(orderData),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Failed to save order:', errorData);
+        } else {
+          console.log('Order saved successfully');
+        }
+      } else {
+        console.log('Skipping order save - no attendee ID or empty cart');
+        console.log('Attendee ID:', formData.attendeeId);
+        console.log('Cart length:', cart.length);
+      }
+      
+      setStep(4);
+      router.push("/payment");
+    } catch (error) {
+      console.error('Error saving order:', error);
+      // Continue anyway, order can be saved later
+      setStep(4);
+      router.push("/payment");
+    }
   };
 
   const handleBack = () => {

@@ -9,6 +9,7 @@ interface AppState {
   setStep: (step: number) => void;
   updateFormData: (data: Partial<FormData>) => void;
   saveToDatabase: () => Promise<{ success: boolean; error?: string }>;
+  updateInDatabase: () => Promise<{ success: boolean; error?: string }>;
   reset: () => void;
   hydrated?: boolean;
 }
@@ -38,31 +39,68 @@ export const useAppStore = create<AppState>()(
         set((state) => ({
           formData: { ...state.formData, ...data },
         })),
-      saveToDatabase: async () => {
-        const { formData } = get();
-        
-        try {
-          const response = await fetch('/api/attendees', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-          });
+        saveToDatabase: async () => {
+    const { formData } = get();
+    
+    try {
+      const response = await fetch('/api/attendees', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-          const result = await response.json();
-          
-          if (!response.ok) {
-            throw new Error(result.error || 'Failed to save to database');
-          }
-          
-          return result;
-          
-        } catch (error) {
-          console.error('Error saving to database:', error);
-          throw error;
-        }
-      },
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to save to database');
+      }
+      
+      // Store the attendee ID in the form data
+      if (result.data && result.data.id) {
+        set((state) => ({
+          formData: { ...state.formData, attendeeId: result.data.id }
+        }));
+      }
+      
+      return result;
+      
+    } catch (error) {
+      console.error('Error saving to database:', error);
+      throw error;
+    }
+  },
+
+  updateInDatabase: async () => {
+    const { formData } = get();
+    
+    if (!formData.attendeeId) {
+      throw new Error('No attendee ID available for update');
+    }
+    
+    try {
+      const response = await fetch(`/api/attendees/${formData.attendeeId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to update database');
+      }
+      
+      return result;
+      
+    } catch (error) {
+      console.error('Error updating database:', error);
+      throw error;
+    }
+  },
       reset: () => {
         set(initialState);
         // Also remove from localStorage

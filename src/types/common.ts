@@ -9,6 +9,7 @@ export interface FormData {
   workplace?: string;
   receiveUpdates: boolean;
   merchandise?: CartItem[];
+  attendeeId?: number; // Store the attendee ID after saving to database
 }
 
 export interface CheckInStatus {

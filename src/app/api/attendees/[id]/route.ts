@@ -1,0 +1,77 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const attendeeId = parseInt(params.id);
+    const updateData = await request.json();
+
+    if (!attendeeId || isNaN(attendeeId)) {
+      return NextResponse.json(
+        { error: 'Invalid attendee ID' },
+        { status: 400 }
+      );
+    }
+
+    // Remove attendeeId from update data if it exists
+    const { attendeeId: _, ...dataToUpdate } = updateData;
+
+    // Map the form fields to database column names
+    const mappedData = {
+      first_name: updateData.firstName,
+      last_name: updateData.lastName,
+      email: updateData.email,
+      phone_number: updateData.phone,
+      class: updateData.class,
+      occupation: updateData.occupation,
+      employer: updateData.workplace,
+      allow_contact: updateData.receiveUpdates,
+      updated_at: new Date().toISOString()
+    };
+
+    // Remove undefined values
+    Object.keys(mappedData).forEach(key => {
+      if (mappedData[key as keyof typeof mappedData] === undefined) {
+        delete mappedData[key as keyof typeof mappedData];
+      }
+    });
+
+    const { data, error } = await supabase
+      .from('Attendees')
+      .update(mappedData)
+      .eq('id', attendeeId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating attendee:', error);
+      return NextResponse.json(
+        { error: 'Failed to update attendee' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: data.id,
+        message: 'Attendee updated successfully'
+      }
+    });
+
+  } catch (error) {
+    console.error('Error in attendees update API:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
