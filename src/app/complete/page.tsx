@@ -61,7 +61,7 @@ export default function CompletePage() {
                 <div className="text-blue-600 text-lg mt-1">📍</div>
                 <div>
                   <h4 className="font-semibold text-blue-800">Địa điểm</h4>
-                  <p className="text-blue-700">Le Hong Phong High School for The Gifted, 235 Đường Nguyễn Văn Cừ, Hồ Chí Minh</p>
+                  <p className="text-blue-700">Trường Trung Học Phổ Thông Chuyên Lê Hồng Phong, 235 Đường Nguyễn Văn Cừ, Hồ Chí Minh</p>
                 </div>
               </div>
               
@@ -69,7 +69,7 @@ export default function CompletePage() {
                 <div className="text-blue-600 text-lg mt-1">📅</div>
                 <div>
                   <h4 className="font-semibold text-blue-800">Thời gian</h4>
-                  <p className="text-blue-700">Chủ nhật, 11/01/2026 · 8:00 AM - 7:00 PM GMT+7</p>
+                  <p className="text-blue-700">Chủ nhật, 01/02/2026 · 8:00 AM - 7:00 PM GMT+7</p>
                 </div>
               </div>
               
@@ -77,7 +77,7 @@ export default function CompletePage() {
                 <div className="text-blue-600 text-lg mt-1">🎯</div>
                 <div>
                   <h4 className="font-semibold text-blue-800">Mục đích</h4>
-                  <p className="text-blue-700">Jom lepak! Jumpa balik kawan-kawan lama, makan, minum, gelak besar-besar, dan buat kenangan baru!</p>
+                  <p className="text-blue-700"></p>
                 </div>
               </div>
             </div>

@@ -13,9 +13,9 @@ export const eventbriteConfig = {
   // Event details from your actual Eventbrite event
   event: {
     title: "LHP0306-Reunion",
-    date: "Chủ nhật, 11/01/2026 · 8:00 AM - 7:00 PM GMT+7",
-    location: "Le Hong Phong High School for The Gifted, 235 Đường Nguyễn Văn Cừ, Hồ Chí Minh, 70000 Viet Nam",
-    description: "Jom lepak! LHP0306-Reunion ni event untuk jumpa balik kawan-kawan lama, makan, minum, gelak besar-besar, dan buat kenangan baru!"
+    date: "Chủ nhật, 01/02/2026 · 8:00 AM - 7:00 PM GMT+7",
+    location: "Trường Trung Học Phổ Thông Chuyên Lê Hồng Phong, 235 Đường Nguyễn Văn Cừ, Hồ Chí Minh, 70000 Viet Nam",
+    description: ""
   },
   
   // Widget configuration

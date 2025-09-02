@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const eventDate = new Date("2026-01-11T08:00:00");
+  const eventDate = new Date("2026-02-01T08:00:00");
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,

@@ -23,7 +23,7 @@ export default function PaymentPage() {
             setStep(4);
             router.push("/event-ticket");
         }}>
-          Tiếp tục đến đặt vé
+          Tiếp theo
         </Button>
       </div>
     </div>
