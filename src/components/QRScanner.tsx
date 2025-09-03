@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import jsQR from 'jsqr';
+import { Html5Qrcode } from 'html5-qrcode';
 
 interface QRScannerProps {
   onScan: (data: string) => void;
@@ -10,99 +10,64 @@ interface QRScannerProps {
 }
 
 export default function QRScanner({ onScan, onError }: QRScannerProps) {
-  const [isScanning, setIsScanning] = useState(false);
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const animationFrameRef = useRef<number | undefined>(undefined);
+  const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Check if device supports camera
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setHasPermission(false);
-      onError('Camera not supported on this device');
-      return;
-    }
-    setHasPermission(true);
-  }, [onError]);
+    // Check if device is mobile
+    const mobileCheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    setIsMobile(mobileCheck);
+    console.log('Device detected as mobile:', mobileCheck);
+    console.log('User agent:', navigator.userAgent);
 
-  const scanFrame = useCallback(() => {
-    if (!videoRef.current || !canvasRef.current || !isScanning) return;
+    // Initialize scanner
+    const scanner = new Html5Qrcode("qr-reader");
+    setHtml5QrCode(scanner);
 
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-
-    if (!context) return;
-
-    // Set canvas size to match video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    // Draw video frame to canvas
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // Get image data for QR detection
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-
-    // Try to decode QR code
-    const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-    if (code) {
-
-      onScan(code.data);
-      stopScanning();
-      return;
-    }
-
-    // Continue scanning
-    animationFrameRef.current = requestAnimationFrame(scanFrame);
-  }, [isScanning, onScan]);
+    return () => {
+      scanner.stop().catch(() => {});
+    };
+  }, []);
 
   const startScanning = async () => {
+    if (!html5QrCode) return;
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          facingMode: 'environment', // Use back camera on mobile
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        } 
-      });
+      console.log('Starting HTML5 QR Scanner...');
       
-      streamRef.current = stream;
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-        setIsScanning(true);
-        
-        // Start scanning frames
-        videoRef.current.addEventListener('loadedmetadata', () => {
-          scanFrame();
-        });
-      }
-    } catch (error) {
-      console.error('Error accessing camera:', error);
-      onError('Unable to access camera. Please check permissions.');
+      await html5QrCode.start(
+        { facingMode: "environment" }, // back camera
+        { fps: 10, qrbox: 250 },       // scan settings
+        async (decodedText) => {
+          console.log('QR Code detected:', decodedText);
+          onScan(decodedText);
+          await stopScanning();
+        },
+        (errorMessage) => {
+          // optional scan errors - ignore most of them as they're normal
+          console.warn("Scan error:", errorMessage);
+        }
+      );
+      setScanning(true);
+      console.log('HTML5 QR Scanner started successfully');
+    } catch (err) {
+      console.error("Unable to start scanning:", err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown scanner error';
+      onError(`Failed to start scanner: ${errorMessage}`);
     }
   };
 
-  const stopScanning = () => {
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
+  const stopScanning = async () => {
+    if (!html5QrCode) return;
+
+    try {
+      console.log('Stopping HTML5 QR Scanner...');
+      await html5QrCode.stop();
+      setScanning(false);
+    } catch (err) {
+      console.error("Unable to stop scanning:", err);
     }
-    
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-    
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-    
-    setIsScanning(false);
   };
 
   const handleManualInput = () => {
@@ -112,26 +77,9 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
     }
   };
 
-  useEffect(() => {
-    return () => {
-      stopScanning();
-    };
-  }, []);
-
-  if (hasPermission === false) {
-    return (
-      <div className="text-center p-4">
-        <p className="text-red-600 mb-4">Camera access denied</p>
-        <Button onClick={handleManualInput} variant="outline">
-          Enter Manually
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
-      {!isScanning ? (
+      {!scanning ? (
         <div className="text-center">
           <Button onClick={startScanning} className="w-full">
             📱 Start Camera Scanner
@@ -143,31 +91,21 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
           >
             ⌨️ Enter QR Data Manually
           </Button>
+          
+          {isMobile && (
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                📱 <strong>Mobile Device Detected</strong><br/>
+                Make sure to allow camera permissions when prompted<br/>
+                Using HTML5-QR-Code library for better mobile support!
+              </p>
+            </div>
+          )}
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="relative">
-            <video
-              ref={videoRef}
-              className="w-full h-64 object-cover rounded-lg border"
-              autoPlay
-              playsInline
-              muted
-            />
-            <canvas
-              ref={canvasRef}
-              className="hidden"
-            />
-            <div className="absolute inset-0 border-2 border-blue-500 rounded-lg pointer-events-none">
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-blue-500 rounded-lg">
-                {/* Scanning overlay */}
-                <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-blue-500"></div>
-                <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-blue-500"></div>
-                <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-blue-500"></div>
-                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-blue-500"></div>
-              </div>
-            </div>
-          </div>
+          {/* Scanner container */}
+          <div id="qr-reader" style={{ width: "100%" }} />
           
           <div className="text-center space-y-2">
             <p className="text-sm text-gray-600">
@@ -184,6 +122,12 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
         <p>💡 Tip: For testing, you can manually enter the QR data</p>
         <p>📱 Best viewed on mobile devices</p>
         <p>🔍 Scanner will automatically detect QR codes</p>
+        {isMobile && (
+          <>
+            <p>📷 Make sure to allow camera permissions when prompted</p>
+            <p>✅ Using HTML5-QR-Code library for better mobile support</p>
+          </>
+        )}
       </div>
     </div>
   );
