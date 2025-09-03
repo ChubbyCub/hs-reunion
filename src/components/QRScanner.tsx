@@ -20,23 +20,32 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
     setIsMobile(mobileCheck);
     console.log('Device detected as mobile:', mobileCheck);
     console.log('User agent:', navigator.userAgent);
-
-    // Initialize scanner
-    const scanner = new Html5Qrcode("qr-reader");
-    setHtml5QrCode(scanner);
-
-    return () => {
-      scanner.stop().catch(() => {});
-    };
   }, []);
 
-  const startScanning = async () => {
-    if (!html5QrCode) return;
+  // Cleanup scanner on unmount
+  useEffect(() => {
+    return () => {
+      if (html5QrCode) {
+        html5QrCode.stop().catch(() => {});
+      }
+    };
+  }, [html5QrCode]);
 
+  const startScanning = async () => {
     try {
       console.log('Starting HTML5 QR Scanner...');
       
-      await html5QrCode.start(
+      // Set scanning state first to render the DOM element
+      setScanning(true);
+      
+      // Wait for React to re-render and create the DOM element
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Now initialize scanner when DOM element exists
+      const scanner = new Html5Qrcode("qr-reader");
+      setHtml5QrCode(scanner);
+      
+      await scanner.start(
         { facingMode: "environment" }, // back camera
         { fps: 10, qrbox: 250 },       // scan settings
         async (decodedText) => {
@@ -49,12 +58,13 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
           console.warn("Scan error:", errorMessage);
         }
       );
-      setScanning(true);
       console.log('HTML5 QR Scanner started successfully');
     } catch (err) {
       console.error("Unable to start scanning:", err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown scanner error';
       onError(`Failed to start scanner: ${errorMessage}`);
+      // Reset scanning state on error
+      setScanning(false);
     }
   };
 
