@@ -99,6 +99,10 @@ export const useAppStore = create<AppState>()(
             orderId = orderResult.data?.orderId;
           }
           
+          // Clear local storage after successful save
+          set(initialState);
+          localStorage.removeItem('app-store');
+          
           return {
             success: true,
             attendeeId,
