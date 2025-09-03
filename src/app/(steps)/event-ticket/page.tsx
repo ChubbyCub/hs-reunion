@@ -77,13 +77,13 @@ export default function EventTicketPage() {
     };
 
     return (
-        <div>
-            <h1 className="text-2xl font-title">Đặt vé sự kiện</h1>
-            <p className="font-legalese mb-6">
+        <div className="px-4 sm:px-0">
+            <h1 className="text-xl sm:text-2xl font-title">Đặt vé sự kiện</h1>
+            <p className="font-legalese mb-4 sm:mb-6 text-sm sm:text-base">
                 Bước cuối cùng! Đây là mã QR của bạn dùng cho khâu check-in.
             </p>
 
-            <div className="bg-white p-6 rounded-lg border mb-6 text-center">
+            <div className="bg-white p-4 sm:p-6 rounded-lg border mb-4 sm:mb-6 text-center">
                 {qrError ? (
                     <p className="text-red-600">{qrError}</p>
                 ) : (
@@ -98,7 +98,7 @@ export default function EventTicketPage() {
                                         alt="Mã QR tham dự"
                                         width={256}
                                         height={256}
-                                        className="w-64 h-64 border rounded"
+                                        className="w-48 h-48 sm:w-64 sm:h-64 border rounded"
                                     />
                                 )}
                                 {qrUrl && (
@@ -126,19 +126,19 @@ export default function EventTicketPage() {
                 </div>
             )}
 
-            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400 mb-6">
-                <h3 className="font-semibold text-blue-800 mb-2">Lưu ý quan trọng:</h3>
-                <ul className="text-blue-700 text-sm space-y-1">
+            <div className="bg-blue-50 p-3 sm:p-4 rounded-lg border-l-4 border-blue-400 mb-4 sm:mb-6">
+                <h3 className="font-semibold text-blue-800 mb-2 text-sm sm:text-base">Lưu ý quan trọng:</h3>
+                <ul className="text-blue-700 text-xs sm:text-sm space-y-1">
                     <li>• Vé sẽ được gửi qua email</li>
                     <li>• Vui lòng kiểm tra email và spam folder</li>
                     <li>• Liên hệ ban tổ chức nếu gặp vấn đề</li>
                 </ul>
             </div>
 
-            <div className="mt-8 flex justify-between">
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between">
                 <Button 
                     variant="outline" 
-                    className="font-form" 
+                    className="font-form order-2 sm:order-1" 
                     onClick={() => {
                         setStep(3);
                         router.push("/payment");
@@ -148,7 +148,7 @@ export default function EventTicketPage() {
                     Quay lại
                 </Button>
                 <Button 
-                    className="font-form bg-green-600 hover:bg-green-700" 
+                    className="font-form bg-green-600 hover:bg-green-700 order-1 sm:order-2" 
                     onClick={handleRegistrationComplete}
                     disabled={isSaving}
                 >

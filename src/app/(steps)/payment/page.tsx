@@ -86,35 +86,35 @@ export default function PaymentPage() {
     const canProceed = uploadStatus === 'success' || cart.length === 0;
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <h1 className="text-2xl font-title mb-6">Thanh toán</h1>
+    <div className="container mx-auto p-4 sm:p-6 max-w-4xl">
+      <h1 className="text-xl sm:text-2xl font-title mb-4 sm:mb-6">Thanh toán</h1>
       
       {/* Order Summary */}
-      <div className="bg-gray-50 p-6 rounded-lg mb-6">
-        <h2 className="text-xl font-semibold mb-4">Tóm tắt đơn hàng</h2>
+      <div className="bg-gray-50 p-4 sm:p-6 rounded-lg mb-4 sm:mb-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Tóm tắt đơn hàng</h2>
         
-        <div className="mb-4">
-          <h3 className="font-medium mb-2">Thông tin người tham gia:</h3>
-          <p className="text-gray-700">{formData.firstName} {formData.lastName}</p>
-          <p className="text-gray-700">{formData.email}</p>
-          <p className="text-gray-700">{formData.phone}</p>
+        <div className="mb-3 sm:mb-4">
+          <h3 className="font-medium mb-2 text-sm sm:text-base">Thông tin người tham gia:</h3>
+          <p className="text-gray-700 text-sm sm:text-base">{formData.firstName} {formData.lastName}</p>
+          <p className="text-gray-700 text-sm sm:text-base">{formData.email}</p>
+          <p className="text-gray-700 text-sm sm:text-base">{formData.phone}</p>
         </div>
 
         {cart.length > 0 && (
-          <div className="mb-4">
-            <h3 className="font-medium mb-2">Đồ lưu niệm:</h3>
+          <div className="mb-3 sm:mb-4">
+            <h3 className="font-medium mb-2 text-sm sm:text-base">Đồ lưu niệm:</h3>
             <div className="space-y-2">
               {cart.map((item) => (
-                <div key={item.merchandiseId} className="flex justify-between">
-                  <span>{item.name} {item.gender && item.size && `(${item.gender} - ${item.size})`} × {item.quantity}</span>
-                  <span>{item.price.toLocaleString()} VND</span>
+                <div key={item.merchandiseId} className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                  <span className="text-sm sm:text-base">{item.name} {item.gender && item.size && `(${item.gender} - ${item.size})`} × {item.quantity}</span>
+                  <span className="text-sm sm:text-base font-medium">{item.price.toLocaleString()} VND</span>
                 </div>
               ))}
             </div>
             <div className="border-t pt-2 mt-2">
               <div className="flex justify-between font-semibold">
-                <span>Tổng cộng:</span>
-                <span>{getTotalPrice().toLocaleString()} VND</span>
+                <span className="text-sm sm:text-base">Tổng cộng:</span>
+                <span className="text-sm sm:text-base">{getTotalPrice().toLocaleString()} VND</span>
               </div>
             </div>
           </div>
@@ -126,9 +126,9 @@ export default function PaymentPage() {
       </div>
 
       {/* Payment Instructions */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4">Hướng dẫn thanh toán</h2>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+      <div className="mb-4 sm:mb-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Hướng dẫn thanh toán</h2>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
           <p className="text-blue-800 mb-2">
             <strong>Chuyển khoản ngân hàng:</strong>
           </p>
@@ -144,10 +144,10 @@ export default function PaymentPage() {
 
       {/* File Upload Section */}
       {cart.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-4">Tải lên xác nhận thanh toán</h2>
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Tải lên xác nhận thanh toán</h2>
           
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 sm:p-6">
             {!selectedFile ? (
               <div className="text-center">
                 <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -174,7 +174,7 @@ export default function PaymentPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                       <span className="text-gray-600 text-sm font-medium">
@@ -182,8 +182,8 @@ export default function PaymentPage() {
                       </span>
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{selectedFile.name}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="font-medium text-gray-900 text-sm sm:text-base">{selectedFile.name}</p>
+                      <p className="text-xs sm:text-sm text-gray-500">
                         {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                       </p>
                     </div>
@@ -192,7 +192,7 @@ export default function PaymentPage() {
                     onClick={removeFile}
                     variant="ghost"
                     size="sm"
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 hover:text-gray-600 self-end sm:self-center"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -232,15 +232,15 @@ export default function PaymentPage() {
       )}
 
       {/* Navigation */}
-      <div className="flex justify-between">
-        <Button variant="outline" className="font-form" onClick={() => {
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between">
+        <Button variant="outline" className="font-form order-2 sm:order-1" onClick={() => {
             setStep(3);
             router.push("/merchandise");
         }}>
           Quay lại
         </Button>
         <Button 
-          className="font-form" 
+          className="font-form order-1 sm:order-2" 
           disabled={!canProceed}
           onClick={() => {
             setStep(5);

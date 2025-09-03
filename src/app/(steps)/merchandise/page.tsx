@@ -161,13 +161,13 @@ export default function MerchandisePage() {
           {tshirts.length > 0 && (
             <div className="mb-8">
               <Card className="p-6">
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                   <div>
-                    <p className="text-xl font-semibold mb-1">Áo Thun</p>
-                    <p className="text-gray-600">Chọn kiểu dáng và kích thước bạn thích</p>
+                    <p className="text-lg sm:text-xl font-semibold mb-1">Áo Thun</p>
+                    <p className="text-sm sm:text-base text-gray-600">Chọn kiểu dáng và kích thước bạn thích</p>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-2xl mb-3">
+                  <div className="flex flex-col sm:items-end gap-3">
+                    <p className="font-bold text-xl sm:text-2xl">
                       {tshirts.length > 0 ? `${tshirts[0].price.toLocaleString()} VND` : 'Giá chưa xác định'}
                     </p>
                     <div className="flex items-center gap-3">
@@ -193,13 +193,13 @@ export default function MerchandisePage() {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pt-4 border-t">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Giới tính</label>
                     <select
                       value={selectedGender}
                       onChange={(e) => setSelectedGender(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                     >
                       <option value="">Chọn giới tính</option>
                       {genders.map(gender => (
@@ -213,7 +213,7 @@ export default function MerchandisePage() {
                     <select
                       value={selectedSize}
                       onChange={(e) => setSelectedSize(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                     >
                       <option value="">Chọn kích thước</option>
                       {sizes.map(size => (
@@ -222,12 +222,12 @@ export default function MerchandisePage() {
                     </select>
                   </div>
                   
-                  <div className="flex items-end justify-end">
+                  <div className="flex items-end justify-center sm:justify-end sm:col-span-2 lg:col-span-1">
                     <Button 
                       onClick={addTshirtToCart}
                       disabled={!selectedGender || !selectedSize}
                       size="lg"
-                      className="h-12"
+                      className="h-12 w-full sm:w-auto"
                     >
                       Thêm vào giỏ hàng
                     </Button>
@@ -236,7 +236,7 @@ export default function MerchandisePage() {
                 
                 {selectedSize && (
                   <div className="col-span-full mt-4">
-                    <p className="text-sm text-gray-600 text-center">
+                    <p className="text-xs sm:text-sm text-gray-600 text-center">
                       {selectedSize === "S" && "Kích thước S: 46cm x 66cm (rộng x dài)"}
                       {selectedSize === "M" && "Kích thước M: 48cm x 68cm (rộng x dài)"}
                       {selectedSize === "L" && "Kích thước L: 50cm x 70cm (rộng x dài)"}
@@ -258,62 +258,62 @@ export default function MerchandisePage() {
                 {otherItems.map((item) => (
                   <Card key={item.id} className="hover:shadow-lg transition-shadow">
                     <CardContent className="p-6">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                        <div className="md:col-span-2">
-                          <h3 className="font-semibold text-xl mb-2">{item.name}</h3>
-                          {item.gender && item.size && (
-                            <p className="text-sm text-gray-600 capitalize">
-                              {item.gender} • {item.size}
-                            </p>
-                          )}
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-2xl">{item.price.toLocaleString()} VND</p>
-                        </div>
-                      </div>
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
+          <div className="md:col-span-2">
+            <h3 className="font-semibold text-lg sm:text-xl mb-2">{item.name}</h3>
+            {item.gender && item.size && (
+              <p className="text-xs sm:text-sm text-gray-600 capitalize">
+                {item.gender} • {item.size}
+              </p>
+            )}
+          </div>
+          <div className="text-right">
+            <p className="font-bold text-lg sm:text-2xl">{item.price.toLocaleString()} VND</p>
+          </div>
+        </div>
                       
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <span className="text-sm font-medium text-gray-700">Số lượng:</span>
-                                                                                                     <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setItemQuantities(prev => ({
-                            ...prev,
-                            [item.id]: Math.max(1, (prev[item.id] || 1) - 1)
-                          }))}
-                          className="w-10 h-10 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
-                        >
-                          -
-                        </Button>
-                        <span className="w-12 text-center font-medium">{itemQuantities[item.id] || 1}</span>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setItemQuantities(prev => ({
-                            ...prev,
-                            [item.id]: (prev[item.id] || 1) + 1
-                          }))}
-                          className="w-10 h-10 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
-                        >
-                          +
-                        </Button>
-                        </div>
-                        
-                        <Button 
-                          onClick={() => {
-                            const quantity = itemQuantities[item.id] || 1;
-                            for (let i = 0; i < quantity; i++) {
-                              addToCart(item);
-                            }
-                            setItemQuantities(prev => ({ ...prev, [item.id]: 1 }));
-                          }}
-                          className="h-12"
-                          size="lg"
-                        >
-                          Thêm vào giỏ hàng
-                        </Button>
-                      </div>
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-gray-700">Số lượng:</span>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setItemQuantities(prev => ({
+                ...prev,
+                [item.id]: Math.max(1, (prev[item.id] || 1) - 1)
+              }))}
+              className="w-10 h-10 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
+            >
+              -
+            </Button>
+            <span className="w-12 text-center font-medium">{itemQuantities[item.id] || 1}</span>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setItemQuantities(prev => ({
+                ...prev,
+                [item.id]: (prev[item.id] || 1) + 1
+              }))}
+              className="w-10 h-10 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
+            >
+              +
+            </Button>
+          </div>
+          
+          <Button 
+            onClick={() => {
+              const quantity = itemQuantities[item.id] || 1;
+              for (let i = 0; i < quantity; i++) {
+                addToCart(item);
+              }
+              setItemQuantities(prev => ({ ...prev, [item.id]: 1 }));
+            }}
+            className="h-12 w-full sm:w-auto"
+            size="lg"
+          >
+            Thêm vào giỏ hàng
+          </Button>
+        </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -328,8 +328,8 @@ export default function MerchandisePage() {
 
         {/* Shopping Cart */}
         <div>
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <h2 className="text-xl font-semibold mb-4">Giỏ hàng</h2>
+          <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
+            <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Giỏ hàng</h2>
             
             {cart.length === 0 ? (
               <p className="text-gray-500 text-center py-8">Giỏ hàng của bạn trống</p>
@@ -337,20 +337,20 @@ export default function MerchandisePage() {
               <>
                 <div className="space-y-3 mb-4">
                   {cart.map((item) => (
-                    <div key={item.merchandiseId} className="flex justify-between items-center p-3 bg-white rounded border">
+                    <div key={item.merchandiseId} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 p-3 bg-white rounded border">
                       <div className="flex-1">
-                        <p className="font-medium">{item.name}</p>
+                        <p className="font-medium text-sm sm:text-base">{item.name}</p>
                         {item.gender && item.size && (
-                          <p className="text-sm text-gray-600 capitalize">
+                          <p className="text-xs sm:text-sm text-gray-600 capitalize">
                             {item.gender} • {item.size}
                             </p>
                         )}
-                        <p className="text-sm text-gray-600">
+                        <p className="text-xs sm:text-sm text-gray-600">
                           {item.price.toLocaleString()} VND × {item.quantity}
                         </p>
                       </div>
                       
-                      <div className="flex items-center gap-2 ml-3">
+                      <div className="flex items-center gap-2 sm:ml-3 self-end sm:self-center">
                         <Button
                           size="sm"
                           variant="outline"
@@ -390,7 +390,7 @@ export default function MerchandisePage() {
                 </div>
                 
                 <div className="border-t pt-4">
-                  <div className="flex justify-between items-center text-lg font-semibold">
+                  <div className="flex justify-between items-center text-base sm:text-lg font-semibold">
                     <span>Tổng cộng:</span>
                     <span>{getTotalPrice().toLocaleString()} VND</span>
                   </div>
@@ -402,13 +402,14 @@ export default function MerchandisePage() {
       </div>
 
       {/* Navigation */}
-      <div className="mt-8 flex justify-between">
-        <Button variant="outline" onClick={handleBack}>
+      <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between">
+        <Button variant="outline" onClick={handleBack} className="order-2 sm:order-1">
           Quay lại
         </Button>
         <Button 
           onClick={handleContinue}
           disabled={cart.length === 0}
+          className="order-1 sm:order-2"
         >
           Tiếp tục
         </Button>

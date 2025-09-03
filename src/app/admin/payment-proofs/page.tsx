@@ -160,15 +160,15 @@ export default function PaymentProofsPage() {
           <p className="text-gray-500">Khi người tham gia tải lên xác nhận thanh toán, chúng sẽ xuất hiện ở đây.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {paymentProofs.map((proof) => (
             <Card key={proof.id} className="overflow-hidden">
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <CardTitle className="text-base sm:text-lg">
                     {proof.Attendees.first_name} {proof.Attendees.last_name}
                   </CardTitle>
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(proof.Order)}`}>
+                  <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(proof.Order)} self-start sm:self-center`}>
                     {getStatusIcon(proof.Order)}
                     <span className="ml-1">{getStatusText(proof.Order)}</span>
                   </span>
@@ -243,7 +243,7 @@ export default function PaymentProofsPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1"
+                    className="flex-1 text-xs sm:text-sm"
                     onClick={() => {
                       // TODO: Implement status update functionality
 
