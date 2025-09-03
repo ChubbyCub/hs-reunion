@@ -84,15 +84,6 @@ export default function EventTicketPage() {
             </p>
 
             <div className="bg-white p-6 rounded-lg border mb-6 text-center">
-                <div className="mb-4">
-                    <p className="font-semibold">
-                        {formData.firstName} {formData.lastName}
-                    </p>
-                    <p className="text-sm text-gray-600">{formData.occupation || 'N/A'}</p>
-                    <p className="text-sm text-gray-600">{formData.workplace || 'N/A'}</p>
-                    <p className="text-sm text-gray-600">{formData.email}</p>
-                    <p className="text-sm text-gray-600">{formData.phone}</p>
-                </div>
                 {qrError ? (
                     <p className="text-red-600">{qrError}</p>
                 ) : (
