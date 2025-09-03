@@ -6,13 +6,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from 'react';
 import { MerchandiseService } from "@/services/database/merchandise";
-import type { Merchandise, CartItem } from "@/types/common";
+import type { Merchandise } from "@/types/common";
 
 export default function MerchandisePage() {
   const router = useRouter();
-  const { setStep, updateFormData } = useAppStore();
+  const { setStep, updateCart, cart } = useAppStore();
   const [merchandise, setMerchandise] = useState<Merchandise[]>([]);
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -53,13 +52,13 @@ export default function MerchandisePage() {
     );
 
     if (existingItem) {
-      setCart(cart.map(cartItem => 
+      updateCart(cart.map(cartItem => 
         cartItem.merchandiseId === item.id 
           ? { ...cartItem, quantity: cartItem.quantity + 1 }
           : cartItem
       ));
     } else {
-      setCart([...cart, {
+      updateCart([...cart, {
         merchandiseId: item.id,
         quantity: 1,
         name: item.name,
@@ -100,56 +99,11 @@ export default function MerchandisePage() {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
-  const handleContinue = async () => {
-    try {
-      // Save cart to store for next step
-      updateFormData({ merchandise: cart });
-      
-      // Save order to database if we have attendee ID
-      const { formData } = useAppStore.getState();
-      console.log('Form data in handleContinue:', formData);
-      console.log('Cart in handleContinue:', cart);
-      
-      if (formData.attendeeId && cart.length > 0) {
-        const orderData = {
-          attendeeId: formData.attendeeId,
-          items: cart.map(item => ({
-            merchandiseId: item.merchandiseId,
-            quantity: item.quantity
-            // Note: price comes from the Merchandise table, but quantity is needed for Merch_Order
-          }))
-        };
-        
-        console.log('Sending order data:', orderData);
-        
-        const response = await fetch('/api/orders', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(orderData),
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error('Failed to save order:', errorData);
-        } else {
-          console.log('Order saved successfully');
-        }
-      } else {
-        console.log('Skipping order save - no attendee ID or empty cart');
-        console.log('Attendee ID:', formData.attendeeId);
-        console.log('Cart length:', cart.length);
-      }
-      
-      setStep(4);
-      router.push("/payment");
-    } catch (error) {
-      console.error('Error saving order:', error);
-      // Continue anyway, order can be saved later
-      setStep(4);
-      router.push("/payment");
-    }
+  const handleContinue = () => {
+    // Cart is already saved in local storage via the store
+    // No need to save to database here - that will happen at the final step
+    setStep(4);
+    router.push("/payment");
   };
 
   const handleBack = () => {
@@ -402,13 +356,13 @@ export default function MerchandisePage() {
                           variant="outline"
                           onClick={() => {
                             if (item.quantity > 1) {
-                              setCart(cart.map(cartItem => 
+                              updateCart(cart.map(cartItem => 
                                 cartItem.merchandiseId === item.merchandiseId 
                                   ? { ...cartItem, quantity: cartItem.quantity - 1 }
                                   : cartItem
                               ));
                             } else {
-                              setCart(cart.filter(cartItem => cartItem.merchandiseId !== item.merchandiseId));
+                              updateCart(cart.filter(cartItem => cartItem.merchandiseId !== item.merchandiseId));
                             }
                           }}
                           className="w-8 h-8 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
@@ -420,11 +374,11 @@ export default function MerchandisePage() {
                           size="sm"
                           variant="outline"
                           onClick={() => {
-                            setCart(cart.map(cartItem => 
+                            updateCart(cart.map(cartItem => 
                               cartItem.merchandiseId === item.merchandiseId 
                                 ? { ...cartItem, quantity: cartItem.quantity + 1 }
                                 : cartItem
-                            ));
+                              ));
                           }}
                           className="w-8 h-8 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
                         >

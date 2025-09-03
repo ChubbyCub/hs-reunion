@@ -10,7 +10,7 @@ import Image from "next/image";
 
 export default function EventTicketPage() {
     const router = useRouter();
-    const { setStep, formData, saveToDatabase } = useAppStore();
+    const { setStep, formData, saveEverythingToDatabase } = useAppStore();
     const [qrUrl, setQrUrl] = useState<string>("");
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
     const [qrError, setQrError] = useState<string>("");
@@ -60,7 +60,7 @@ export default function EventTicketPage() {
         setSaveStatus({});
         
         try {
-            const result = await saveToDatabase();
+            const result = await saveEverythingToDatabase();
             if (result.success) {
                 setSaveStatus({ success: true, message: "Đăng ký thành công! Dữ liệu đã được lưu vào cơ sở dữ liệu." });
                 setTimeout(() => {

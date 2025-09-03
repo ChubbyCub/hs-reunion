@@ -33,12 +33,9 @@ export default function RegisterPage() {
   const router = useRouter();
   const { formData, updateFormData, setStep } = useAppStore();
   const [hasHydrated, setHasHydrated] = useState(false);
-  const [originalData, setOriginalData] = useState(formData);
-
   useEffect(() => {
     setHasHydrated(true);
-    setOriginalData(formData);
-  }, [formData]);
+  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,38 +51,19 @@ export default function RegisterPage() {
     }
   }, [hasHydrated, form, formData]);
 
-  // Check if form data has changed from original
-  const hasDataChanged = (currentValues: z.infer<typeof formSchema>) => {
-    return Object.keys(currentValues).some(key => {
-      const k = key as keyof z.infer<typeof formSchema>;
-      return currentValues[k] !== originalData[k];
-    });
-  };
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // Update form data first
+      // Update form data first - no database save here
       updateFormData(values);
       
-      // Check if we're updating an existing attendee or creating a new one
-      const { saveToDatabase, updateInDatabase, formData } = useAppStore.getState();
-      
-      if (formData.attendeeId) {
-        // Only update if data has actually changed
-        if (hasDataChanged(values)) {
-          await updateInDatabase();
-        }
-      } else {
-        // Create new attendee
-        await saveToDatabase();
-      }
-      
-      // Proceed to next step
+      // Proceed to next step - everything will be saved at the final step
       setStep(2);
       router.push("/merchandise");
     } catch (error) {
-      console.error('Error saving attendee data:', error);
-      // Still proceed to next step, data can be saved later
+      console.error('Error updating form data:', error);
+      // Still proceed to next step
       setStep(2);
       router.push("/merchandise");
     }

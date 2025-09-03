@@ -1,20 +1,21 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { FormData } from '../types/common';
+import type { FormData, CartItem } from '../types/common';
 
 // Define the shape of your store
 interface AppState {
   currentStep: number;
   formData: FormData;
+  cart: CartItem[];
   setStep: (step: number) => void;
   updateFormData: (data: Partial<FormData>) => void;
-  saveToDatabase: () => Promise<{ success: boolean; error?: string }>;
-  updateInDatabase: () => Promise<{ success: boolean; error?: string }>;
+  updateCart: (cart: CartItem[]) => void;
+  saveEverythingToDatabase: () => Promise<{ success: boolean; error?: string; attendeeId?: number; orderId?: number }>;
   reset: () => void;
   hydrated?: boolean;
 }
 
-const initialState: { currentStep: number; formData: FormData; hydrated?: boolean } = {
+const initialState: { currentStep: number; formData: FormData; cart: CartItem[]; hydrated?: boolean } = {
   currentStep: 1,
   formData: {
     firstName: '',
@@ -26,6 +27,7 @@ const initialState: { currentStep: number; formData: FormData; hydrated?: boolea
     workplace: '',
     receiveUpdates: false,
   },
+  cart: [],
   hydrated: false,
 };
 
@@ -39,68 +41,78 @@ export const useAppStore = create<AppState>()(
         set((state) => ({
           formData: { ...state.formData, ...data },
         })),
-        saveToDatabase: async () => {
-    const { formData } = get();
-    
-    try {
-      const response = await fetch('/api/attendees', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      updateCart: (cart) => set({ cart }),
+      saveEverythingToDatabase: async () => {
+        const { formData, cart } = get();
+        
+        try {
+          // First, save the attendee
+          const attendeeResponse = await fetch('/api/attendees', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+          });
 
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to save to database');
-      }
-      
-      // Store the attendee ID in the form data
-      if (result.data && result.data.id) {
-        set((state) => ({
-          formData: { ...state.formData, attendeeId: result.data.id }
-        }));
-      }
-      
-      return result;
-      
-    } catch (error) {
-      console.error('Error saving to database:', error);
-      throw error;
-    }
-  },
+          const attendeeResult = await attendeeResponse.json();
+          
+          if (!attendeeResponse.ok) {
+            throw new Error(attendeeResult.error || 'Failed to save attendee to database');
+          }
+          
+          const attendeeId = attendeeResult.data?.id;
+          if (!attendeeId) {
+            throw new Error('No attendee ID returned from server');
+          }
 
-  updateInDatabase: async () => {
-    const { formData } = get();
-    
-    if (!formData.attendeeId) {
-      throw new Error('No attendee ID available for update');
-    }
-    
-    try {
-      const response = await fetch(`/api/attendees/${formData.attendeeId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+          // Update form data with attendee ID
+          set((state) => ({
+            formData: { ...state.formData, attendeeId }
+          }));
 
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to update database');
-      }
-      
-      return result;
-      
-    } catch (error) {
-      console.error('Error updating database:', error);
-      throw error;
-    }
-  },
+          // If there are items in cart, save the order
+          let orderId = null;
+          if (cart.length > 0) {
+            const orderData = {
+              attendeeId: attendeeId,
+              items: cart.map(item => ({
+                merchandiseId: item.merchandiseId,
+                quantity: item.quantity
+              }))
+            };
+            
+            const orderResponse = await fetch('/api/orders', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(orderData),
+            });
+            
+            const orderResult = await orderResponse.json();
+            
+            if (!orderResponse.ok) {
+              throw new Error(orderResult.error || 'Failed to save order to database');
+            }
+            
+            orderId = orderResult.data?.orderId;
+          }
+          
+          return {
+            success: true,
+            attendeeId,
+            orderId
+          };
+          
+        } catch (error) {
+          console.error('Error saving to database:', error);
+          return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error occurred'
+          };
+        }
+      },
       reset: () => {
         set(initialState);
         // Also remove from localStorage
