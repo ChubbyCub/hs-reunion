@@ -8,12 +8,12 @@ const supabase = createClient(
 
 export async function POST(request: NextRequest) {
   try {
-    const { attendeeId, items, totalAmount } = await request.json();
+    const { attendeeId, items } = await request.json();
     
-    console.log('Received order data:', { attendeeId, items });
+
 
     if (!attendeeId || !items || !Array.isArray(items) || items.length === 0) {
-      console.log('Validation failed:', { attendeeId, items });
+
       return NextResponse.json(
         { error: 'Invalid order data' },
         { status: 400 }
@@ -21,13 +21,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the order
-    console.log('Creating order with data:', { id_attendee: attendeeId, total_amount: totalAmount });
+
     
     // Try without quotes first, then with quotes if that fails
     let order, orderError;
     
     try {
-      console.log('Attempting to create order without quotes...');
+
       const result = await supabase
         .from('Order')
         .insert({
@@ -40,10 +40,10 @@ export async function POST(request: NextRequest) {
       orderError = result.error;
       
       if (!orderError) {
-        console.log('Order created successfully without quotes');
+
       }
     } catch {
-      console.log('First attempt failed, trying with quotes...');
+
       const result = await supabase
         .from('"Order"')
         .insert({
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       orderError = result.error;
       
       if (!orderError) {
-        console.log('Order created successfully with quotes');
+
       }
     }
 
@@ -76,14 +76,13 @@ export async function POST(request: NextRequest) {
       // Note: price comes from the original Merchandise table, but quantity is needed for Merch_Order
     }));
 
-    console.log('Creating merchandise orders with data:', merchOrderItems);
-    console.log('Each item includes quantity:', items.map(item => ({ merchandiseId: item.merchandiseId, quantity: item.quantity })));
+
 
     // Try without quotes first, then with quotes if that fails
     let merchOrderError;
     
     try {
-      console.log('Attempting to create merchandise orders without quotes...');
+
       const result = await supabase
         .from('Merch_Order')
         .insert(merchOrderItems);
@@ -91,10 +90,10 @@ export async function POST(request: NextRequest) {
       merchOrderError = result.error;
       
       if (!merchOrderError) {
-        console.log('Merchandise orders created successfully without quotes');
+
       }
     } catch {
-      console.log('First attempt failed for Merch_Order, trying with quotes...');
+
       const result = await supabase
         .from('"Merch_Order"')
         .insert(merchOrderItems);
@@ -102,7 +101,7 @@ export async function POST(request: NextRequest) {
       merchOrderError = result.error;
       
       if (!merchOrderError) {
-        console.log('Merchandise orders created successfully with quotes');
+
       }
     }
 

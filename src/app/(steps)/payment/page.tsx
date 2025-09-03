@@ -3,14 +3,87 @@
 import { useAppStore } from "@/stores/app-store";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useState, useRef } from "react";
+import { Upload, CheckCircle, AlertCircle, X } from "lucide-react";
 
 export default function PaymentPage() {
     const router = useRouter();
     const { setStep, formData, cart } = useAppStore();
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [uploadMessage, setUploadMessage] = useState('');
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const getTotalPrice = () => {
         return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
     };
+
+    const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                setUploadMessage('Chỉ chấp nhận file hình ảnh');
+                setUploadStatus('error');
+                return;
+            }
+            
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                setUploadMessage('File phải nhỏ hơn 5MB');
+                setUploadStatus('error');
+                return;
+            }
+            
+            setSelectedFile(file);
+            setUploadStatus('idle');
+            setUploadMessage('');
+        }
+    };
+
+    const handleUpload = async () => {
+        if (!selectedFile) return;
+
+        setIsUploading(true);
+        setUploadStatus('idle');
+        setUploadMessage('');
+
+        try {
+            // For now, just store the file info in the store
+            // The actual upload will happen during finish registration
+            const fileInfo = {
+                file: selectedFile,
+                name: selectedFile.name,
+                size: selectedFile.size,
+                type: selectedFile.type,
+                uploadedAt: new Date().toISOString()
+            };
+
+            // Store the actual file for later upload
+            useAppStore.getState().setPaymentProofFile(fileInfo);
+
+            setUploadStatus('success');
+            setUploadMessage('File đã được chọn! Sẽ được tải lên khi hoàn tất đăng ký.');
+        } catch (error) {
+            setUploadStatus('error');
+            setUploadMessage('Có lỗi xảy ra khi chọn file');
+            console.error('File selection error:', error);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const removeFile = () => {
+        setSelectedFile(null);
+        setUploadStatus('idle');
+        setUploadMessage('');
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
+    const canProceed = uploadStatus === 'success' || cart.length === 0;
 
   return (
     <div className="container mx-auto p-6 max-w-4xl">
@@ -52,14 +125,111 @@ export default function PaymentPage() {
         )}
       </div>
 
-      {/* Payment Options */}
+      {/* Payment Instructions */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4">Phương thức thanh toán</h2>
-        <p className="font-legalese text-gray-600">
-          Hiện tại chúng tôi chưa tích hợp hệ thống thanh toán. 
-          Bạn có thể thanh toán trực tiếp tại sự kiện hoặc liên hệ với ban tổ chức.
+        <h2 className="text-xl font-semibold mb-4">Hướng dẫn thanh toán</h2>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <p className="text-blue-800 mb-2">
+            <strong>Chuyển khoản ngân hàng:</strong>
+          </p>
+          <p className="text-blue-700 mb-1">Ngân hàng: Vietcombank</p>
+          <p className="text-blue-700 mb-1">Số tài khoản: 1234567890</p>
+          <p className="text-blue-700 mb-1">Tên tài khoản: NGUYEN VAN A</p>
+          <p className="text-blue-700 mb-1">Nội dung: [Tên của bạn] - HS Reunion</p>
+        </div>
+        <p className="text-gray-600 text-sm">
+          Sau khi chuyển khoản, vui lòng chụp màn hình xác nhận và tải lên bên dưới.
         </p>
       </div>
+
+      {/* File Upload Section */}
+      {cart.length > 0 && (
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold mb-4">Tải lên xác nhận thanh toán</h2>
+          
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+            {!selectedFile ? (
+              <div className="text-center">
+                <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <p className="text-gray-600 mb-2">
+                  Chọn file hình ảnh xác nhận thanh toán
+                </p>
+                <p className="text-gray-500 text-sm mb-4">
+                  Hỗ trợ: JPG, PNG, GIF (tối đa 5MB)
+                </p>
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  variant="outline"
+                  className="font-form"
+                >
+                  Chọn file
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span className="text-gray-600 text-sm font-medium">
+                        {selectedFile.name.split('.').pop()?.toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{selectedFile.name}</p>
+                      <p className="text-sm text-gray-500">
+                        {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={removeFile}
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                <Button
+                  onClick={handleUpload}
+                  disabled={isUploading}
+                  className="w-full font-form"
+                >
+                  {isUploading ? 'Đang tải lên...' : 'Tải lên xác nhận thanh toán'}
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Upload Status */}
+          {uploadStatus !== 'idle' && (
+            <div className={`mt-4 p-4 rounded-lg flex items-center space-x-3 ${
+              uploadStatus === 'success' 
+                ? 'bg-green-50 border border-green-200' 
+                : 'bg-red-50 border border-red-200'
+            }`}>
+              {uploadStatus === 'success' ? (
+                <CheckCircle className="h-5 w-5 text-green-600" />
+              ) : (
+                <AlertCircle className="h-5 w-5 text-red-600" />
+              )}
+              <p className={`text-sm ${
+                uploadStatus === 'success' ? 'text-green-800' : 'text-red-800'
+              }`}>
+                {uploadMessage}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Navigation */}
       <div className="flex justify-between">
@@ -71,6 +241,7 @@ export default function PaymentPage() {
         </Button>
         <Button 
           className="font-form" 
+          disabled={!canProceed}
           onClick={() => {
             setStep(5);
             router.push("/event-ticket");

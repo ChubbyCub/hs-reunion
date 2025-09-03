@@ -7,15 +7,23 @@ interface AppState {
   currentStep: number;
   formData: FormData;
   cart: CartItem[];
+  paymentProofFile?: {
+    file: File;
+    name: string;
+    size: number;
+    type: string;
+    uploadedAt: string;
+  };
   setStep: (step: number) => void;
   updateFormData: (data: Partial<FormData>) => void;
   updateCart: (cart: CartItem[]) => void;
+  setPaymentProofFile: (file: { file: File; name: string; size: number; type: string; uploadedAt: string }) => void;
   saveEverythingToDatabase: () => Promise<{ success: boolean; error?: string; attendeeId?: number; orderId?: number }>;
   reset: () => void;
   hydrated?: boolean;
 }
 
-const initialState: { currentStep: number; formData: FormData; cart: CartItem[]; hydrated?: boolean } = {
+const initialState: { currentStep: number; formData: FormData; cart: CartItem[]; paymentProofFile?: { file: File; name: string; size: number; type: string; uploadedAt: string }; hydrated?: boolean } = {
   currentStep: 1,
   formData: {
     firstName: '',
@@ -28,6 +36,7 @@ const initialState: { currentStep: number; formData: FormData; cart: CartItem[];
     receiveUpdates: false,
   },
   cart: [],
+  paymentProofFile: undefined,
   hydrated: false,
 };
 
@@ -42,8 +51,9 @@ export const useAppStore = create<AppState>()(
           formData: { ...state.formData, ...data },
         })),
       updateCart: (cart) => set({ cart }),
+      setPaymentProofFile: (file) => set({ paymentProofFile: file }),
       saveEverythingToDatabase: async () => {
-        const { formData, cart } = get();
+        const { formData, cart, paymentProofFile } = get();
         
         try {
           // First, save the attendee
@@ -97,6 +107,26 @@ export const useAppStore = create<AppState>()(
             }
             
             orderId = orderResult.data?.orderId;
+          }
+
+          // Upload payment proof if available
+          if (paymentProofFile) {
+            const formDataToSend = new FormData();
+            formDataToSend.append('file', paymentProofFile.file);
+            formDataToSend.append('attendeeId', attendeeId.toString());
+            formDataToSend.append('orderId', orderId ? orderId.toString() : 'null');
+
+            const uploadResponse = await fetch('/api/upload-payment-proof', {
+              method: 'POST',
+              body: formDataToSend,
+            });
+
+            const uploadResult = await uploadResponse.json();
+            
+            if (!uploadResponse.ok) {
+              console.error('Payment proof upload failed:', uploadResult.error);
+              // Don't fail the entire process if payment proof upload fails
+            }
           }
           
           // Clear local storage after successful save

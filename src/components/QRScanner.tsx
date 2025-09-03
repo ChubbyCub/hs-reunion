@@ -50,7 +50,7 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
     const code = jsQR(imageData.data, imageData.width, imageData.height);
 
     if (code) {
-      console.log('QR Code detected:', code.data);
+
       onScan(code.data);
       stopScanning();
       return;

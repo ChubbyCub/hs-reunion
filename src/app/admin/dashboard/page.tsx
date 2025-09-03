@@ -51,6 +51,13 @@ export default function AdminDashboard() {
             </div>
           </Link>
           
+          <Link href="/admin/payment-proofs">
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+              <h2 className="text-lg sm:text-xl font-semibold mb-2">📸 Xác nhận thanh toán</h2>
+              <p className="text-sm sm:text-base text-gray-600">Xem và quản lý các xác nhận thanh toán từ người tham gia</p>
+            </div>
+          </Link>
+          
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
             <h2 className="text-lg sm:text-xl font-semibold mb-4">📊 Tải xuống dữ liệu</h2>
             <div className="space-y-3">
@@ -84,8 +91,6 @@ export default function AdminDashboard() {
               </button>
             </div>
           </div>
-          
-
         </div>
       </main>
       <Footer />
