@@ -124,13 +124,7 @@ export default function CheckInPage() {
           </div>
           <div className="bg-white p-2 rounded border font-mono text-xs break-all">
             {JSON.stringify({
-              em: "test@example.com",
-              ph: "123456789",
-              fn: "Test",
-              ln: "User",
-              oc: "Developer",
-              emr: "Test Company",
-              ac: true
+              em: "test@example.com"
             })}
           </div>
         </div>
@@ -185,7 +179,8 @@ export default function CheckInPage() {
             </div>
             
             <p className="text-sm text-gray-600">
-              Nhập dữ liệu QR code hoặc email của attendee để check-in
+              Nhập dữ liệu QR code hoặc email của attendee để check-in. 
+              Hệ thống sẽ tự động nhận diện loại dữ liệu bạn nhập.
             </p>
           </div>
         )}
@@ -227,9 +222,6 @@ export default function CheckInPage() {
                 <tr className="border-b">
                   <th className="text-left p-2 text-xs sm:text-sm">Tên</th>
                   <th className="text-left p-2 text-xs sm:text-sm hidden sm:table-cell">Email</th>
-                  <th className="text-left p-2 text-xs sm:text-sm hidden lg:table-cell">Thời gian check-in</th>
-                  <th className="text-left p-2 text-xs sm:text-sm hidden md:table-cell">Phương thức</th>
-                  <th className="text-left p-2 text-xs sm:text-sm hidden lg:table-cell">Ghi chú</th>
                 </tr>
               </thead>
               <tbody>
@@ -237,13 +229,6 @@ export default function CheckInPage() {
                   <tr key={attendee.id} className="border-b hover:bg-gray-50">
                     <td className="p-2">{attendee.first_name} {attendee.last_name}</td>
                     <td className="p-2 hidden sm:table-cell">{attendee.email}</td>
-                    <td className="p-2 hidden lg:table-cell">
-                      {attendee.check_in_time ? new Date(attendee.check_in_time).toLocaleString('vi-VN') : '-'}
-                    </td>
-                    <td className="p-2 hidden md:table-cell">{attendee.check_in_method || '-'}</td>
-                    <td className="p-2 text-xs sm:text-sm text-gray-600 hidden lg:table-cell">
-                      {attendee.check_in_notes || '-'}
-                    </td>
                   </tr>
                 ))}
               </tbody>

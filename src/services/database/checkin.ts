@@ -12,14 +12,27 @@ export class CheckInService {
    */
   static async checkInAttendee(qrData: string): Promise<{ success: boolean; error?: string }> {
     try {
-      // Parse QR data
-      const attendeeInfo: QRCodeData = JSON.parse(qrData);
+      let attendeeEmail: string;
+
+      // Try to parse as QR data first
+      try {
+        const attendeeInfo: QRCodeData = JSON.parse(qrData);
+        attendeeEmail = attendeeInfo.em;
+      } catch {
+        // If parsing fails, treat as plain email
+        attendeeEmail = qrData.trim();
+      }
+
+      // Validate email format
+      if (!attendeeEmail || !attendeeEmail.includes('@')) {
+        return { success: false, error: 'Invalid email format' };
+      }
       
       // Find attendee by email
       const { data: attendee, error: findError } = await supabase
         .from('Attendees')
-        .select('id, checked_in')
-        .eq('email', attendeeInfo.em)
+        .select('id, checked_in, first_name, last_name')
+        .eq('email', attendeeEmail)
         .single();
       
       if (findError || !attendee) {
@@ -36,9 +49,6 @@ export class CheckInService {
         .from('Attendees')
         .update({
           checked_in: true,
-          check_in_time: new Date().toISOString(),
-          check_in_method: 'qr_scan',
-          check_in_notes: `QR scan - ${attendeeInfo.fn} ${attendeeInfo.ln}`,
         })
         .eq('id', attendee.id);
       
@@ -82,9 +92,6 @@ export class CheckInService {
         success: true,
         data: {
           isCheckedIn: attendee.checked_in,
-          checkInTime: attendee.check_in_time || undefined,
-          checkInMethod: attendee.check_in_method || undefined,
-          notes: attendee.check_in_notes || undefined,
         }
       };
       

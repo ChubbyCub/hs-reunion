@@ -11,9 +11,6 @@ CREATE TABLE IF NOT EXISTS public."Attendees" (
     employer character varying NULL,
     allow_contact boolean NOT NULL DEFAULT false,
     checked_in boolean NOT NULL DEFAULT false,
-    check_in_time timestamp with time zone NULL,
-    check_in_method character varying(50) NULL,
-    check_in_notes text NULL,
     CONSTRAINT Attendee_pkey PRIMARY KEY (id),
     CONSTRAINT Attendee_email_key UNIQUE (email)
 ) TABLESPACE pg_default;

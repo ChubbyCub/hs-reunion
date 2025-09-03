@@ -14,9 +14,6 @@ export interface FormData {
 
 export interface CheckInStatus {
   isCheckedIn: boolean;
-  checkInTime?: string;
-  checkInMethod?: string;
-  notes?: string;
 }
 
 export interface AttendeeSummary {
@@ -28,9 +25,6 @@ export interface AttendeeSummary {
   occupation: string | null;
   employer: string | null;
   checked_in: boolean;
-  check_in_time: string | null;
-  check_in_method: string | null;
-  check_in_notes: string | null;
 }
 
 export interface CheckInStats {
@@ -39,15 +33,9 @@ export interface CheckInStats {
   checkInRate: number;
 }
 
-// QR Code data structure
+// QR Code data structure - simplified for check-in
 export interface QRCodeData {
-  em: string;    // email
-  ph: string;    // phone
-  fn: string;    // first name
-  ln: string;    // last name
-  oc: string;    // occupation
-  emr: string;   // employer
-  ac: boolean;   // allow contact
+  em: string;    // email only
 }
 
 // Merchandise types

@@ -23,7 +23,7 @@ export async function GET() {
     }
 
     // Convert to CSV format
-    const headers = ['ID', 'Họ', 'Tên', 'Email', 'Số điện thoại', 'Nghề nghiệp', 'Công ty', 'Đồng ý thông báo', 'Ngày đăng ký', 'Thời gian check-in', 'Phương thức check-in', 'Ghi chú check-in'];
+    const headers = ['ID', 'Họ', 'Tên', 'Email', 'Số điện thoại', 'Nghề nghiệp', 'Công ty', 'Đồng ý thông báo', 'Ngày đăng ký', 'Đã check-in'];
     const csvRows = [headers.join(',')];
 
     attendees?.forEach(attendee => {
@@ -37,9 +37,7 @@ export async function GET() {
         `"${attendee.company || ''}"`,
         attendee.allow_notifications ? 'Có' : 'Không',
         new Date(attendee.created_at).toLocaleString('vi-VN'),
-        attendee.check_in_time ? new Date(attendee.check_in_time).toLocaleString('vi-VN') : '',
-        attendee.check_in_method || '',
-        `"${attendee.check_in_notes || ''}"`
+        attendee.checked_in ? 'Có' : 'Không'
       ];
       csvRows.push(row.join(','));
     });

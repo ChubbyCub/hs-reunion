@@ -11,9 +11,6 @@ export interface Attendee {
   employer: string | null;
   allow_contact: boolean;
   checked_in: boolean;
-  check_in_time: string | null;
-  check_in_method: string | null;
-  check_in_notes: string | null;
 }
 
 // Insert/Update types (without auto-generated fields)
@@ -29,7 +26,4 @@ export interface CreateAttendeeData {
 
 export interface UpdateAttendeeData {
   checked_in?: boolean;
-  check_in_time?: string | null;
-  check_in_method?: string | null;
-  check_in_notes?: string | null;
 }

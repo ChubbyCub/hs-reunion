@@ -18,14 +18,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse QR data
-    const attendeeInfo = JSON.parse(qrData);
+    let attendeeEmail: string;
+
+    // Try to parse as QR data first
+    try {
+      const attendeeInfo = JSON.parse(qrData);
+      attendeeEmail = attendeeInfo.em;
+    } catch {
+      // If parsing fails, treat as plain email
+      attendeeEmail = qrData.trim();
+    }
+
+    // Validate email format
+    if (!attendeeEmail || !attendeeEmail.includes('@')) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid email format' },
+        { status: 400 }
+      );
+    }
     
     // Find attendee by email
     const { data: attendee, error: findError } = await supabase
       .from('Attendees')
-      .select('id, checked_in')
-      .eq('email', attendeeInfo.em)
+      .select('id, checked_in, first_name, last_name')
+      .eq('email', attendeeEmail)
       .single();
     
     if (findError || !attendee) {
@@ -48,9 +64,6 @@ export async function POST(request: NextRequest) {
       .from('Attendees')
       .update({
         checked_in: true,
-        check_in_time: new Date().toISOString(),
-        check_in_method: 'qr_scan',
-        check_in_notes: `QR scan - ${attendeeInfo.fn} ${attendeeInfo.ln}`,
       })
       .eq('id', attendee.id);
     
@@ -72,7 +85,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     );
-  }
+    }
 }
 
 export async function GET() {

@@ -20,15 +20,9 @@ export default function EventTicketPage() {
     const attendeePayload = useMemo(() => {
         const payload = {
             em: formData.email || "",
-            ph: formData.phone || "",
-            fn: formData.firstName || "",
-            ln: formData.lastName || "",
-            oc: formData.occupation || "",
-            emr: formData.workplace || "",
-            ac: formData.receiveUpdates || false,
         };
         return JSON.stringify(payload);
-    }, [formData.email, formData.phone, formData.firstName, formData.lastName, formData.occupation, formData.workplace, formData.receiveUpdates]);
+    }, [formData.email]);
 
     useEffect(() => {
         let cancelled = false;
