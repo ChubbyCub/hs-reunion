@@ -100,6 +100,29 @@ export default function CheckInPage() {
         </div>
       </div>
 
+      {/* Message Display */}
+      {message && (
+        <div className={`p-4 rounded-lg mb-4 sm:mb-6 ${
+          message.type === 'success' 
+            ? 'bg-green-100 border border-green-400 text-green-800' 
+            : message.type === 'error'
+            ? 'bg-red-100 border border-red-400 text-red-800'
+            : 'bg-blue-100 border border-blue-400 text-blue-800'
+        }`}>
+          <div className="flex justify-between items-center">
+            <span>{message.text}</span>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={clearMessage}
+              className="text-gray-600 hover:text-gray-800 touch-manipulation p-2"
+            >
+              ✕
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Check-in Methods */}
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-4 sm:mb-6">
         <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Check-in Attendee</h2>
@@ -140,29 +163,6 @@ export default function CheckInPage() {
           </p>
         </div>
       </div>
-
-      {/* Message Display */}
-      {message && (
-        <div className={`p-4 rounded-lg mb-6 ${
-          message.type === 'success' 
-            ? 'bg-green-100 border border-green-400 text-green-800' 
-            : message.type === 'error'
-            ? 'bg-red-100 border border-red-400 text-red-800'
-            : 'bg-blue-100 border border-blue-400 text-blue-800'
-        }`}>
-          <div className="flex justify-between items-center">
-            <span>{message.text}</span>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={clearMessage}
-              className="text-gray-600 hover:text-gray-800 touch-manipulation p-2"
-            >
-              ✕
-            </Button>
-          </div>
-        </div>
-      )}
       </main>
       <Footer />
     </div>

@@ -13,15 +13,21 @@ export default function AdminLogin() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    const res = await fetch("/api/admin-login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-    if (res.ok) {
-      router.push("/admin/dashboard");
-    } else {
-      setError("Sai tên đăng nhập hoặc mật khẩu");
+    
+    try {
+      const res = await fetch("/api/admin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      
+      if (res.ok) {
+        router.push("/admin/dashboard");
+      } else {
+        setError("Sai tên đăng nhập hoặc mật khẩu");
+      }
+    } catch {
+      setError("Lỗi kết nối. Vui lòng thử lại.");
     }
   }
 

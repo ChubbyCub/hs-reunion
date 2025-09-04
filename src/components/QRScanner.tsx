@@ -22,9 +22,29 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
     console.log('User agent:', navigator.userAgent);
   }, []);
 
-  // Cleanup scanner on unmount
+  // Cleanup scanner on unmount and page visibility change
   useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden && html5QrCode) {
+        // Stop scanner when page becomes hidden (user navigates away)
+        html5QrCode.stop().catch(() => {});
+        setScanning(false);
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      if (html5QrCode) {
+        // Stop scanner when user is about to leave the page
+        html5QrCode.stop().catch(() => {});
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
       if (html5QrCode) {
         html5QrCode.stop().catch(() => {});
       }
