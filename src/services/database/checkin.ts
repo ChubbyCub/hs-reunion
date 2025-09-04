@@ -31,7 +31,7 @@ export class CheckInService {
       // Find attendee by email
       const { data: attendee, error: findError } = await supabase
         .from('Attendees')
-        .select('id, checked_in, first_name, last_name')
+        .select('id, checked_in, first_name, last_name, class')
         .eq('email', attendeeEmail)
         .single();
       

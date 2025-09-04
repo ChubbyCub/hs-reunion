@@ -22,6 +22,7 @@ export interface AttendeeSummary {
   last_name: string;
   email: string;
   phone_number: string;
+  class: string;
   occupation: string | null;
   employer: string | null;
   checked_in: boolean;

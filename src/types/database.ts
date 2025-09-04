@@ -7,6 +7,7 @@ export interface Attendee {
   last_name: string;
   email: string;
   phone_number: string;
+  class: string;
   occupation: string | null;
   employer: string | null;
   allow_contact: boolean;
@@ -19,6 +20,7 @@ export interface CreateAttendeeData {
   last_name: string;
   email: string;
   phone_number: string;
+  class: string;
   occupation?: string | null;
   employer?: string | null;
   allow_contact?: boolean;

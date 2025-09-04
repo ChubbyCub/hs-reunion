@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS public."Attendees" (
     last_name character varying NOT NULL DEFAULT ''::character varying,
     email character varying NOT NULL DEFAULT ''::character varying,
     phone_number character varying NOT NULL DEFAULT ''::character varying,
+    class character varying NOT NULL DEFAULT ''::character varying,
     occupation character varying NULL,
     employer character varying NULL,
     allow_contact boolean NOT NULL DEFAULT false,

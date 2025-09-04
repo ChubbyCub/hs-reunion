@@ -56,16 +56,14 @@ export default function EventTicketPage() {
         try {
             const result = await saveEverythingToDatabase();
             if (result.success) {
-                setSaveStatus({ success: true, message: "Đăng ký thành công! Dữ liệu đã được lưu vào cơ sở dữ liệu." });
-                setTimeout(() => {
-                    router.push("/complete");
-                }, 2000);
+                // Immediately redirect to success page
+                router.push("/complete");
             } else {
                 setSaveStatus({ success: false, message: `Lỗi khi lưu dữ liệu: ${result.error}` });
+                setIsSaving(false);
             }
         } catch {
             setSaveStatus({ success: false, message: "Lỗi không xác định khi lưu dữ liệu." });
-        } finally {
             setIsSaving(false);
         }
     };
@@ -101,7 +99,7 @@ export default function EventTicketPage() {
                                         download={`ticket-${formData.email || "attendee"}.png`}
                                         className="inline-flex"
                                     >
-                                        <Button className="font-form">Tải mã QR</Button>
+                                        <Button className="font-form py-2 px-4 touch-manipulation">Tải mã QR</Button>
                                     </a>
                                 )}
                             </>
@@ -110,12 +108,8 @@ export default function EventTicketPage() {
                 )}
             </div>
 
-            {saveStatus.message && (
-                <div className={`p-4 rounded-lg border-l-4 mb-6 ${
-                    saveStatus.success 
-                        ? 'bg-green-50 border-green-400 text-green-800' 
-                        : 'bg-red-50 border-red-400 text-red-800'
-                }`}>
+            {saveStatus.message && !saveStatus.success && (
+                <div className="p-4 rounded-lg border-l-4 mb-6 bg-red-50 border-red-400 text-red-800">
                     <p className="font-semibold">{saveStatus.message}</p>
                 </div>
             )}
@@ -123,8 +117,7 @@ export default function EventTicketPage() {
             <div className="bg-blue-50 p-3 sm:p-4 rounded-lg border-l-4 border-blue-400 mb-4 sm:mb-6">
                 <h3 className="font-semibold text-blue-800 mb-2 text-sm sm:text-base">Lưu ý quan trọng:</h3>
                 <ul className="text-blue-700 text-xs sm:text-sm space-y-1">
-                    <li>• Vé sẽ được gửi qua email</li>
-                    <li>• Vui lòng kiểm tra email và spam folder</li>
+                    <li>• Lưu vé vào điện thoại để dễ dàng check-in</li>
                     <li>• Liên hệ ban tổ chức nếu gặp vấn đề</li>
                 </ul>
             </div>

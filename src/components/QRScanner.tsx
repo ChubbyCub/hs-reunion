@@ -80,26 +80,13 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
     }
   };
 
-  const handleManualInput = () => {
-    const input = prompt('Enter QR code data manually:');
-    if (input) {
-      onScan(input);
-    }
-  };
 
   return (
     <div className="space-y-4">
       {!scanning ? (
         <div className="text-center">
-          <Button onClick={startScanning} className="w-full">
+          <Button onClick={startScanning} className="w-full py-3 text-base touch-manipulation">
             📱 Start Camera Scanner
-          </Button>
-          <Button 
-            onClick={handleManualInput} 
-            variant="outline" 
-            className="w-full mt-2"
-          >
-            ⌨️ Enter QR Data Manually
           </Button>
           
           {isMobile && (
@@ -121,7 +108,7 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
             <p className="text-sm text-gray-600">
               Position QR code within the frame
             </p>
-            <Button onClick={stopScanning} variant="outline">
+            <Button onClick={stopScanning} variant="outline" className="py-2 px-4 touch-manipulation">
               Stop Scanner
             </Button>
           </div>
@@ -129,7 +116,6 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
       )}
       
       <div className="text-xs text-gray-500 text-center">
-        <p>💡 Tip: For testing, you can manually enter the QR data</p>
         <p>📱 Best viewed on mobile devices</p>
         <p>🔍 Scanner will automatically detect QR codes</p>
         {isMobile && (

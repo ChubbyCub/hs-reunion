@@ -22,18 +22,19 @@ export async function GET() {
       );
     }
 
-    // Convert to CSV format
-    const headers = ['ID', 'Tên', 'Giá (VND)', 'Giới tính', 'Kích thước', 'Ngày tạo'];
+    // Convert to CSV format - raw table data
+    const headers = ['ID', 'Created At', 'Updated At', 'Name', 'Price', 'Gender', 'Size'];
     const csvRows = [headers.join(',')];
 
     merchandise?.forEach(item => {
       const row = [
         item.id,
-        `"${item.name}"`,
+        new Date(item.created_at).toISOString(),
+        new Date(item.updated_at).toISOString(),
+        `"${item.name || ''}"`,
         item.price,
-        item.gender,
-        item.size,
-        new Date(item.created_at).toLocaleString('vi-VN')
+        `"${item.gender || ''}"`,
+        `"${item.size || ''}"`
       ];
       csvRows.push(row.join(','));
     });

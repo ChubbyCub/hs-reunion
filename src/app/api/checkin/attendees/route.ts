@@ -11,7 +11,7 @@ export async function GET() {
   try {
     const { data, error } = await supabase
       .from('Attendees')
-      .select('id, first_name, last_name, email, phone_number, occupation, employer, checked_in')
+      .select('id, first_name, last_name, email, phone_number, class, occupation, employer, checked_in')
       .eq('checked_in', true)
       .order('created_at', { ascending: false });
     

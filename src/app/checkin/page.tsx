@@ -4,29 +4,21 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CheckInService } from "@/services/database/checkin";
-import type { AttendeeSummary, CheckInStats } from "@/types/common";
+import type { CheckInStats } from "@/types/common";
 import QRScanner from "@/components/QRScanner";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export default function CheckInPage() {
   const [qrData, setQrData] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
-  const [checkedInAttendees, setCheckedInAttendees] = useState<AttendeeSummary[]>([]);
   const [stats, setStats] = useState<CheckInStats | null>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
-  const [showScanner, setShowScanner] = useState(false);
 
   useEffect(() => {
-    loadCheckedInAttendees();
     loadStats();
   }, []);
 
-  const loadCheckedInAttendees = async () => {
-    const result = await CheckInService.getCheckedInAttendees();
-    if (result.success) {
-      setCheckedInAttendees(result.data || []);
-    }
-  };
 
   const loadStats = async () => {
     setIsLoadingStats(true);
@@ -43,7 +35,6 @@ export default function CheckInPage() {
       return;
     }
 
-    setIsProcessing(true);
     setMessage(null);
 
     try {
@@ -55,9 +46,7 @@ export default function CheckInPage() {
           text: 'Check-in thành công!' 
         });
         setQrData("");
-        setShowScanner(false);
         // Reload data
-        await loadCheckedInAttendees();
         await loadStats();
       } else {
         setMessage({ 
@@ -70,13 +59,10 @@ export default function CheckInPage() {
         type: 'error', 
         text: `Lỗi không xác định trong quá trình check-in: ${error instanceof Error ? error.message : 'Unknown error'}` 
       });
-    } finally {
-      setIsProcessing(false);
     }
   };
 
   const handleQRScan = (data: string) => {
-    setQrData(data);
     handleCheckIn(data);
   };
 
@@ -87,7 +73,9 @@ export default function CheckInPage() {
   const clearMessage = () => setMessage(null);
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-1 container mx-auto p-4 max-w-4xl">
       <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-center">Hệ thống Check-in</h1>
       
       {/* Statistics */}
@@ -116,74 +104,41 @@ export default function CheckInPage() {
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-4 sm:mb-6">
         <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Check-in Attendee</h2>
         
-        {/* Test QR Code Display */}
-        <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">🧪 Test QR Code</h3>
-          <div className="text-xs text-gray-600 mb-2">
-            Use this sample data to test the check-in system:
-          </div>
-          <div className="bg-white p-2 rounded border font-mono text-xs break-all">
-            {JSON.stringify({
-              em: "test@example.com"
-            })}
-          </div>
-        </div>
         
-        {/* Method Selection */}
-        <div className="flex flex-col sm:flex-row gap-2 mb-4">
-          <Button 
-            onClick={() => setShowScanner(true)}
-            variant={showScanner ? "default" : "outline"}
-            className="flex-1 text-sm sm:text-base"
-          >
-            📱 Camera Scanner
-          </Button>
-          <Button 
-            onClick={() => setShowScanner(false)}
-            variant={!showScanner ? "default" : "outline"}
-            className="flex-1 text-sm sm:text-base"
-          >
-            ⌨️ Manual Input
-          </Button>
+        {/* QR Scanner */}
+        <div className="mb-4">
+          <QRScanner 
+            onScan={handleQRScan}
+            onError={handleScannerError}
+          />
         </div>
 
-        {/* QR Scanner */}
-        {showScanner && (
-          <div className="mb-4">
-            <QRScanner 
-              onScan={handleQRScan}
-              onError={handleScannerError}
+        {/* Manual Email Input */}
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <Input
+              type="email"
+              placeholder="Enter email"
+              value={qrData}
+              onChange={(e) => setQrData(e.target.value)}
+              className="flex-1 text-sm sm:text-base py-3"
+              onKeyPress={(e) => e.key === 'Enter' && handleCheckIn(qrData)}
+              autoComplete="email"
+              inputMode="email"
             />
+            <Button 
+              onClick={() => handleCheckIn(qrData)}
+              disabled={!qrData.trim()}
+              className="px-6 sm:px-8 text-sm sm:text-base py-3 touch-manipulation"
+            >
+              Check-in
+            </Button>
           </div>
-        )}
-
-        {/* Manual Input */}
-        {!showScanner && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-              <Input
-                type="text"
-                placeholder="Nhập dữ liệu QR hoặc email"
-                value={qrData}
-                onChange={(e) => setQrData(e.target.value)}
-                className="flex-1 text-sm sm:text-base"
-                onKeyPress={(e) => e.key === 'Enter' && handleCheckIn(qrData)}
-              />
-              <Button 
-                onClick={() => handleCheckIn(qrData)}
-                disabled={isProcessing || !qrData.trim()}
-                className="px-6 sm:px-8 text-sm sm:text-base"
-              >
-                {isProcessing ? 'Đang xử lý...' : 'Check-in'}
-              </Button>
-            </div>
-            
-            <p className="text-sm text-gray-600">
-              Nhập dữ liệu QR code hoặc email của attendee để check-in. 
-              Hệ thống sẽ tự động nhận diện loại dữ liệu bạn nhập.
-            </p>
-          </div>
-        )}
+          
+          <p className="text-sm text-gray-600">
+            Enter email address to check-in attendee manually.
+          </p>
+        </div>
       </div>
 
       {/* Message Display */}
@@ -201,41 +156,15 @@ export default function CheckInPage() {
               variant="ghost" 
               size="sm" 
               onClick={clearMessage}
-              className="text-gray-600 hover:text-gray-800"
+              className="text-gray-600 hover:text-gray-800 touch-manipulation p-2"
             >
               ✕
             </Button>
           </div>
         </div>
       )}
-
-      {/* Checked-in Attendees */}
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Danh sách đã check-in</h2>
-        
-        {checkedInAttendees.length === 0 ? (
-          <p className="text-gray-500 text-center py-6 sm:py-8">Chưa có ai check-in</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm sm:text-base">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-2 text-xs sm:text-sm">Tên</th>
-                  <th className="text-left p-2 text-xs sm:text-sm hidden sm:table-cell">Email</th>
-                </tr>
-              </thead>
-              <tbody>
-                {checkedInAttendees.map((attendee) => (
-                  <tr key={attendee.id} className="border-b hover:bg-gray-50">
-                    <td className="p-2">{attendee.first_name} {attendee.last_name}</td>
-                    <td className="p-2 hidden sm:table-cell">{attendee.email}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }

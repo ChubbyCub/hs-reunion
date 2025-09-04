@@ -22,22 +22,24 @@ export async function GET() {
       );
     }
 
-    // Convert to CSV format
-    const headers = ['ID', 'Họ', 'Tên', 'Email', 'Số điện thoại', 'Nghề nghiệp', 'Công ty', 'Đồng ý thông báo', 'Ngày đăng ký', 'Đã check-in'];
+    // Convert to CSV format - raw table data
+    const headers = ['ID', 'Created At', 'Updated At', 'First Name', 'Last Name', 'Email', 'Phone Number', 'Class', 'Occupation', 'Employer', 'Allow Contact', 'Checked In'];
     const csvRows = [headers.join(',')];
 
     attendees?.forEach(attendee => {
       const row = [
         attendee.id,
-        `"${attendee.last_name || ''}"`,
+        new Date(attendee.created_at).toISOString(),
+        new Date(attendee.updated_at).toISOString(),
         `"${attendee.first_name || ''}"`,
+        `"${attendee.last_name || ''}"`,
         `"${attendee.email || ''}"`,
-        `"${attendee.phone || ''}"`,
+        `"${attendee.phone_number || ''}"`,
+        `"${attendee.class || ''}"`,
         `"${attendee.occupation || ''}"`,
-        `"${attendee.company || ''}"`,
-        attendee.allow_notifications ? 'Có' : 'Không',
-        new Date(attendee.created_at).toLocaleString('vi-VN'),
-        attendee.checked_in ? 'Có' : 'Không'
+        `"${attendee.employer || ''}"`,
+        attendee.allow_contact,
+        attendee.checked_in
       ];
       csvRows.push(row.join(','));
     });
