@@ -53,7 +53,7 @@ export default function AdminDashboard() {
           
           
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-            <h2 className="text-lg sm:text-xl font-semibold mb-4">📊 Tải xuống dữ liệu</h2>
+            <h2 className="text-lg sm:text-xl font-semibold mb-4">📊 Tải dữ liệu</h2>
             <div className="space-y-3">
               <button 
                 onClick={() => downloadCSV('merchandise')}

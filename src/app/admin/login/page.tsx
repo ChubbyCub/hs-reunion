@@ -8,11 +8,17 @@ export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    
+    // Prevent double submissions
+    if (isLoading) return;
+    
+    setIsLoading(true);
     
     try {
       const res = await fetch("/api/admin-login", {
@@ -26,8 +32,11 @@ export default function AdminLogin() {
       } else {
         setError("Sai tên đăng nhập hoặc mật khẩu");
       }
-    } catch {
+    } catch (error) {
+      console.error("Login error:", error);
       setError("Lỗi kết nối. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -41,7 +50,7 @@ export default function AdminLogin() {
             <label className="block mb-1 font-semibold text-sm sm:text-base">Tên đăng nhập</label>
             <input
               type="text"
-              className="w-full border rounded px-3 py-2 text-sm sm:text-base"
+              className="w-full border rounded px-3 py-3 text-sm sm:text-base min-h-[44px] touch-manipulation"
               value={username}
               onChange={e => setUsername(e.target.value)}
               autoComplete="username"
@@ -52,7 +61,7 @@ export default function AdminLogin() {
             <label className="block mb-1 font-semibold text-sm sm:text-base">Mật khẩu</label>
             <input
               type="password"
-              className="w-full border rounded px-3 py-2 text-sm sm:text-base"
+              className="w-full border rounded px-3 py-3 text-sm sm:text-base min-h-[44px] touch-manipulation"
               value={password}
               onChange={e => setPassword(e.target.value)}
               autoComplete="current-password"
@@ -60,7 +69,13 @@ export default function AdminLogin() {
             />
           </div>
           {error && <div className="mb-4 text-red-600 text-center text-sm sm:text-base">{error}</div>}
-          <button type="submit" className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded text-sm sm:text-base">Đăng nhập</button>
+          <button 
+            type="submit" 
+            disabled={isLoading}
+            className="w-full bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded text-sm sm:text-base touch-manipulation min-h-[44px]"
+          >
+            {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
+          </button>
         </form>
       </main>
       <Footer />
