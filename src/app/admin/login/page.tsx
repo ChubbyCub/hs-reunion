@@ -14,21 +14,28 @@ export default function AdminLogin() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    
+
     // Prevent double submissions
     if (isLoading) return;
-    
+
     setIsLoading(true);
-    
+
     try {
       const res = await fetch("/api/admin-login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
+        },
+        credentials: "same-origin",
         body: JSON.stringify({ username, password }),
       });
-      
+
       if (res.ok) {
-        router.push("/admin/dashboard");
+        // Add a small delay to ensure cookie is set before navigation
+        await new Promise(resolve => setTimeout(resolve, 100));
+        // Force page reload to ensure cookie is recognized
+        window.location.href = "/admin/dashboard";
       } else {
         setError("Sai tên đăng nhập hoặc mật khẩu");
       }

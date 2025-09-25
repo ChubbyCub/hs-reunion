@@ -22,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
       </head>
       <body className={`${nunito.variable} antialiased`}>
