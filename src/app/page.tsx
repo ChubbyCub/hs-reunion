@@ -114,6 +114,9 @@ export default function Home() {
             <h1 className="text-4xl md:text-5xl font-bold tracking-wide mb-4">
               Hành trình 20 năm
             </h1>
+            <p className="text-2xl md:text-3xl font-semibold tracking-wide text-yellow-400 mb-3">
+              Ngày 1 tháng 2 năm 2026
+            </p>
             <p className="text-xl md:text-2xl tracking-wide text-yellow-100 max-w-4xl mx-auto leading-relaxed">
               Từ ngôi trường mang tên Lê Hồng Phong, chúng ta trở lại nơi từng ghi dấu những ngày thanh xuân tươi đẹp...
             </p>
@@ -192,10 +195,10 @@ export default function Home() {
                   >
                     <Link
                       href="/register"
-                      className="group inline-flex items-center text-2xl font-semibold text-yellow-400 transition-colors hover:text-yellow-300"
+                      className="group inline-flex items-center text-2xl font-bold text-yellow-400 transition-all hover:text-yellow-300 border-2 border-yellow-400 hover:border-yellow-300 bg-transparent px-6 py-3 rounded-lg"
                     >
                       <motion.span
-                        whileHover={{ scale: 1.08, filter: "brightness(1.2)" }}
+                        whileHover={{ scale: 1.05 }}
                         transition={{ type: "spring", stiffness: 300 }}
                         className="inline-block"
                       >
