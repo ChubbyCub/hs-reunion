@@ -17,7 +17,24 @@ export default function PaymentPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const getMerchandiseTotal = () => {
-        return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        let total = 0;
+        let firstTshirtApplied = false;
+
+        cart.forEach((item) => {
+            // Check if this is a T-shirt item
+            const isTshirt = item.name.toLowerCase().includes('áo') || item.name.toLowerCase().includes('t-shirt');
+
+            if (isTshirt && !firstTshirtApplied && item.quantity > 0) {
+                // First T-shirt is free, charge for the rest
+                total += item.price * (item.quantity - 1);
+                firstTshirtApplied = true;
+            } else {
+                // Regular pricing for non-tshirt items or after first free tshirt
+                total += item.price * item.quantity;
+            }
+        });
+
+        return total;
     };
 
     const getTotalPrice = () => {
