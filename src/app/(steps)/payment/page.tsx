@@ -9,14 +9,19 @@ import { Upload, CheckCircle, AlertCircle, X } from "lucide-react";
 export default function PaymentPage() {
     const router = useRouter();
     const { setStep, formData, cart } = useAppStore();
+    const donationAmount = formData.donationAmount || 0;
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [uploadMessage, setUploadMessage] = useState('');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const getTotalPrice = () => {
+    const getMerchandiseTotal = () => {
         return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    };
+
+    const getTotalPrice = () => {
+        return getMerchandiseTotal() + donationAmount;
     };
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,7 +100,7 @@ export default function PaymentPage() {
         
         <div className="mb-3 sm:mb-4">
           <h3 className="font-medium mb-2 text-sm sm:text-base">Thông tin người tham gia:</h3>
-          <p className="text-gray-700 text-sm sm:text-base">{formData.firstName} {formData.lastName}</p>
+          <p className="text-gray-700 text-sm sm:text-base">{formData.fullName}</p>
           <p className="text-gray-700 text-sm sm:text-base">{formData.email}</p>
           <p className="text-gray-700 text-sm sm:text-base">{formData.phone}</p>
         </div>
@@ -111,18 +116,31 @@ export default function PaymentPage() {
                 </div>
               ))}
             </div>
-            <div className="border-t pt-2 mt-2">
-              <div className="flex justify-between font-semibold">
-                <span className="text-sm sm:text-base">Tổng cộng:</span>
-                <span className="text-sm sm:text-base">{getTotalPrice().toLocaleString()} VND</span>
-              </div>
-            </div>
           </div>
         )}
 
         {cart.length === 0 && (
-          <p className="text-gray-600">Không có đồ lưu niệm nào được chọn.</p>
+          <div className="mb-3 sm:mb-4">
+            <p className="text-gray-600">Không có đồ lưu niệm nào được chọn.</p>
+          </div>
         )}
+
+        {/* Donation Amount */}
+        <div className="mb-3 sm:mb-4">
+          <h3 className="font-medium mb-2 text-sm sm:text-base">Quyên góp:</h3>
+          <div className="flex justify-between">
+            <span className="text-sm sm:text-base">Số tiền quyên góp</span>
+            <span className="text-sm sm:text-base font-medium">{donationAmount.toLocaleString()} VND</span>
+          </div>
+        </div>
+
+        {/* Total */}
+        <div className="border-t pt-2 mt-2">
+          <div className="flex justify-between font-semibold text-lg">
+            <span className="text-sm sm:text-base">Tổng cộng:</span>
+            <span className="text-sm sm:text-base">{getTotalPrice().toLocaleString()} VND</span>
+          </div>
+        </div>
       </div>
 
       {/* Payment Instructions */}
@@ -143,7 +161,7 @@ export default function PaymentPage() {
       </div>
 
       {/* File Upload Section */}
-      {cart.length > 0 && (
+      {(cart.length > 0 || donationAmount > 0) && (
         <div className="mb-4 sm:mb-6">
           <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Tải lên xác nhận thanh toán</h2>
           
@@ -235,12 +253,12 @@ export default function PaymentPage() {
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between">
         <Button variant="outline" className="font-form order-2 sm:order-1" onClick={() => {
             setStep(3);
-            router.push("/merchandise");
+            router.push("/donation");
         }}>
           Quay lại
         </Button>
-        <Button 
-          className="font-form order-1 sm:order-2" 
+        <Button
+          className="font-form order-1 sm:order-2"
           disabled={!canProceed}
           onClick={() => {
             setStep(5);

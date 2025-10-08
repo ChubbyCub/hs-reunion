@@ -88,7 +88,6 @@ export default function Home() {
                     { href: "/gallery", label: "Thư viện ảnh" },
                     { href: "/faq", label: "Hỏi đáp" },
                     { href: "/contact", label: "Liên lạc & Kết nối" },
-                    { href: "/donation", label: "Quyên góp" },
                     { href: "/admin/dashboard", label: "Quản trị" }
                   ].map((item) => (
                     <Link

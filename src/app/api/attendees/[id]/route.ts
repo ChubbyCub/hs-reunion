@@ -24,14 +24,12 @@ export async function PUT(
 
     // Map the form fields to database column names
     const mappedData = {
-      first_name: updateData.firstName,
-      last_name: updateData.lastName,
+      full_name: updateData.fullName,
       email: updateData.email,
       phone_number: updateData.phone,
       class: updateData.class,
       occupation: updateData.occupation,
       employer: updateData.workplace,
-      allow_contact: updateData.receiveUpdates,
       updated_at: new Date().toISOString()
     };
 

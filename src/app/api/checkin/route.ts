@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     // Find attendee by email
     const { data: attendee, error: findError } = await supabase
       .from('Attendees')
-      .select('id, checked_in, first_name, last_name')
+      .select('id, checked_in, full_name')
       .eq('email', attendeeEmail)
       .single();
     

@@ -20,8 +20,7 @@ export async function GET() {
         id_order,
         Attendees (
           id,
-          first_name,
-          last_name,
+          full_name,
           email,
           phone_number
         ),

@@ -23,7 +23,7 @@ export async function GET() {
     }
 
     // Convert to CSV format - raw table data
-    const headers = ['ID', 'Created At', 'Updated At', 'First Name', 'Last Name', 'Email', 'Phone Number', 'Class', 'Occupation', 'Employer', 'Allow Contact', 'Checked In'];
+    const headers = ['ID', 'Created At', 'Updated At', 'Full Name', 'Email', 'Phone Number', 'Class', 'Occupation', 'Employer', 'Checked In'];
     const csvRows = [headers.join(',')];
 
     attendees?.forEach(attendee => {
@@ -31,14 +31,12 @@ export async function GET() {
         attendee.id,
         new Date(attendee.created_at).toISOString(),
         new Date(attendee.updated_at).toISOString(),
-        `"${attendee.first_name || ''}"`,
-        `"${attendee.last_name || ''}"`,
+        `"${attendee.full_name || ''}"`,
         `"${attendee.email || ''}"`,
         `"${attendee.phone_number || ''}"`,
         `"${attendee.class || ''}"`,
         `"${attendee.occupation || ''}"`,
         `"${attendee.employer || ''}"`,
-        attendee.allow_contact,
         attendee.checked_in
       ];
       csvRows.push(row.join(','));

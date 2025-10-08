@@ -18,9 +18,9 @@ const supabase = createClient(
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.json();
-    
+
     // Validate required fields
-    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'class'];
+    const requiredFields = ['fullName', 'email', 'phone', 'class'];
     for (const field of requiredFields) {
       if (!formData[field]) {
         return NextResponse.json(
@@ -34,14 +34,12 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from('Attendees')
       .insert([{
-        first_name: formData.firstName,
-        last_name: formData.lastName,
+        full_name: formData.fullName,
         email: formData.email,
         phone_number: formData.phone,
         class: formData.class,
         occupation: formData.occupation || null,
         employer: formData.workplace || null,
-        allow_contact: formData.receiveUpdates || false,
       }])
       .select('id')
       .single();

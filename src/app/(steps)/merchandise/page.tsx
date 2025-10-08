@@ -102,8 +102,8 @@ export default function MerchandisePage() {
   const handleContinue = () => {
     // Cart is already saved in local storage via the store
     // No need to save to database here - that will happen at the final step
-    setStep(4);
-    router.push("/payment");
+    setStep(3);
+    router.push("/donation");
   };
 
   const handleBack = () => {
@@ -149,9 +149,9 @@ export default function MerchandisePage() {
 
   return (
     <div className="container mx-auto p-6 max-w-6xl">
-      <h1 className="text-2xl font-title mb-6">Đồ Lưu Niệm</h1>
-      <p className="font-legalese mb-6">
-        Hãy ủng hộ sự kiện của chúng tôi bằng cách mua đồ lưu niệm! 
+      <h1 className="text-2xl font-title mb-6 text-center">Đồ Lưu Niệm</h1>
+      <p className="font-legalese mb-6 text-center">
+        Hãy ủng hộ sự kiện của chúng tôi bằng cách mua đồ lưu niệm!
       </p>
 
             <div className="grid grid-cols-1 gap-6">
@@ -406,9 +406,8 @@ export default function MerchandisePage() {
         <Button variant="outline" onClick={handleBack} className="order-2 sm:order-1">
           Quay lại
         </Button>
-        <Button 
+        <Button
           onClick={handleContinue}
-          disabled={cart.length === 0}
           className="order-1 sm:order-2"
         >
           Tiếp tục

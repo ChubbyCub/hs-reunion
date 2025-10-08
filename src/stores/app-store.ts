@@ -26,14 +26,13 @@ interface AppState {
 const initialState: { currentStep: number; formData: FormData; cart: CartItem[]; paymentProofFile?: { file: File; name: string; size: number; type: string; uploadedAt: string }; hydrated?: boolean } = {
   currentStep: 1,
   formData: {
-    firstName: '',
-    lastName: '',
+    fullName: '',
     email: '',
     phone: '',
     class: '',
     occupation: '',
     workplace: '',
-    receiveUpdates: false,
+    donationAmount: 0,
   },
   cart: [],
   paymentProofFile: undefined,
