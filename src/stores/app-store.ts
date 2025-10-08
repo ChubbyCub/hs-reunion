@@ -80,6 +80,26 @@ export const useAppStore = create<AppState>()(
             formData: { ...state.formData, attendeeId }
           }));
 
+          // Save donation if amount is provided
+          if (formData.donationAmount && formData.donationAmount > 0) {
+            const donationResponse = await fetch('/api/donations', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                amount: formData.donationAmount,
+                attendeeId: attendeeId,
+              }),
+            });
+
+            const donationResult = await donationResponse.json();
+
+            if (!donationResponse.ok) {
+              throw new Error(donationResult.error || 'Failed to save donation to database');
+            }
+          }
+
           // If there are items in cart, save the order
           let orderId = null;
           if (cart.length > 0) {
@@ -90,7 +110,7 @@ export const useAppStore = create<AppState>()(
                 quantity: item.quantity
               }))
             };
-            
+
             const orderResponse = await fetch('/api/orders', {
               method: 'POST',
               headers: {
@@ -98,13 +118,13 @@ export const useAppStore = create<AppState>()(
               },
               body: JSON.stringify(orderData),
             });
-            
+
             const orderResult = await orderResponse.json();
-            
+
             if (!orderResponse.ok) {
               throw new Error(orderResult.error || 'Failed to save order to database');
             }
-            
+
             orderId = orderResult.data?.orderId;
           }
 

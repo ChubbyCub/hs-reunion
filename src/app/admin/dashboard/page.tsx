@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 export default function AdminDashboard() {
   const [downloading, setDownloading] = useState<string | null>(null);
 
-  const downloadCSV = async (type: 'merchandise' | 'attendees' | 'orders' | 'payments') => {
+  const downloadCSV = async (type: 'merchandise' | 'attendees' | 'orders' | 'payments' | 'donations') => {
     try {
       setDownloading(type);
       const response = await fetch(`/api/admin/download/${type}`);
@@ -76,12 +76,19 @@ export default function AdminDashboard() {
               >
                 {downloading === 'orders' ? '⏳ Đang tải...' : '🛒 Tải CSV Danh sách Đơn hàng'}
               </button>
-              <button 
+              <button
                 onClick={() => downloadCSV('payments')}
                 disabled={downloading !== null}
                 className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-medium py-3 px-4 rounded text-sm sm:text-base transition-colors touch-manipulation"
               >
                 {downloading === 'payments' ? '⏳ Đang tải...' : '💳 Tải CSV Danh sách Thanh toán'}
+              </button>
+              <button
+                onClick={() => downloadCSV('donations')}
+                disabled={downloading !== null}
+                className="w-full bg-pink-500 hover:bg-pink-600 disabled:bg-pink-300 text-white font-medium py-3 px-4 rounded text-sm sm:text-base transition-colors touch-manipulation"
+              >
+                {downloading === 'donations' ? '⏳ Đang tải...' : '💰 Tải CSV Danh sách Quyên góp'}
               </button>
             </div>
           </div>
