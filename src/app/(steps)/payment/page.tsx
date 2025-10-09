@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState, useRef } from "react";
 import { Upload, CheckCircle, AlertCircle, X } from "lucide-react";
+import Image from "next/image";
 
 export default function PaymentPage() {
     const router = useRouter();
@@ -126,12 +127,31 @@ export default function PaymentPage() {
           <div className="mb-3 sm:mb-4">
             <h3 className="font-medium mb-2 text-sm sm:text-base">Đồ lưu niệm:</h3>
             <div className="space-y-2">
-              {cart.map((item) => (
-                <div key={item.merchandiseId} className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                  <span className="text-sm sm:text-base">{item.name} {item.gender && item.size && `(${item.gender} - ${item.size})`} × {item.quantity}</span>
-                  <span className="text-sm sm:text-base font-medium">{item.price.toLocaleString()} VND</span>
-                </div>
-              ))}
+              {(() => {
+                let firstTshirtApplied = false;
+                return cart.map((item) => {
+                  const isTshirt = item.name.toLowerCase().includes('áo') || item.name.toLowerCase().includes('t-shirt');
+                  let itemTotal = item.price * item.quantity;
+                  let displayNote = '';
+
+                  if (isTshirt && !firstTshirtApplied && item.quantity > 0) {
+                    // First T-shirt is free
+                    itemTotal = item.price * (item.quantity - 1);
+                    firstTshirtApplied = true;
+                    displayNote = ' (1 chiếc miễn phí)';
+                  }
+
+                  return (
+                    <div key={item.merchandiseId} className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                      <span className="text-sm sm:text-base">
+                        {item.name} {item.gender && item.size && `(${item.gender} - ${item.size})`} × {item.quantity}
+                        {displayNote && <span className="text-green-600">{displayNote}</span>}
+                      </span>
+                      <span className="text-sm sm:text-base font-medium">{itemTotal.toLocaleString()} VND</span>
+                    </div>
+                  );
+                });
+              })()}
             </div>
           </div>
         )}
@@ -164,13 +184,30 @@ export default function PaymentPage() {
       <div className="mb-4 sm:mb-6">
         <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Hướng dẫn thanh toán</h2>
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
-          <p className="text-blue-800 mb-2">
-            <strong>Chuyển khoản ngân hàng:</strong>
-          </p>
-          <p className="text-blue-700 mb-1">Ngân hàng: Vietcombank</p>
-          <p className="text-blue-700 mb-1">Số tài khoản: 1234567890</p>
-          <p className="text-blue-700 mb-1">Tên tài khoản: NGUYEN VAN A</p>
-          <p className="text-blue-700 mb-1">Nội dung: [Tên của bạn] - HS Reunion</p>
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+            <div className="flex-1">
+              <p className="text-blue-800 mb-2">
+                <strong>Chuyển khoản ngân hàng:</strong>
+              </p>
+              <p className="text-blue-700 mb-1">Ngân hàng: ACB (Ngân hàng thương mại cổ phần Á Châu)</p>
+              <p className="text-blue-700 mb-1">Chi nhánh: ACB - PGD KHANH HOI</p>
+              <p className="text-blue-700 mb-1">Số tài khoản: 47117217</p>
+              <p className="text-blue-700 mb-1">Tên tài khoản: NGUYEN CONG HOANG YEN</p>
+              <p className="text-blue-700 mb-1">Swift Code: ASCBVNVX</p>
+            </div>
+            <div className="flex justify-center md:justify-end">
+              <div className="bg-white p-2 rounded-lg border border-blue-300">
+                <Image
+                  src="/bank-qr.jpeg"
+                  alt="QR Code chuyển khoản ngân hàng"
+                  width={200}
+                  height={200}
+                  className="w-40 h-auto sm:w-48"
+                />
+                <p className="text-center text-xs text-blue-600 mt-1">Quét mã QR để chuyển khoản</p>
+              </div>
+            </div>
+          </div>
         </div>
         <p className="text-gray-600 text-sm">
           Sau khi chuyển khoản, vui lòng chụp màn hình xác nhận và tải lên bên dưới.
