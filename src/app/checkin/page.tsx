@@ -6,8 +6,7 @@ import { Input } from "@/components/ui/input";
 import { CheckInService } from "@/services/database/checkin";
 import type { CheckInStats } from "@/types/common";
 import QRScanner from "@/components/QRScanner";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import AdminLayout from "@/components/AdminLayout";
 
 export default function CheckInPage() {
   const [qrData, setQrData] = useState("");
@@ -73,13 +72,12 @@ export default function CheckInPage() {
   const clearMessage = () => setMessage(null);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-1 container mx-auto p-4 max-w-4xl">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-center">Hệ thống Check-in</h1>
-      
-      {/* Statistics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+    <AdminLayout>
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Hệ thống Check-in</h1>
+
+        {/* Statistics */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div className="bg-blue-100 p-3 sm:p-4 rounded-lg text-center">
           <div className="text-xl sm:text-2xl font-bold text-blue-800">
             {isLoadingStats ? '...' : stats?.totalAttendees || 0}
@@ -98,73 +96,71 @@ export default function CheckInPage() {
           </div>
           <div className="text-xs sm:text-sm text-purple-600">Tỷ lệ check-in</div>
         </div>
-      </div>
+        </div>
 
-      {/* Message Display */}
-      {message && (
-        <div className={`p-4 rounded-lg mb-4 sm:mb-6 ${
-          message.type === 'success' 
-            ? 'bg-green-100 border border-green-400 text-green-800' 
-            : message.type === 'error'
-            ? 'bg-red-100 border border-red-400 text-red-800'
-            : 'bg-blue-100 border border-blue-400 text-blue-800'
-        }`}>
-          <div className="flex justify-between items-center">
-            <span>{message.text}</span>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={clearMessage}
-              className="text-gray-600 hover:text-gray-800 touch-manipulation p-2"
-            >
-              ✕
-            </Button>
+        {/* Message Display */}
+        {message && (
+          <div className={`p-4 rounded-lg mb-4 sm:mb-6 ${
+            message.type === 'success'
+              ? 'bg-green-100 border border-green-400 text-green-800'
+              : message.type === 'error'
+              ? 'bg-red-100 border border-red-400 text-red-800'
+              : 'bg-blue-100 border border-blue-400 text-blue-800'
+          }`}>
+            <div className="flex justify-between items-center">
+              <span>{message.text}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearMessage}
+                className="text-gray-600 hover:text-gray-800 touch-manipulation p-2"
+              >
+                ✕
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Check-in Methods */}
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-4 sm:mb-6">
-        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Check-in Attendee</h2>
-        
-        
-        {/* QR Scanner */}
-        <div className="mb-4">
-          <QRScanner 
-            onScan={handleQRScan}
-            onError={handleScannerError}
-          />
-        </div>
+        {/* Check-in Methods */}
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Check-in Attendee</h2>
 
-        {/* Manual Email Input */}
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-            <Input
-              type="email"
-              placeholder="Enter email"
-              value={qrData}
-              onChange={(e) => setQrData(e.target.value)}
-              className="flex-1 text-sm sm:text-base py-3"
-              onKeyPress={(e) => e.key === 'Enter' && handleCheckIn(qrData)}
-              autoComplete="email"
-              inputMode="email"
+          {/* QR Scanner */}
+          <div className="mb-4">
+            <QRScanner
+              onScan={handleQRScan}
+              onError={handleScannerError}
             />
-            <Button 
-              onClick={() => handleCheckIn(qrData)}
-              disabled={!qrData.trim()}
-              className="px-6 sm:px-8 text-sm sm:text-base py-3 touch-manipulation"
-            >
-              Check-in
-            </Button>
           </div>
-          
-          <p className="text-sm text-gray-600">
-            Enter email address to check-in attendee manually.
-          </p>
+
+          {/* Manual Email Input */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <Input
+                type="email"
+                placeholder="Enter email"
+                value={qrData}
+                onChange={(e) => setQrData(e.target.value)}
+                className="flex-1 text-sm sm:text-base py-3"
+                onKeyPress={(e) => e.key === 'Enter' && handleCheckIn(qrData)}
+                autoComplete="email"
+                inputMode="email"
+              />
+              <Button
+                onClick={() => handleCheckIn(qrData)}
+                disabled={!qrData.trim()}
+                className="px-6 sm:px-8 text-sm sm:text-base py-3 touch-manipulation"
+              >
+                Check-in
+              </Button>
+            </div>
+
+            <p className="text-sm text-gray-600">
+              Enter email address to check-in attendee manually.
+            </p>
+          </div>
         </div>
       </div>
-      </main>
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 }

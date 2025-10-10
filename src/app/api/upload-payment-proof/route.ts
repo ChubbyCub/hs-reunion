@@ -13,7 +13,9 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file') as File;
     const attendeeId = formData.get('attendeeId') as string;
     const orderId = formData.get('orderId') as string;
-    
+    const donationId = formData.get('donationId') as string;
+    const amount = formData.get('amount') as string;
+
     if (!file) {
       return NextResponse.json(
         { error: 'No file provided' },
@@ -21,9 +23,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!attendeeId || !orderId) {
+    if (!attendeeId) {
       return NextResponse.json(
-        { error: 'Missing attendeeId or orderId' },
+        { error: 'Missing attendeeId' },
+        { status: 400 }
+      );
+    }
+
+    if (amount === null || amount === undefined || parseFloat(amount) < 0) {
+      return NextResponse.json(
+        { error: 'Missing or invalid payment amount' },
+        { status: 400 }
+      );
+    }
+
+    // Must have both orderId and donationId (business rule: everyone orders + donates)
+    if (!orderId || !donationId) {
+      return NextResponse.json(
+        { error: 'Must provide both orderId and donationId' },
         { status: 400 }
       );
     }
@@ -47,7 +64,7 @@ export async function POST(request: NextRequest) {
     // Create a unique filename
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const fileExtension = file.name.split('.').pop();
-    const filename = `payment-proofs/${attendeeId}/${orderId}-${timestamp}.${fileExtension}`;
+    const filename = `payment-proofs/${attendeeId}/${timestamp}.${fileExtension}`;
 
     // Upload to Vercel Blob
     const blob = await put(filename, file, {
@@ -55,19 +72,32 @@ export async function POST(request: NextRequest) {
       addRandomSuffix: false,
     });
 
+    // Prepare payment data
+    const paymentData: {
+      id_attendee: number;
+      url_confirmation: string;
+      amount: number;
+      id_order: number;
+      id_donation: number;
+    } = {
+      id_attendee: parseInt(attendeeId),
+      url_confirmation: blob.url,
+      amount: parseFloat(amount),
+      id_order: orderId ? parseInt(orderId) : 0,
+      id_donation: donationId ? parseInt(donationId) : 0,
+    };
+
     // Store the blob URL in the Payment table
     const { error: dbError } = await supabase
       .from('Payment')
-      .insert({
-        id_attendee: parseInt(attendeeId),
-        url_confirmation: blob.url,
-        id_order: orderId !== 'temp' ? parseInt(orderId.replace('order-', '')) : null
-      });
+      .insert(paymentData);
 
     if (dbError) {
       console.error('Database error:', dbError);
-      // Note: We don't fail the upload if DB insert fails
-      // The file is still uploaded and accessible
+      return NextResponse.json(
+        { error: 'Failed to save payment record to database', details: dbError.message },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({

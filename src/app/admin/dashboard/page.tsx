@@ -1,100 +1,111 @@
 "use client";
-import { useState } from "react";
-import Link from "next/link";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { useQuery } from "@tanstack/react-query";
+import { Users, ShoppingCart, DollarSign } from "lucide-react";
+import AdminLayout from "@/components/AdminLayout";
 
 export default function AdminDashboard() {
-  const [downloading, setDownloading] = useState<string | null>(null);
+  // Fetch total attendees
+  const { data: attendeesData } = useQuery({
+    queryKey: ["dashboard-attendees"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/attendees?limit=1");
+      if (!response.ok) throw new Error("Failed to fetch attendees");
+      return response.json();
+    },
+  });
 
-  const downloadCSV = async (type: 'merchandise' | 'attendees' | 'orders' | 'payments' | 'donations') => {
-    try {
-      setDownloading(type);
-      const response = await fetch(`/api/admin/download/${type}`);
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${type}-${new Date().toISOString().split('T')[0]}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      } else {
-        console.error(`Failed to download ${type} CSV`);
-        alert(`Không thể tải xuống ${type} CSV. Vui lòng thử lại.`);
-      }
-    } catch (error) {
-      console.error(`Error downloading ${type} CSV:`, error);
-      alert(`Lỗi khi tải xuống ${type} CSV. Vui lòng thử lại.`);
-    } finally {
-      setDownloading(null);
-    }
+  // Fetch total orders
+  const { data: ordersData } = useQuery({
+    queryKey: ["dashboard-orders"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/orders?limit=1000");
+      if (!response.ok) throw new Error("Failed to fetch orders");
+      return response.json();
+    },
+  });
+
+  // Fetch total donations
+  const { data: donationsData } = useQuery({
+    queryKey: ["dashboard-donations"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/donations?limit=1000");
+      if (!response.ok) throw new Error("Failed to fetch donations");
+      return response.json();
+    },
+  });
+
+  const totalAttendees = attendeesData?.pagination?.total || 0;
+  const totalOrderAmount = ordersData?.data?.reduce((sum: number, order: { amount: number }) => sum + order.amount, 0) || 0;
+  const totalDonationAmount = donationsData?.data?.reduce((sum: number, donation: { amount: number }) => sum + donation.amount, 0) || 0;
+
+  const formatVND = (amount: number) => {
+    return amount.toLocaleString("vi-VN") + " VND";
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main
-        style={{ background: "none" }}
-        className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 lg:p-24 !bg-transparent"
-      >
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8 text-center">Bảng điều khiển quản trị</h1>
-        <p className="text-base sm:text-lg mb-6 sm:mb-8 text-center px-4">Chào mừng đến với bảng điều khiển quản trị. Tại đây bạn có thể quản lý trang web.</p>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full max-w-4xl px-4">
-          <Link href="/checkin">
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-              <h2 className="text-lg sm:text-xl font-semibold mb-2">📱 Hệ thống Check-in</h2>
-              <p className="text-sm sm:text-base text-gray-600">Quản lý check-in/out của attendees, xem thống kê tham dự</p>
+    <AdminLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Bảng điều khiển quản trị</h1>
+          <p className="text-base text-gray-600">Tổng quan về sự kiện và thống kê tài chính</p>
+        </div>
+
+        {/* Summary Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Total Attendees */}
+          <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Tổng số Attendees</p>
+                <p className="text-3xl font-bold text-gray-900">{totalAttendees}</p>
+              </div>
+              <div className="bg-blue-100 p-4 rounded-lg">
+                <Users className="w-8 h-8 text-blue-600" />
+              </div>
             </div>
-          </Link>
-          
-          
-          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-            <h2 className="text-lg sm:text-xl font-semibold mb-4">📊 Tải dữ liệu</h2>
-            <div className="space-y-3">
-              <button 
-                onClick={() => downloadCSV('merchandise')}
-                disabled={downloading !== null}
-                className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white font-medium py-3 px-4 rounded text-sm sm:text-base transition-colors touch-manipulation"
-              >
-                {downloading === 'merchandise' ? '⏳ Đang tải...' : '📦 Tải CSV Danh sách Đồ lưu niệm'}
-              </button>
-              <button 
-                onClick={() => downloadCSV('attendees')}
-                disabled={downloading !== null}
-                className="w-full bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white font-medium py-3 px-4 rounded text-sm sm:text-base transition-colors touch-manipulation"
-              >
-                {downloading === 'attendees' ? '⏳ Đang tải...' : '👥 Tải CSV Danh sách Attendees'}
-              </button>
-              <button 
-                onClick={() => downloadCSV('orders')}
-                disabled={downloading !== null}
-                className="w-full bg-purple-500 hover:bg-purple-600 disabled:bg-purple-300 text-white font-medium py-3 px-4 rounded text-sm sm:text-base transition-colors touch-manipulation"
-              >
-                {downloading === 'orders' ? '⏳ Đang tải...' : '🛒 Tải CSV Danh sách Đơn hàng'}
-              </button>
-              <button
-                onClick={() => downloadCSV('payments')}
-                disabled={downloading !== null}
-                className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-medium py-3 px-4 rounded text-sm sm:text-base transition-colors touch-manipulation"
-              >
-                {downloading === 'payments' ? '⏳ Đang tải...' : '💳 Tải CSV Danh sách Thanh toán'}
-              </button>
-              <button
-                onClick={() => downloadCSV('donations')}
-                disabled={downloading !== null}
-                className="w-full bg-pink-500 hover:bg-pink-600 disabled:bg-pink-300 text-white font-medium py-3 px-4 rounded text-sm sm:text-base transition-colors touch-manipulation"
-              >
-                {downloading === 'donations' ? '⏳ Đang tải...' : '💰 Tải CSV Danh sách Quyên góp'}
-              </button>
+          </div>
+
+          {/* Total Order Amount */}
+          <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Tổng tiền Orders</p>
+                <p className="text-2xl font-bold text-gray-900">{formatVND(totalOrderAmount)}</p>
+              </div>
+              <div className="bg-purple-100 p-4 rounded-lg">
+                <ShoppingCart className="w-8 h-8 text-purple-600" />
+              </div>
+            </div>
+          </div>
+
+          {/* Total Donation Amount */}
+          <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Tổng tiền Donations</p>
+                <p className="text-2xl font-bold text-gray-900">{formatVND(totalDonationAmount)}</p>
+              </div>
+              <div className="bg-green-100 p-4 rounded-lg">
+                <DollarSign className="w-8 h-8 text-green-600" />
+              </div>
             </div>
           </div>
         </div>
-      </main>
-      <Footer />
-    </div>
+
+        {/* Total Revenue Card */}
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-lg shadow-md text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm opacity-90 mb-1">Tổng doanh thu</p>
+              <p className="text-4xl font-bold">{formatVND(totalOrderAmount + totalDonationAmount)}</p>
+              <p className="text-sm opacity-75 mt-2">Orders + Donations</p>
+            </div>
+            <div className="bg-white/20 p-4 rounded-lg">
+              <DollarSign className="w-12 h-12" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </AdminLayout>
   );
 } 

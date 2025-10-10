@@ -70,8 +70,8 @@ export default function EventTicketPage() {
 
     return (
         <div className="px-4 sm:px-0">
-            <h1 className="text-xl sm:text-2xl font-title">Đặt vé sự kiện</h1>
-            <p className="font-legalese mb-4 sm:mb-6 text-sm sm:text-base">
+            <h1 className="text-xl sm:text-2xl font-title text-center">Đặt vé sự kiện</h1>
+            <p className="font-legalese mb-4 sm:mb-6 text-sm sm:text-base text-center">
                 Bước cuối cùng! Đây là mã QR của bạn dùng cho khâu check-in.
             </p>
 

@@ -17,7 +17,7 @@ const donationOptions = [
 export default function DonationPage() {
   const router = useRouter();
   const { setStep, updateFormData } = useAppStore();
-  const [selectedAmount, setSelectedAmount] = useState(0);
+  const [selectedAmount, setSelectedAmount] = useState(500000);
   const [customAmount, setCustomAmount] = useState('');
   const [isCustomSelected, setIsCustomSelected] = useState(false);
   const [validationError, setValidationError] = useState('');

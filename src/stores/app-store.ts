@@ -81,6 +81,7 @@ export const useAppStore = create<AppState>()(
           }));
 
           // Save donation if amount is provided
+          let donationId = null;
           if (formData.donationAmount && formData.donationAmount > 0) {
             const donationResponse = await fetch('/api/donations', {
               method: 'POST',
@@ -98,17 +99,41 @@ export const useAppStore = create<AppState>()(
             if (!donationResponse.ok) {
               throw new Error(donationResult.error || 'Failed to save donation to database');
             }
+
+            donationId = donationResult.data?.id;
           }
 
           // If there are items in cart, save the order
           let orderId = null;
           if (cart.length > 0) {
+            // Calculate merchandise total with free t-shirt logic
+            const getMerchandiseTotal = () => {
+              let total = 0;
+              let firstTshirtApplied = false;
+
+              cart.forEach((item) => {
+                const isTshirt = item.name.toLowerCase().includes('áo') || item.name.toLowerCase().includes('t-shirt');
+
+                if (isTshirt && !firstTshirtApplied && item.quantity > 0) {
+                  total += item.price * (item.quantity - 1);
+                  firstTshirtApplied = true;
+                } else {
+                  total += item.price * item.quantity;
+                }
+              });
+
+              return total;
+            };
+
+            const orderAmount = getMerchandiseTotal();
+
             const orderData = {
               attendeeId: attendeeId,
               items: cart.map(item => ({
                 merchandiseId: item.merchandiseId,
                 quantity: item.quantity
-              }))
+              })),
+              amount: orderAmount
             };
 
             const orderResponse = await fetch('/api/orders', {
@@ -130,10 +155,33 @@ export const useAppStore = create<AppState>()(
 
           // Upload payment proof if available
           if (paymentProofFile) {
+            // Calculate total payment amount
+            const getMerchandiseTotal = () => {
+              let total = 0;
+              let firstTshirtApplied = false;
+
+              cart.forEach((item) => {
+                const isTshirt = item.name.toLowerCase().includes('áo') || item.name.toLowerCase().includes('t-shirt');
+
+                if (isTshirt && !firstTshirtApplied && item.quantity > 0) {
+                  total += item.price * (item.quantity - 1);
+                  firstTshirtApplied = true;
+                } else {
+                  total += item.price * item.quantity;
+                }
+              });
+
+              return total;
+            };
+
+            const totalAmount = getMerchandiseTotal() + (formData.donationAmount || 0);
+
             const formDataToSend = new FormData();
             formDataToSend.append('file', paymentProofFile.file);
             formDataToSend.append('attendeeId', attendeeId.toString());
-            formDataToSend.append('orderId', orderId ? orderId.toString() : 'null');
+            formDataToSend.append('orderId', orderId ? orderId.toString() : '');
+            formDataToSend.append('donationId', donationId ? donationId.toString() : '');
+            formDataToSend.append('amount', totalAmount.toString());
 
             const uploadResponse = await fetch('/api/upload-payment-proof', {
               method: 'POST',
@@ -141,7 +189,7 @@ export const useAppStore = create<AppState>()(
             });
 
             const uploadResult = await uploadResponse.json();
-            
+
             if (!uploadResponse.ok) {
               console.error('Payment proof upload failed:', uploadResult.error);
               // Don't fail the entire process if payment proof upload fails

@@ -8,8 +8,8 @@ const supabase = createClient(
 
 export async function POST(request: NextRequest) {
   try {
-    const { attendeeId, items } = await request.json();
-    
+    const { attendeeId, items, amount } = await request.json();
+
 
 
     if (!attendeeId || !items || !Array.isArray(items) || items.length === 0) {
@@ -20,25 +20,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (amount === undefined || amount === null || amount < 0) {
+      return NextResponse.json(
+        { error: 'Invalid order amount' },
+        { status: 400 }
+      );
+    }
+
     // Create the order
 
-    
+
     // Try without quotes first, then with quotes if that fails
     let order, orderError;
-    
+
     try {
 
       const result = await supabase
         .from('Order')
         .insert({
-          id_attendee: attendeeId
+          id_attendee: attendeeId,
+          amount: amount
         })
         .select()
         .single();
-      
+
       order = result.data;
       orderError = result.error;
-      
+
       if (!orderError) {
 
       }
@@ -47,14 +55,15 @@ export async function POST(request: NextRequest) {
       const result = await supabase
         .from('"Order"')
         .insert({
-          id_attendee: attendeeId
+          id_attendee: attendeeId,
+          amount: amount
         })
         .select()
         .single();
-      
+
       order = result.data;
       orderError = result.error;
-      
+
       if (!orderError) {
 
       }

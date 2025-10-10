@@ -24,10 +24,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate amount is positive
-    if (data.amount < 0) {
+    // Validate amount meets minimum requirement (500,000 VND)
+    const MINIMUM_DONATION = 500000;
+    if (data.amount < MINIMUM_DONATION) {
       return NextResponse.json(
-        { success: false, error: 'Donation amount must be positive' },
+        { success: false, error: `Donation amount must be at least ${MINIMUM_DONATION.toLocaleString()} VND` },
         { status: 400 }
       );
     }

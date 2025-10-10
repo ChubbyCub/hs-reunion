@@ -3,12 +3,28 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { Calendar } from "lucide-react";
 
 export default function CompletePage() {
   const router = useRouter();
 
   const handleGoHome = () => {
     router.push("/");
+  };
+
+  const handleAddToCalendar = () => {
+    // Event details
+    const title = "Họp mặt cựu học sinh LHP khóa 2003-2006";
+    const location = "Trường THPT Chuyên Lê Hồng Phong, 235 Đường Nguyễn Văn Cừ, Hồ Chí Minh";
+    const description = "Buổi họp mặt 20 năm tốt nghiệp - Lê Hồng Phong khóa 2003-2006";
+    const startDate = "20260201T080000"; // Feb 1, 2026, 8:00 AM
+    const endDate = "20260201T190000"; // Feb 1, 2026, 7:00 PM
+
+    // Generate Google Calendar URL
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(location)}`;
+
+    // Open in new tab
+    window.open(googleCalendarUrl, '_blank');
   };
 
   return (
@@ -121,19 +137,24 @@ export default function CompletePage() {
                 </div>
               </motion.div>
               
-              <motion.div 
-                className="flex items-start space-x-3"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 2.4 }}
-              >
-                <div className="text-blue-600 text-lg mt-1">🎯</div>
-                <div>
-                  <h4 className="font-semibold text-blue-800">Mục đích</h4>
-                  <p className="text-blue-700"></p>
-                </div>
-              </motion.div>
             </div>
+
+            {/* Add to Calendar Button */}
+            <motion.div
+              className="mt-6 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 2.6 }}
+            >
+              <Button
+                onClick={handleAddToCalendar}
+                variant="outline"
+                className="bg-white hover:bg-blue-600 text-blue-700 hover:text-white border-blue-300 hover:border-blue-600"
+              >
+                <Calendar className="w-4 h-4 mr-2" />
+                Thêm vào lịch
+              </Button>
+            </motion.div>
           </motion.div>
 
 
