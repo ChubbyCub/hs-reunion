@@ -39,7 +39,8 @@ export async function POST(request: NextRequest) {
         .from('Order')
         .insert({
           id_attendee: attendeeId,
-          amount: amount
+          amount: amount,
+          order_status: 'pending'
         })
         .select()
         .single();
@@ -56,7 +57,8 @@ export async function POST(request: NextRequest) {
         .from('"Order"')
         .insert({
           id_attendee: attendeeId,
-          amount: amount
+          amount: amount,
+          order_status: 'pending'
         })
         .select()
         .single();

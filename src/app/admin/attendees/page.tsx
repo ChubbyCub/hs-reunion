@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   useReactTable,
@@ -61,13 +61,13 @@ export default function AttendeesPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   // Debounce search
-  useState(() => {
+  useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
       setPage(1); // Reset to first page on search
     }, 300);
     return () => clearTimeout(timer);
-  });
+  }, [search]);
 
   // Fetch attendees
   const { data, isLoading, refetch } = useQuery<AttendeesResponse>({
