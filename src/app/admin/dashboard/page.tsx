@@ -1,11 +1,11 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { Users, ShoppingCart, DollarSign } from "lucide-react";
+import { Users, ShoppingCart, DollarSign, Loader2 } from "lucide-react";
 import AdminLayout from "@/components/AdminLayout";
 
 export default function AdminDashboard() {
   // Fetch total attendees
-  const { data: attendeesData } = useQuery({
+  const { data: attendeesData, isLoading: isLoadingAttendees } = useQuery({
     queryKey: ["dashboard-attendees"],
     queryFn: async () => {
       const response = await fetch("/api/admin/attendees?limit=1");
@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   });
 
   // Fetch total orders
-  const { data: ordersData } = useQuery({
+  const { data: ordersData, isLoading: isLoadingOrders } = useQuery({
     queryKey: ["dashboard-orders"],
     queryFn: async () => {
       const response = await fetch("/api/admin/orders?limit=1000");
@@ -25,7 +25,7 @@ export default function AdminDashboard() {
   });
 
   // Fetch total donations
-  const { data: donationsData } = useQuery({
+  const { data: donationsData, isLoading: isLoadingDonations } = useQuery({
     queryKey: ["dashboard-donations"],
     queryFn: async () => {
       const response = await fetch("/api/admin/donations?limit=1000");
@@ -57,7 +57,13 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Tổng số Attendees</p>
-                <p className="text-3xl font-bold text-gray-900">{totalAttendees}</p>
+                {isLoadingAttendees ? (
+                  <div className="flex items-center">
+                    <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                  </div>
+                ) : (
+                  <p className="text-3xl font-bold text-gray-900">{totalAttendees}</p>
+                )}
               </div>
               <div className="bg-blue-100 p-4 rounded-lg">
                 <Users className="w-8 h-8 text-blue-600" />
@@ -70,7 +76,13 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Tổng tiền Orders</p>
-                <p className="text-2xl font-bold text-gray-900">{formatVND(totalOrderAmount)}</p>
+                {isLoadingOrders ? (
+                  <div className="flex items-center">
+                    <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
+                  </div>
+                ) : (
+                  <p className="text-2xl font-bold text-gray-900">{formatVND(totalOrderAmount)}</p>
+                )}
               </div>
               <div className="bg-purple-100 p-4 rounded-lg">
                 <ShoppingCart className="w-8 h-8 text-purple-600" />
@@ -83,7 +95,13 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Tổng tiền Donations</p>
-                <p className="text-2xl font-bold text-gray-900">{formatVND(totalDonationAmount)}</p>
+                {isLoadingDonations ? (
+                  <div className="flex items-center">
+                    <Loader2 className="w-6 h-6 animate-spin text-green-600" />
+                  </div>
+                ) : (
+                  <p className="text-2xl font-bold text-gray-900">{formatVND(totalDonationAmount)}</p>
+                )}
               </div>
               <div className="bg-green-100 p-4 rounded-lg">
                 <DollarSign className="w-8 h-8 text-green-600" />
@@ -97,8 +115,16 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm opacity-90 mb-1">Tổng doanh thu</p>
-              <p className="text-4xl font-bold">{formatVND(totalOrderAmount + totalDonationAmount)}</p>
-              <p className="text-sm opacity-75 mt-2">Orders + Donations</p>
+              {isLoadingOrders || isLoadingDonations ? (
+                <div className="flex items-center">
+                  <Loader2 className="w-8 h-8 animate-spin text-white" />
+                </div>
+              ) : (
+                <>
+                  <p className="text-4xl font-bold">{formatVND(totalOrderAmount + totalDonationAmount)}</p>
+                  <p className="text-sm opacity-75 mt-2">Orders + Donations</p>
+                </>
+              )}
             </div>
             <div className="bg-white/20 p-4 rounded-lg">
               <DollarSign className="w-12 h-12" />

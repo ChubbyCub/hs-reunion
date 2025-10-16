@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { useEffect, useState, useMemo } from "react";
 
@@ -43,6 +44,50 @@ export default function Home() {
 
   return (
       <main className="flex min-h-screen flex-col items-center justify-center p-24 uppercase md:justify-between md:bg-transparent">
+        {/* Logos Container - Centered on all screen sizes */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+          {/* School Logo - Large primary logo */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0, y: -20 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+            }}
+            className="relative"
+          >
+            <Image
+              src="/school-logo.png"
+              alt="School Logo"
+              width={160}
+              height={160}
+              className="w-32 h-32 md:w-40 md:h-40 object-contain"
+              priority
+            />
+
+            {/* 20 Nam Logo - Subscript overlay at bottom-right */}
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0, scale: 0.8 },
+                visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut", delay: 0.2 } }
+              }}
+              className="absolute -bottom-2 -right-2 md:-bottom-3 md:-right-3 z-20"
+            >
+              <Image
+                src="/logo-20-nam.png"
+                alt="20 Nam Logo"
+                width={80}
+                height={80}
+                className="w-16 h-16 md:w-20 md:h-20 object-contain"
+                priority
+              />
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Hamburger Menu */}
         <motion.div
           className="absolute top-4 right-4 md:top-8 md:right-8 z-10"
           initial="hidden"
@@ -104,7 +149,7 @@ export default function Home() {
             )}
           </div>
         </motion.div>
-        <div className="mt-14 md:mt-20">
+        <div className="mt-16 md:mt-40">
           <motion.div
             initial={{ opacity: 0, x: -100 }}
             animate={{ opacity: 1, x: 0 }}
