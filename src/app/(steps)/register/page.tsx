@@ -31,6 +31,11 @@ export default function RegisterPage() {
   const router = useRouter();
   const { formData, updateFormData, setStep } = useAppStore();
   const [hasHydrated, setHasHydrated] = useState(false);
+  const [emailExists, setEmailExists] = useState(false);
+  const [phoneExists, setPhoneExists] = useState(false);
+  const [checkingEmail, setCheckingEmail] = useState(false);
+  const [checkingPhone, setCheckingPhone] = useState(false);
+
   useEffect(() => {
     setHasHydrated(true);
   }, []);
@@ -60,9 +65,70 @@ export default function RegisterPage() {
     }
   }, [hasHydrated, form, formData]);
 
+  // Debounced email check
+  useEffect(() => {
+    const email = form.watch('email');
+
+    if (!email || !email.includes('@')) {
+      setEmailExists(false);
+      return;
+    }
+
+    setCheckingEmail(true);
+    const timer = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/check-duplicate?email=${encodeURIComponent(email)}`);
+        const data = await response.json();
+        setEmailExists(data.exists);
+      } catch (error) {
+        console.error('Error checking email:', error);
+      } finally {
+        setCheckingEmail(false);
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+      setCheckingEmail(false);
+    };
+  }, [form.watch('email')]);
+
+  // Debounced phone check
+  useEffect(() => {
+    const phone = form.watch('phone');
+
+    if (!phone || phone.length < 8) {
+      setPhoneExists(false);
+      return;
+    }
+
+    setCheckingPhone(true);
+    const timer = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/check-duplicate?phone=${encodeURIComponent(phone)}`);
+        const data = await response.json();
+        setPhoneExists(data.exists);
+      } catch (error) {
+        console.error('Error checking phone:', error);
+      } finally {
+        setCheckingPhone(false);
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+      setCheckingPhone(false);
+    };
+  }, [form.watch('phone')]);
+
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    // Prevent submission if email or phone already exists
+    if (emailExists || phoneExists) {
+      return;
+    }
+
     try {
       // Update form data first - no database save here
       updateFormData(values);
@@ -112,9 +178,19 @@ export default function RegisterPage() {
               <FormItem>
                 <FormLabel className="font-form">Địa chỉ email</FormLabel>
                 <FormControl>
-                  <Input className="font-form" placeholder="Địa chỉ email của bạn" {...field} />
+                  <Input
+                    className="font-form"
+                    placeholder="Địa chỉ email của bạn"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
+                {checkingEmail && (
+                  <p className="text-sm text-gray-500 mt-1">Đang kiểm tra...</p>
+                )}
+                {!checkingEmail && emailExists && (
+                  <p className="text-sm text-red-600 mt-1">Email này đã được sử dụng. Vui lòng sử dụng email khác.</p>
+                )}
               </FormItem>
             )}
           />
@@ -125,9 +201,19 @@ export default function RegisterPage() {
               <FormItem>
                 <FormLabel className="font-form">Số điện thoại</FormLabel>
                 <FormControl>
-                  <Input className="font-form" placeholder="Số điện thoại của bạn" {...field} />
+                  <Input
+                    className="font-form"
+                    placeholder="Số điện thoại của bạn"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
+                {checkingPhone && (
+                  <p className="text-sm text-gray-500 mt-1">Đang kiểm tra...</p>
+                )}
+                {!checkingPhone && phoneExists && (
+                  <p className="text-sm text-red-600 mt-1">Số điện thoại này đã được sử dụng. Vui lòng sử dụng số khác.</p>
+                )}
               </FormItem>
             )}
           />
@@ -205,7 +291,13 @@ export default function RegisterPage() {
             )}
           />
           <div className="flex justify-end">
-            <Button type="submit" className="font-form">Tiếp theo</Button>
+            <Button
+              type="submit"
+              className="font-form"
+              disabled={emailExists || phoneExists || checkingEmail || checkingPhone}
+            >
+              Tiếp theo
+            </Button>
           </div>
         </form>
       </Form>
