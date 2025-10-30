@@ -18,7 +18,7 @@ export default function CompletePage() {
     const location = "Trường THPT Chuyên Lê Hồng Phong, 235 Đường Nguyễn Văn Cừ, Hồ Chí Minh";
     const description = "Buổi họp mặt 20 năm tốt nghiệp - Lê Hồng Phong khóa 2003-2006";
     const startDate = "20260201T080000"; // Feb 1, 2026, 8:00 AM
-    const endDate = "20260201T190000"; // Feb 1, 2026, 7:00 PM
+    const endDate = "20260201T130000"; // Feb 1, 2026, 1:00 PM
 
     // Generate Google Calendar URL
     const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(location)}`;
@@ -133,7 +133,7 @@ export default function CompletePage() {
                 <div className="text-blue-600 text-lg mt-1">📅</div>
                 <div>
                   <h4 className="font-semibold text-blue-800">Thời gian</h4>
-                  <p className="text-blue-700">Chủ nhật, 01/02/2026 · 8:00 AM - 7:00 PM GMT+7</p>
+                  <p className="text-blue-700">Chủ nhật, 01/02/2026 · 8:00 AM - 1:00 PM GMT+7</p>
                 </div>
               </motion.div>
               
