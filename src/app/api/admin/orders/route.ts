@@ -127,25 +127,54 @@ export async function GET(request: NextRequest) {
             ? `${item.Merchandise.gender} - ${item.Merchandise.size}`
             : '';
 
-          // Calculate item total with free first t-shirt logic
-          let itemTotal = item.Merchandise.price * item.quantity;
+          // If this is a t-shirt and we haven't applied the free one yet
           if (isTshirt && !firstTshirtApplied && item.quantity > 0) {
-            itemTotal = item.Merchandise.price * (item.quantity - 1);
             firstTshirtApplied = true;
-          }
 
-          csvRows.push([
-            order.id.toString(),
-            order.Attendees?.full_name || '',
-            order.Attendees?.email || '',
-            order.order_status || 'pending',
-            item.Merchandise.name,
-            details,
-            item.quantity.toString(),
-            item.Merchandise.price.toString(),
-            itemTotal.toString(),
-            new Date(order.created_at).toLocaleString('vi-VN'),
-          ]);
+            // Add the free t-shirt as a separate row
+            csvRows.push([
+              order.id.toString(),
+              order.Attendees?.full_name || '',
+              order.Attendees?.email || '',
+              order.order_status || 'pending',
+              item.Merchandise.name + ' (Miễn phí)',
+              details,
+              '1',
+              '0',
+              '0',
+              new Date(order.created_at).toLocaleString('vi-VN'),
+            ]);
+
+            // If there are more than 1, add the remaining paid items
+            if (item.quantity > 1) {
+              csvRows.push([
+                order.id.toString(),
+                order.Attendees?.full_name || '',
+                order.Attendees?.email || '',
+                order.order_status || 'pending',
+                item.Merchandise.name,
+                details,
+                (item.quantity - 1).toString(),
+                item.Merchandise.price.toString(),
+                (item.Merchandise.price * (item.quantity - 1)).toString(),
+                new Date(order.created_at).toLocaleString('vi-VN'),
+              ]);
+            }
+          } else {
+            // Regular item - not a free t-shirt
+            csvRows.push([
+              order.id.toString(),
+              order.Attendees?.full_name || '',
+              order.Attendees?.email || '',
+              order.order_status || 'pending',
+              item.Merchandise.name,
+              details,
+              item.quantity.toString(),
+              item.Merchandise.price.toString(),
+              (item.Merchandise.price * item.quantity).toString(),
+              new Date(order.created_at).toLocaleString('vi-VN'),
+            ]);
+          }
         });
       });
 
