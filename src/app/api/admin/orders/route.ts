@@ -104,32 +104,49 @@ export async function GET(request: NextRequest) {
         'Attendee Name',
         'Email',
         'Status',
-        'Amount (VND)',
+        'Item Name',
+        'Item Details',
+        'Quantity',
+        'Unit Price (VND)',
+        'Item Total (VND)',
         'Order Date',
-        'Merchandise Items',
       ];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const csvRows = filteredOrders.map((order: any) => {
-        // Format merchandise items as a single string
-        const merchItems = order.merchandise_items
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .map((item: any) => {
-            const details = item.Merchandise.gender && item.Merchandise.size
-              ? ` (${item.Merchandise.gender} - ${item.Merchandise.size})`
-              : '';
-            return `${item.Merchandise.name}${details} x${item.quantity}`;
-          })
-          .join('; ');
 
-        return [
-          order.id,
-          order.Attendees?.full_name || '',
-          order.Attendees?.email || '',
-          order.order_status || 'pending',
-          order.amount,
-          new Date(order.created_at).toLocaleString('vi-VN'),
-          merchItems,
-        ];
+      const csvRows: string[][] = [];
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      filteredOrders.forEach((order: any) => {
+        let firstTshirtApplied = false;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        order.merchandise_items.forEach((item: any) => {
+          const isTshirt = item.Merchandise.name.toLowerCase().includes('áo') ||
+                          item.Merchandise.name.toLowerCase().includes('t-shirt');
+
+          const details = item.Merchandise.gender && item.Merchandise.size
+            ? `${item.Merchandise.gender} - ${item.Merchandise.size}`
+            : '';
+
+          // Calculate item total with free first t-shirt logic
+          let itemTotal = item.Merchandise.price * item.quantity;
+          if (isTshirt && !firstTshirtApplied && item.quantity > 0) {
+            itemTotal = item.Merchandise.price * (item.quantity - 1);
+            firstTshirtApplied = true;
+          }
+
+          csvRows.push([
+            order.id.toString(),
+            order.Attendees?.full_name || '',
+            order.Attendees?.email || '',
+            order.order_status || 'pending',
+            item.Merchandise.name,
+            details,
+            item.quantity.toString(),
+            item.Merchandise.price.toString(),
+            itemTotal.toString(),
+            new Date(order.created_at).toLocaleString('vi-VN'),
+          ]);
+        });
       });
 
       const csvContent = [
