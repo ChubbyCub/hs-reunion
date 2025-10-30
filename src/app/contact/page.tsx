@@ -211,11 +211,11 @@ export default function ContactPage() {
                             <MessageCircle className="h-5 w-5 text-blue-500 mr-2" />
                             <h4 className="font-semibold text-gray-900 text-sm">Zalo Group</h4>
                           </div>
-                          <a 
-                            href="https://zalo.me/g/yrzikb642" 
-                            target="_blank" 
+                          <a
+                            href="https://zalo.me/g/yrzikb642"
+                            target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary hover:text-primary/80 transition-colors text-xs break-all"
+                            className="text-primary hover:text-primary/80 transition-colors text-sm break-all"
                           >
                             zalo.me/g/yrzikb642
                           </a>
@@ -237,11 +237,11 @@ export default function ContactPage() {
                             <FacebookIcon className="h-5 w-5 text-blue-600 mr-2" />
                             <h4 className="font-semibold text-gray-900 text-sm">Facebook Group</h4>
                           </div>
-                          <a 
-                            href="https://web.facebook.com/groups/lhp0306" 
-                            target="_blank" 
+                          <a
+                            href="https://web.facebook.com/groups/lhp0306"
+                            target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary hover:text-primary/80 transition-colors text-xs break-all"
+                            className="text-primary hover:text-primary/80 transition-colors text-sm break-all"
                           >
                             facebook.com/groups/lhp0306
                           </a>

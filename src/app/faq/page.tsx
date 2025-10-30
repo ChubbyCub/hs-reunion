@@ -35,7 +35,7 @@ const faqData: FAQItem[] = [
   {
     id: 2,
     question: "Sự kiện sẽ diễn ra khi nào và ở đâu?",
-    answer: "📍 Thời gian: Dự kiến tháng 2 năm 2026\n\n📍 Địa điểm: Trường THPT Chuyên Lê Hồng Phong – Số 235 Nguyễn Văn Cừ, P.4, Q.5, TP.HCM\n\n👉 Thời gian cụ thể sẽ được thông báo sau khi BTC thống nhất với nhà trường."
+    answer: "📍 Thời gian: Ngày 1 tháng 2 năm 2026\n\n📍 Địa điểm: Trường THPT Chuyên Lê Hồng Phong – Số 235 Nguyễn Văn Cừ, P.4, Q.5, TP.HCM"
   },
   {
     id: 3,

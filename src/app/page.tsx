@@ -45,8 +45,8 @@ export default function Home() {
   return (
       <main className="flex min-h-screen flex-col items-center justify-center p-24 uppercase md:justify-between md:bg-transparent">
         {/* Logos Container - Centered on all screen sizes */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-          {/* School Logo - Large primary logo */}
+        <div className="absolute top-4 md:top-8 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 md:gap-1">
+          {/* School Logo */}
           <motion.div
             initial="hidden"
             animate="visible"
@@ -54,36 +54,34 @@ export default function Home() {
               hidden: { opacity: 0, y: -20 },
               visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
             }}
-            className="relative"
           >
             <Image
               src="/school-logo.png"
               alt="School Logo"
-              width={160}
-              height={160}
-              className="w-32 h-32 md:w-40 md:h-40 object-contain"
+              width={120}
+              height={120}
+              className="w-24 h-24 md:w-32 md:h-32 object-contain"
               priority
             />
+          </motion.div>
 
-            {/* 20 Nam Logo - Subscript overlay at bottom-right */}
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: { opacity: 0, scale: 0.8 },
-                visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut", delay: 0.2 } }
-              }}
-              className="absolute -bottom-2 -right-2 md:-bottom-3 md:-right-3 z-20"
-            >
-              <Image
-                src="/logo-20-nam.png"
-                alt="20 Nam Logo"
-                width={80}
-                height={80}
-                className="w-16 h-16 md:w-20 md:h-20 object-contain"
-                priority
-              />
-            </motion.div>
+          {/* 20 Nam Logo */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0, y: -20 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut", delay: 0.2 } }
+            }}
+          >
+            <Image
+              src="/logo-20-nam.png"
+              alt="20 Nam Logo"
+              width={120}
+              height={120}
+              className="w-24 h-24 md:w-32 md:h-32 object-contain"
+              priority
+            />
           </motion.div>
         </div>
 
@@ -240,7 +238,7 @@ export default function Home() {
                   >
                     <Link
                       href="/register"
-                      className="group inline-flex items-center text-2xl font-bold text-yellow-400 transition-all hover:text-yellow-300 border-2 border-yellow-400 hover:border-yellow-300 bg-transparent px-6 py-3 rounded-lg"
+                      className="group inline-flex items-center text-2xl font-bold text-yellow-400 transition-all hover:text-yellow-500 border-0 md:border-2 md:border-white md:hover:border-yellow-100 bg-transparent md:bg-white/90 hover:bg-transparent md:hover:bg-white/95 px-6 py-3 rounded-lg"
                     >
                       <motion.span
                         whileHover={{ scale: 1.05 }}
