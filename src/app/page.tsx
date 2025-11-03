@@ -154,13 +154,13 @@ export default function Home() {
             transition={{ duration: 1.5, ease: "easeInOut" }}
             className="text-center text-white mb-8"
           >
-            <h1 className="text-4xl md:text-5xl font-bold tracking-wide mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-wide mb-4 txt-with-bg pad-02em blk-txt">
               Hành trình 20 năm
-            </h1>
-            <p className="text-2xl md:text-3xl font-semibold tracking-wide text-yellow-400 mb-3">
+            </h1><br />
+            <p className="text-2xl md:text-3xl font-semibold tracking-wide text-yellow-400 mb-3 txt-with-bg pad-02em blk-txt">
               Ngày 1 tháng 2 năm 2026
-            </p>
-            <p className="text-xl md:text-2xl tracking-wide text-yellow-100 max-w-4xl mx-auto leading-relaxed">
+            </p><br />
+            <p className="text-xl md:text-2xl tracking-wide text-yellow-100 max-w-4xl mx-auto leading-relaxed txt-with-bg pad-02em blk-txt">
               Từ ngôi trường mang tên Lê Hồng Phong, chúng ta trở lại nơi từng ghi dấu những ngày thanh xuân tươi đẹp...
             </p>
           </motion.div>
@@ -173,7 +173,7 @@ export default function Home() {
           >
             <h1 className="text-6xl md:text-8xl font-title">
               <div className="flex flex-col items-center mt-4">
-                <div className="flex justify-center items-end">
+                <div className="flex justify-center items-end txt-with-bg">
                   {timeLeft.days > 0 && (
                     <>
                       <div className="flex flex-col items-center" style={{ width: '3.5rem' }}>
@@ -208,7 +208,7 @@ export default function Home() {
                     <span className="text-4xl font-title leading-none">{timeLeft.seconds}</span>
                   </div>
                 </div>
-                <div className="flex justify-center items-start mt-1">
+                <div className="flex justify-center items-start mt-1 txt-with-bg">
                   {timeLeft.days > 0 && (
                     <>
                       <div className="text-xs font-legalese text-center" style={{ width: '3.5rem' }}>ngày</div>
@@ -238,7 +238,7 @@ export default function Home() {
                   >
                     <Link
                       href="/register"
-                      className="group inline-flex items-center text-2xl font-bold text-yellow-400 transition-all hover:text-yellow-500 border-0 md:border-2 md:border-white md:hover:border-yellow-100 bg-transparent md:bg-white/90 hover:bg-transparent md:hover:bg-white/95 px-6 py-3 rounded-lg"
+                      className="group inline-flex items-center text-2xl font-bold text-yellow-400 transition-all hover:text-yellow-500 border-0 md:border-2 md:border-white md:hover:border-yellow-100 bg-transparent reg-cta-bg px-6 py-3 rounded-lg"
                     >
                       <motion.span
                         whileHover={{ scale: 1.05 }}
