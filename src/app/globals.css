@@ -85,6 +85,23 @@
   body {
     background-image: url('/background-desktop.webp');
   }
+  .reg-cta-bg {
+    background-color: #0798e38c;
+  }
+  .reg-cta-bg:hover {
+    background-color: #079ae3c1;
+  }
+  .txt-with-bg {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 4px;
+  }
+  .pad-02em {
+    padding: 0.2em 0.2em;
+  }
+  .blk-txt {
+    display: inline-block;
+  }
 }
 
 /* Add extra top padding to main content on tablets to avoid collision with menu */
