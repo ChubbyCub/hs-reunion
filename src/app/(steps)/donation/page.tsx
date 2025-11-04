@@ -7,11 +7,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAppStore } from "@/stores/app-store";
 
-const donationOptions = [
-  { amount: 500000, required: false },
-  { amount: 1000000, required: false },
-  { amount: 1500000, required: false },
-  { amount: 2000000, required: false },
+const minimumDonation = { amount: 500000 };
+
+const additionalDonationOptions = [
+  { amount: 1000000 },
+  { amount: 1500000 },
+  { amount: 2000000 },
 ];
 
 export default function DonationPage() {
@@ -41,10 +42,12 @@ export default function DonationPage() {
       setIsCustomSelected(true);
       setValidationError('');
     } else if (numValue > 0) {
-      setSelectedAmount(numValue);
+      // Don't update selectedAmount for invalid amounts
       setIsCustomSelected(true);
       setValidationError('error');
     } else {
+      // Reset to minimum when field is cleared
+      setSelectedAmount(500000);
       setIsCustomSelected(false);
       setValidationError('');
     }
@@ -75,25 +78,68 @@ export default function DonationPage() {
       {/* Header */}
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-title tracking-tighter">
-          Quyên góp
+          Khoản đóng góp của bạn
         </h1>
-        <p className="mt-2 text-muted-foreground font-legalese">
-          Hỗ trợ sự kiện họp mặt cựu học sinh LHP khóa 2003-2006
-        </p>
-        <p className="mt-1 text-sm text-red-600">
-          * Bắt buộc - Số tiền quyên góp tối thiểu là 500.000 VND
+        <p className="mt-3 text-base text-gray-700 font-legalese leading-relaxed">
+          Mỗi tấm lòng ủng hộ sẽ góp phần giúp ngày trở về của LHP0306 thêm trọn vẹn và ý nghĩa. Mức đóng góp tối thiểu: <span className="font-semibold text-gray-900">500.000 VND/người</span> (đã bao gồm chi phí tổ chức cơ bản, Chi tiết xem tại{' '}
+          <a
+            href="https://drive.google.com/file/d/1bX5ecaMj5Azb901-4LGva_D9LLt_bzpM/view?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center font-medium text-gray-900 hover:text-gray-600 transition-colors"
+          >
+            Bảng dự toán kinh phí
+            <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+          ).
         </p>
       </div>
 
       {/* Donation Options */}
       <div className="space-y-6">
-        {/* Suggested Amounts Section */}
+        {/* Minimum Amount Section */}
         <div>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Số tiền gợi ý
+            Số tiền tối thiểu
+          </h2>
+          <Card
+            className={`cursor-pointer transition-all duration-200 ${
+              selectedAmount === minimumDonation.amount && !isCustomSelected
+                ? 'ring-2 ring-blue-500 bg-blue-50 border-blue-200'
+                : 'hover:shadow-md border-gray-200'
+            }`}
+            onClick={() => handleAmountSelect(minimumDonation.amount)}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900">
+                    {formatAmount(minimumDonation.amount)} VND
+                  </h3>
+                </div>
+                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                  selectedAmount === minimumDonation.amount && !isCustomSelected
+                    ? 'bg-blue-500 border-blue-500 shadow-md'
+                    : 'border-gray-300 bg-white hover:border-gray-400'
+                }`}>
+                  {selectedAmount === minimumDonation.amount && !isCustomSelected && (
+                    <div className="w-3 h-3 bg-white rounded-full shadow-sm"></div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Additional Optional Amounts Section */}
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Mức đóng góp khác (tùy chọn)
           </h2>
           <div className="space-y-3">
-            {donationOptions.map((option) => (
+            {additionalDonationOptions.map((option) => (
               <Card
                 key={option.amount}
                 className={`cursor-pointer transition-all duration-200 ${

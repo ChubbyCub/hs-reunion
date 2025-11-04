@@ -284,40 +284,25 @@ export default function OrdersPage() {
                                     </tr>
                                   </thead>
                                   <tbody className="bg-white divide-y divide-gray-200">
-                                    {(() => {
-                                      let firstTshirtApplied = false;
-                                      return order.merchandise_items.map((item, idx) => {
-                                        const isTshirt = item.Merchandise.name.toLowerCase().includes('áo') ||
-                                                        item.Merchandise.name.toLowerCase().includes('t-shirt');
-                                        let itemTotal = item.Merchandise.price * item.quantity;
-                                        let isFreeItem = false;
+                                    {order.merchandise_items.map((item, idx) => {
+                                      const itemTotal = item.Merchandise.price * item.quantity;
 
-                                        if (isTshirt && !firstTshirtApplied && item.quantity > 0) {
-                                          itemTotal = item.Merchandise.price * (item.quantity - 1);
-                                          firstTshirtApplied = true;
-                                          isFreeItem = true;
-                                        }
-
-                                        return (
-                                          <tr key={idx} className={isFreeItem ? 'bg-green-50' : ''}>
-                                            <td className="px-3 py-2">
-                                              {item.Merchandise.name}
-                                              {isFreeItem && (
-                                                <span className="ml-2 text-xs text-green-700 font-medium">(1 miễn phí)</span>
-                                              )}
-                                            </td>
-                                            <td className="px-3 py-2 text-gray-600">
-                                              {item.Merchandise.gender && item.Merchandise.size
-                                                ? `${item.Merchandise.gender} - ${item.Merchandise.size}`
-                                                : '-'}
-                                            </td>
-                                            <td className="px-3 py-2 text-center">{item.quantity}</td>
-                                            <td className="px-3 py-2 text-right">{formatVND(item.Merchandise.price)}</td>
-                                            <td className="px-3 py-2 text-right font-medium">{formatVND(itemTotal)}</td>
-                                          </tr>
-                                        );
-                                      });
-                                    })()}
+                                      return (
+                                        <tr key={idx}>
+                                          <td className="px-3 py-2">
+                                            {item.Merchandise.name}
+                                          </td>
+                                          <td className="px-3 py-2 text-gray-600">
+                                            {item.Merchandise.gender && item.Merchandise.size
+                                              ? `${item.Merchandise.gender} - ${item.Merchandise.size}`
+                                              : '-'}
+                                          </td>
+                                          <td className="px-3 py-2 text-center">{item.quantity}</td>
+                                          <td className="px-3 py-2 text-right">{formatVND(item.Merchandise.price)}</td>
+                                          <td className="px-3 py-2 text-right font-medium">{formatVND(itemTotal)}</td>
+                                        </tr>
+                                      );
+                                    })}
                                   </tbody>
                                 </table>
                               </div>

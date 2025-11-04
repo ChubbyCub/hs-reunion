@@ -91,32 +91,8 @@ export default function MerchandisePage() {
     }
   };
 
-
-
-
-
-  const isTshirtItem = (itemName: string) => {
-    return itemName.toLowerCase().includes('áo') || itemName.toLowerCase().includes('t-shirt');
-  };
-
   const getTotalPrice = () => {
-    let total = 0;
-    let firstTshirtApplied = false;
-
-    cart.forEach((item) => {
-      const isTshirt = isTshirtItem(item.name);
-
-      if (isTshirt && !firstTshirtApplied && item.quantity > 0) {
-        // First T-shirt is free, charge for the rest
-        total += item.price * (item.quantity - 1);
-        firstTshirtApplied = true;
-      } else {
-        // Regular pricing for non-tshirt items or after first free tshirt
-        total += item.price * item.quantity;
-      }
-    });
-
-    return total;
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   const handleContinue = () => {
@@ -356,36 +332,20 @@ export default function MerchandisePage() {
             ) : (
               <>
                 <div className="space-y-3 mb-4">
-                  {cart.map((item, index) => {
-                    const isTshirt = isTshirtItem(item.name);
-                    const isFirstTshirt = index === 0 && isTshirt;
-                    return (
+                  {cart.map((item) => (
                     <div key={item.merchandiseId} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 p-3 bg-white rounded border">
                       <div className="flex-1">
                         <p className="font-medium text-sm sm:text-base">
                           {item.name}
-                          {isFirstTshirt && item.quantity > 0 && (
-                            <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Chiếc đầu miễn phí</span>
-                          )}
                         </p>
                         {item.gender && item.size && (
                           <p className="text-xs sm:text-sm text-gray-600 capitalize">
                             {item.gender} • {item.size}
-                            </p>
-                        )}
-                        {isFirstTshirt && item.quantity > 0 ? (
-                          <p className="text-xs sm:text-sm text-gray-600">
-                            <span className="line-through text-gray-400">{item.price.toLocaleString()} VND</span>
-                            {" "}0 VND (chiếc đầu)
-                            {item.quantity > 1 && (
-                              <span> + {item.price.toLocaleString()} VND × {item.quantity - 1}</span>
-                            )}
-                          </p>
-                        ) : (
-                          <p className="text-xs sm:text-sm text-gray-600">
-                            {item.price.toLocaleString()} VND × {item.quantity}
                           </p>
                         )}
+                        <p className="text-xs sm:text-sm text-gray-600">
+                          {item.price.toLocaleString()} VND × {item.quantity}
+                        </p>
                       </div>
                       
                       <div className="flex items-center gap-2 sm:ml-3 self-end sm:self-center">
@@ -424,8 +384,7 @@ export default function MerchandisePage() {
                         </Button>
                       </div>
                     </div>
-                  );
-                  })}
+                  ))}
                 </div>
                 
                 <div className="border-t pt-4">

@@ -106,26 +106,8 @@ export const useAppStore = create<AppState>()(
           // If there are items in cart, save the order
           let orderId = null;
           if (cart.length > 0) {
-            // Calculate merchandise total with free t-shirt logic
-            const getMerchandiseTotal = () => {
-              let total = 0;
-              let firstTshirtApplied = false;
-
-              cart.forEach((item) => {
-                const isTshirt = item.name.toLowerCase().includes('áo') || item.name.toLowerCase().includes('t-shirt');
-
-                if (isTshirt && !firstTshirtApplied && item.quantity > 0) {
-                  total += item.price * (item.quantity - 1);
-                  firstTshirtApplied = true;
-                } else {
-                  total += item.price * item.quantity;
-                }
-              });
-
-              return total;
-            };
-
-            const orderAmount = getMerchandiseTotal();
+            // Calculate merchandise total
+            const orderAmount = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
 
             const orderData = {
               attendeeId: attendeeId,
@@ -156,25 +138,8 @@ export const useAppStore = create<AppState>()(
           // Upload payment proof if available
           if (paymentProofFile) {
             // Calculate total payment amount
-            const getMerchandiseTotal = () => {
-              let total = 0;
-              let firstTshirtApplied = false;
-
-              cart.forEach((item) => {
-                const isTshirt = item.name.toLowerCase().includes('áo') || item.name.toLowerCase().includes('t-shirt');
-
-                if (isTshirt && !firstTshirtApplied && item.quantity > 0) {
-                  total += item.price * (item.quantity - 1);
-                  firstTshirtApplied = true;
-                } else {
-                  total += item.price * item.quantity;
-                }
-              });
-
-              return total;
-            };
-
-            const totalAmount = getMerchandiseTotal() + (formData.donationAmount || 0);
+            const merchandiseTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+            const totalAmount = merchandiseTotal + (formData.donationAmount || 0);
 
             const formDataToSend = new FormData();
             formDataToSend.append('file', paymentProofFile.file);

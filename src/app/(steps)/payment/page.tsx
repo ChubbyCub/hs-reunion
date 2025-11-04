@@ -18,24 +18,7 @@ export default function PaymentPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const getMerchandiseTotal = () => {
-        let total = 0;
-        let firstTshirtApplied = false;
-
-        cart.forEach((item) => {
-            // Check if this is a T-shirt item
-            const isTshirt = item.name.toLowerCase().includes('áo') || item.name.toLowerCase().includes('t-shirt');
-
-            if (isTshirt && !firstTshirtApplied && item.quantity > 0) {
-                // First T-shirt is free, charge for the rest
-                total += item.price * (item.quantity - 1);
-                firstTshirtApplied = true;
-            } else {
-                // Regular pricing for non-tshirt items or after first free tshirt
-                total += item.price * item.quantity;
-            }
-        });
-
-        return total;
+        return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
     };
 
     const getTotalPrice = () => {
@@ -127,31 +110,17 @@ export default function PaymentPage() {
           <div className="mb-3 sm:mb-4">
             <h3 className="font-medium mb-2 text-sm sm:text-base">Đồ lưu niệm:</h3>
             <div className="space-y-2">
-              {(() => {
-                let firstTshirtApplied = false;
-                return cart.map((item) => {
-                  const isTshirt = item.name.toLowerCase().includes('áo') || item.name.toLowerCase().includes('t-shirt');
-                  let itemTotal = item.price * item.quantity;
-                  let displayNote = '';
-
-                  if (isTshirt && !firstTshirtApplied && item.quantity > 0) {
-                    // First T-shirt is free
-                    itemTotal = item.price * (item.quantity - 1);
-                    firstTshirtApplied = true;
-                    displayNote = ' (1 chiếc miễn phí)';
-                  }
-
-                  return (
-                    <div key={item.merchandiseId} className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                      <span className="text-sm sm:text-base">
-                        {item.name} {item.gender && item.size && `(${item.gender} - ${item.size})`} × {item.quantity}
-                        {displayNote && <span className="text-green-600">{displayNote}</span>}
-                      </span>
-                      <span className="text-sm sm:text-base font-medium">{itemTotal.toLocaleString()} VND</span>
-                    </div>
-                  );
-                });
-              })()}
+              {cart.map((item) => {
+                const itemTotal = item.price * item.quantity;
+                return (
+                  <div key={item.merchandiseId} className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                    <span className="text-sm sm:text-base">
+                      {item.name} {item.gender && item.size && `(${item.gender} - ${item.size})`} × {item.quantity}
+                    </span>
+                    <span className="text-sm sm:text-base font-medium">{itemTotal.toLocaleString()} VND</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

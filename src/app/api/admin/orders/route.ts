@@ -116,65 +116,24 @@ export async function GET(request: NextRequest) {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       filteredOrders.forEach((order: any) => {
-        let firstTshirtApplied = false;
-
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         order.merchandise_items.forEach((item: any) => {
-          const isTshirt = item.Merchandise.name.toLowerCase().includes('áo') ||
-                          item.Merchandise.name.toLowerCase().includes('t-shirt');
-
           const details = item.Merchandise.gender && item.Merchandise.size
             ? `${item.Merchandise.gender} - ${item.Merchandise.size}`
             : '';
 
-          // If this is a t-shirt and we haven't applied the free one yet
-          if (isTshirt && !firstTshirtApplied && item.quantity > 0) {
-            firstTshirtApplied = true;
-
-            // Add the free t-shirt as a separate row
-            csvRows.push([
-              order.id.toString(),
-              order.Attendees?.full_name || '',
-              order.Attendees?.email || '',
-              order.order_status || 'pending',
-              item.Merchandise.name + ' (Miễn phí)',
-              details,
-              '1',
-              '0',
-              '0',
-              new Date(order.created_at).toLocaleString('vi-VN'),
-            ]);
-
-            // If there are more than 1, add the remaining paid items
-            if (item.quantity > 1) {
-              csvRows.push([
-                order.id.toString(),
-                order.Attendees?.full_name || '',
-                order.Attendees?.email || '',
-                order.order_status || 'pending',
-                item.Merchandise.name,
-                details,
-                (item.quantity - 1).toString(),
-                item.Merchandise.price.toString(),
-                (item.Merchandise.price * (item.quantity - 1)).toString(),
-                new Date(order.created_at).toLocaleString('vi-VN'),
-              ]);
-            }
-          } else {
-            // Regular item - not a free t-shirt
-            csvRows.push([
-              order.id.toString(),
-              order.Attendees?.full_name || '',
-              order.Attendees?.email || '',
-              order.order_status || 'pending',
-              item.Merchandise.name,
-              details,
-              item.quantity.toString(),
-              item.Merchandise.price.toString(),
-              (item.Merchandise.price * item.quantity).toString(),
-              new Date(order.created_at).toLocaleString('vi-VN'),
-            ]);
-          }
+          csvRows.push([
+            order.id.toString(),
+            order.Attendees?.full_name || '',
+            order.Attendees?.email || '',
+            order.order_status || 'pending',
+            item.Merchandise.name,
+            details,
+            item.quantity.toString(),
+            item.Merchandise.price.toString(),
+            (item.Merchandise.price * item.quantity).toString(),
+            new Date(order.created_at).toLocaleString('vi-VN'),
+          ]);
         });
       });
 
