@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
         id_attendee,
         id_order,
         id_donation,
+        confirmed,
         Attendees!Payment_id_attendee_fkey (
           full_name,
           email

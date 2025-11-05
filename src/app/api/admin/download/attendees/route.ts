@@ -22,8 +22,25 @@ export async function GET() {
       );
     }
 
-    // Convert to CSV format - raw table data
-    const headers = ['ID', 'Created At', 'Updated At', 'Full Name', 'Email', 'Phone Number', 'Class', 'Occupation', 'Employer', 'Checked In'];
+    // Convert to CSV format - all columns
+    const headers = [
+      'ID',
+      'Created At',
+      'Updated At',
+      'First Name',
+      'Last Name',
+      'Full Name',
+      'Email',
+      'Phone Number',
+      'Class',
+      'Occupation',
+      'Employer',
+      'Address',
+      'Country',
+      'Message',
+      'Checked In',
+      'QR Code URL'
+    ];
     const csvRows = [headers.join(',')];
 
     attendees?.forEach(attendee => {
@@ -31,13 +48,19 @@ export async function GET() {
         attendee.id,
         new Date(attendee.created_at).toISOString(),
         new Date(attendee.updated_at).toISOString(),
+        `"${attendee.first_name || ''}"`,
+        `"${attendee.last_name || ''}"`,
         `"${attendee.full_name || ''}"`,
         `"${attendee.email || ''}"`,
         `"${attendee.phone_number || ''}"`,
         `"${attendee.class || ''}"`,
         `"${attendee.occupation || ''}"`,
         `"${attendee.employer || ''}"`,
-        attendee.checked_in
+        `"${attendee.address || ''}"`,
+        `"${attendee.country || ''}"`,
+        `"${(attendee.message || '').replace(/"/g, '""')}"`, // Escape quotes in message
+        attendee.checked_in,
+        `"${attendee.qr_code_url || ''}"`
       ];
       csvRows.push(row.join(','));
     });

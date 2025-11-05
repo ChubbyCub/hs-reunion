@@ -24,6 +24,7 @@ interface Payment {
   amount: number;
   url_confirmation: string;
   id_attendee: number;
+  confirmed: boolean;
   Attendees: {
     full_name: string;
     email: string;
@@ -80,6 +81,35 @@ export default function PaymentsPage() {
       document.body.removeChild(a);
     } catch (error) {
       console.error("Failed to export CSV:", error);
+    }
+  };
+
+  const toggleConfirmedStatus = async (paymentId: number, currentStatus: boolean) => {
+    try {
+      console.log('Toggling payment', paymentId, 'from', currentStatus, 'to', !currentStatus);
+
+      const response = await fetch(`/api/admin/payments/${paymentId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ confirmed: !currentStatus }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('API error:', errorData);
+        throw new Error('Failed to update payment status');
+      }
+
+      const result = await response.json();
+      console.log('Update successful:', result);
+
+      // Refetch data to update the UI
+      await refetch();
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+      alert('Failed to update payment status: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   };
 
@@ -148,13 +178,14 @@ export default function PaymentsPage() {
                   <TableHead className="text-right">Order Amount</TableHead>
                   <TableHead className="text-right">Donation Amount</TableHead>
                   <TableHead>Payment Date</TableHead>
+                  <TableHead>Confirmed</TableHead>
                   <TableHead>Proof</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
+                    <TableCell colSpan={8} className="h-24 text-center">
                       <RefreshCw className="w-6 h-6 animate-spin text-gray-400 mx-auto" />
                     </TableCell>
                   </TableRow>
@@ -179,6 +210,22 @@ export default function PaymentsPage() {
                         {format(new Date(payment.created_at), "dd/MM/yyyy HH:mm")}
                       </TableCell>
                       <TableCell>
+                        <button
+                          onClick={() => toggleConfirmedStatus(payment.id, payment.confirmed)}
+                          className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                          style={{
+                            backgroundColor: payment.confirmed ? '#16a34a' : '#d1d5db'
+                          }}
+                          title={payment.confirmed ? 'Confirmed' : 'Not Confirmed'}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                              payment.confirmed ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                      </TableCell>
+                      <TableCell>
                         <Button
                           variant="outline"
                           size="sm"
@@ -192,7 +239,7 @@ export default function PaymentsPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
+                    <TableCell colSpan={8} className="h-24 text-center">
                       Không tìm thấy dữ liệu
                     </TableCell>
                   </TableRow>
