@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.json();
 
     // Validate required fields
-    const requiredFields = ['fullName', 'email', 'phone', 'class'];
+    const requiredFields = ['fullName', 'email', 'phone', 'class', 'qrCodeUrl'];
     for (const field of requiredFields) {
       if (!formData[field]) {
         return NextResponse.json(
@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
         class: formData.class,
         occupation: formData.occupation || null,
         employer: formData.workplace || null,
+        qr_code_url: formData.qrCodeUrl,
       }])
       .select('id')
       .single();

@@ -3,51 +3,13 @@
 import { useAppStore } from "@/stores/app-store";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-import QRCode from "qrcode";
-import Image from "next/image";
- 
+import { useState } from "react";
 
 export default function EventTicketPage() {
     const router = useRouter();
-    const { setStep, formData, saveEverythingToDatabase } = useAppStore();
-    const [qrUrl, setQrUrl] = useState<string>("");
-    const [isGenerating, setIsGenerating] = useState<boolean>(false);
-    const [qrError, setQrError] = useState<string>("");
+    const { setStep, saveEverythingToDatabase } = useAppStore();
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [saveStatus, setSaveStatus] = useState<{ success?: boolean; message?: string }>({});
-
-    const attendeePayload = useMemo(() => {
-        const payload = {
-            em: formData.email || "",
-        };
-        return JSON.stringify(payload);
-    }, [formData.email]);
-
-    useEffect(() => {
-        let cancelled = false;
-        async function generate() {
-            setIsGenerating(true);
-            setQrError("");
-            try {
-                const url = await QRCode.toDataURL(attendeePayload, {
-                    errorCorrectionLevel: "M",
-                    width: 256,
-                    margin: 2,
-                    color: { dark: "#000000", light: "#ffffff" },
-                });
-                if (!cancelled) setQrUrl(url);
-            } catch {
-                if (!cancelled) setQrError("Không thể tạo mã QR. Vui lòng thử lại.");
-            } finally {
-                if (!cancelled) setIsGenerating(false);
-            }
-        }
-        generate();
-        return () => {
-            cancelled = true;
-        };
-    }, [attendeePayload]);
 
     const handleRegistrationComplete = async () => {
         setIsSaving(true);
@@ -70,43 +32,10 @@ export default function EventTicketPage() {
 
     return (
         <div className="px-4 sm:px-0">
-            <h1 className="text-xl sm:text-2xl font-title text-center">Mã QR</h1>
+            <h1 className="text-xl sm:text-2xl font-title text-center">Xác nhận đăng ký</h1>
             <p className="font-legalese mb-4 sm:mb-6 text-sm sm:text-base text-center">
-                Bước cuối cùng! Đây là mã QR của bạn dùng cho khâu check-in.
+                Bước cuối cùng! Vui lòng xác nhận thông tin đăng ký của bạn.
             </p>
-
-            <div className="bg-white p-4 sm:p-6 rounded-lg border mb-4 sm:mb-6 text-center">
-                {qrError ? (
-                    <p className="text-red-600">{qrError}</p>
-                ) : (
-                    <div className="flex flex-col items-center gap-3">
-                        {isGenerating ? (
-                            <p className="text-sm text-gray-500">Đang tạo mã QR…</p>
-                        ) : (
-                            <>
-                                {qrUrl && (
-                                    <Image
-                                        src={qrUrl}
-                                        alt="Mã QR tham dự"
-                                        width={256}
-                                        height={256}
-                                        className="w-48 h-48 sm:w-64 sm:h-64 border rounded"
-                                    />
-                                )}
-                                {qrUrl && (
-                                    <a
-                                        href={qrUrl}
-                                        download={`ticket-${formData.email || "attendee"}.png`}
-                                        className="inline-flex"
-                                    >
-                                        <Button className="font-form py-2 px-4 touch-manipulation">Tải mã QR</Button>
-                                    </a>
-                                )}
-                            </>
-                        )}
-                    </div>
-                )}
-            </div>
 
             {saveStatus.message && !saveStatus.success && (
                 <div className="p-4 rounded-lg border-l-4 mb-6 bg-red-50 border-red-400 text-red-800">
@@ -117,7 +46,8 @@ export default function EventTicketPage() {
             <div className="bg-blue-50 p-3 sm:p-4 rounded-lg border-l-4 border-blue-400 mb-4 sm:mb-6">
                 <h3 className="font-semibold text-blue-800 mb-2 text-sm sm:text-base">Lưu ý quan trọng:</h3>
                 <ul className="text-blue-700 text-xs sm:text-sm space-y-1">
-                    <li>• Lưu mã QR vào điện thoại để dễ dàng check-in</li>
+                    <li>• Ban tổ chức sẽ xác nhận thanh toán của bạn</li>
+                    <li>• Mã QR check-in sẽ được gửi qua email sau khi thanh toán được xác nhận</li>
                     <li>• Liên hệ ban tổ chức nếu gặp vấn đề</li>
                 </ul>
             </div>

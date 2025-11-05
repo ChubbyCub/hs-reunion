@@ -153,7 +153,7 @@ export default function RegisterPage() {
           Thông tin cá nhân
         </h1>
         <p className="mt-2 text-muted-foreground font-legalese">
-          Vui lòng điền thông tin chi tiết của bạn để đăng ký tham gia sự kiện.
+          Bạn nhớ nhập đúng email và số điện thoại nhé – để BTC dễ dàng liên hệ và xác nhận thông tin. 👉 Mỗi email chỉ dùng cho một người và một lượt đăng ký duy nhất thôi nha!
         </p>
       </div>
       <Form {...form}>

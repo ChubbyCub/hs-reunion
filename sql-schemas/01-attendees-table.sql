@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS public."Attendees" (
     employer character varying NULL,
     allow_contact boolean NOT NULL DEFAULT false,
     checked_in boolean NOT NULL DEFAULT false,
+    qr_code_url character varying NOT NULL,
     CONSTRAINT Attendee_pkey PRIMARY KEY (id),
     CONSTRAINT Attendee_email_key UNIQUE (email)
 ) TABLESPACE pg_default;

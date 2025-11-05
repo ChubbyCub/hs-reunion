@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { FormData, CartItem } from '../types/common';
+import QRCode from 'qrcode';
 
 // Define the shape of your store
 interface AppState {
@@ -14,6 +15,7 @@ interface AppState {
     type: string;
     uploadedAt: string;
   };
+  qrCodeUrl?: string;
   setStep: (step: number) => void;
   updateFormData: (data: Partial<FormData>) => void;
   updateCart: (cart: CartItem[]) => void;
@@ -23,7 +25,7 @@ interface AppState {
   hydrated?: boolean;
 }
 
-const initialState: { currentStep: number; formData: FormData; cart: CartItem[]; paymentProofFile?: { file: File; name: string; size: number; type: string; uploadedAt: string }; hydrated?: boolean } = {
+const initialState: { currentStep: number; formData: FormData; cart: CartItem[]; paymentProofFile?: { file: File; name: string; size: number; type: string; uploadedAt: string }; qrCodeUrl?: string; hydrated?: boolean } = {
   currentStep: 1,
   formData: {
     fullName: '',
@@ -36,6 +38,7 @@ const initialState: { currentStep: number; formData: FormData; cart: CartItem[];
   },
   cart: [],
   paymentProofFile: undefined,
+  qrCodeUrl: undefined,
   hydrated: false,
 };
 
@@ -52,16 +55,62 @@ export const useAppStore = create<AppState>()(
       updateCart: (cart) => set({ cart }),
       setPaymentProofFile: (file) => set({ paymentProofFile: file }),
       saveEverythingToDatabase: async () => {
-        const { formData, cart, paymentProofFile } = get();
-        
+        const state = get();
+        const { formData, cart, paymentProofFile, qrCodeUrl: existingQrCodeUrl } = state;
+
         try {
-          // First, save the attendee
+          // Step 1: Generate and upload QR code only if not already done
+          let qrCodeUrl = existingQrCodeUrl;
+
+          if (!qrCodeUrl) {
+            // Generate QR code
+            const qrPayload = JSON.stringify({ em: formData.email });
+            const qrDataUrl = await QRCode.toDataURL(qrPayload, {
+              errorCorrectionLevel: 'M',
+              width: 512,
+              margin: 2,
+              color: { dark: '#000000', light: '#ffffff' },
+            });
+
+            // Convert data URL to Blob
+            const base64Data = qrDataUrl.split(',')[1];
+            const binaryData = atob(base64Data);
+            const arrayBuffer = new ArrayBuffer(binaryData.length);
+            const uint8Array = new Uint8Array(arrayBuffer);
+            for (let i = 0; i < binaryData.length; i++) {
+              uint8Array[i] = binaryData.charCodeAt(i);
+            }
+            const qrBlob = new Blob([uint8Array], { type: 'image/png' });
+
+            // Upload QR code to Vercel Blob
+            const qrFormData = new FormData();
+            qrFormData.append('file', qrBlob, `${formData.email}.png`);
+            qrFormData.append('email', formData.email);
+
+            const qrUploadResponse = await fetch('/api/upload-qr-code', {
+              method: 'POST',
+              body: qrFormData,
+            });
+
+            const qrUploadResult = await qrUploadResponse.json();
+
+            if (!qrUploadResponse.ok) {
+              throw new Error(qrUploadResult.error || 'Failed to upload QR code');
+            }
+
+            qrCodeUrl = qrUploadResult.url;
+
+            // Store QR code URL in state to prevent re-upload
+            set({ qrCodeUrl });
+          }
+
+          // Step 2: Save the attendee with QR code URL
           const attendeeResponse = await fetch('/api/attendees', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData),
+            body: JSON.stringify({ ...formData, qrCodeUrl }),
           });
 
           const attendeeResult = await attendeeResponse.json();
