@@ -10,6 +10,28 @@ import Image from "next/image";
 export default function CompletePage() {
   const { formData } = useAppStore();
 
+  const handleDownloadQR = async () => {
+    try {
+      // Fetch the original PNG file
+      const response = await fetch('/sharing_event_qr.png');
+      const blob = await response.blob();
+
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'chia-se-su-kien-lhp-2026.png';
+      document.body.appendChild(a);
+      a.click();
+
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error downloading QR code:', error);
+    }
+  };
+
   const handleAddToCalendar = () => {
     // Event details
     const title = "Họp mặt cựu học sinh LHP khóa 2003-2006";
@@ -177,15 +199,21 @@ export default function CompletePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 2.6 }}
             >
-              <div className="bg-white p-4 rounded-lg shadow-md">
+              <div
+                className="bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-xl transition-shadow"
+                onClick={handleDownloadQR}
+                title="Click để tải xuống"
+              >
                 <Image
                   src="/sharing_event_qr.png"
                   alt="QR Code chia sẻ sự kiện"
-                  width={300}
-                  height={300}
-                  className="w-64 h-auto sm:w-80"
+                  width={1200}
+                  height={1200}
+                  className="w-80 h-auto sm:w-96 md:w-[600px] lg:w-[700px] xl:w-[800px]"
+                  quality={100}
                 />
               </div>
+              <p className="text-sm text-purple-600 mt-2 text-center">Click vào hình để tải xuống</p>
             </motion.div>
           </motion.div>
 
