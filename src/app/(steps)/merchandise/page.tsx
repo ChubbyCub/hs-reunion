@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from 'react';
 import { MerchandiseService } from "@/services/database/merchandise";
 import type { Merchandise } from "@/types/common";
+import Image from "next/image";
 
 export default function MerchandisePage() {
   const router = useRouter();
@@ -155,6 +156,20 @@ export default function MerchandisePage() {
           {tshirts.length > 0 && (
             <div className="mb-8">
               <Card className="p-6">
+                {/* T-shirt Image */}
+                <div className="mb-6 flex justify-center">
+                  <div className="relative w-full max-w-md">
+                    <Image
+                      src="/t_shirt_image.jpg"
+                      alt="Áo thun LHP0306"
+                      width={600}
+                      height={600}
+                      className="rounded-lg object-cover w-full h-auto"
+                      priority
+                    />
+                  </div>
+                </div>
+
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                   <div>
                     <p className="text-lg sm:text-xl font-semibold mb-1">Áo Thun</p>
