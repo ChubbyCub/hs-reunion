@@ -9,12 +9,13 @@ import Image from "next/image";
 
 export default function PaymentPage() {
     const router = useRouter();
-    const { setStep, formData, cart } = useAppStore();
+    const { setStep, formData, cart, updateFormData } = useAppStore();
     const donationAmount = formData.donationAmount || 0;
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [uploadMessage, setUploadMessage] = useState('');
+    const [message, setMessage] = useState(formData.message || '');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const getMerchandiseTotal = () => {
@@ -163,6 +164,7 @@ export default function PaymentPage() {
               <p className="text-blue-700 mb-1">Số tài khoản: 47117217</p>
               <p className="text-blue-700 mb-1">Tên tài khoản: NGUYEN CONG HOANG YEN</p>
               <p className="text-blue-700 mb-1">Swift Code: ASCBVNVX</p>
+              <p className="text-blue-700 mb-1">Nội dung chuyển khoản: {formData.email}</p>
             </div>
             <div className="flex justify-center md:justify-end">
               <div className="bg-white p-2 rounded-lg border border-blue-300">
@@ -272,6 +274,23 @@ export default function PaymentPage() {
         </div>
       )}
 
+      {/* Message to Organizing Committee */}
+      <div className="mb-4 sm:mb-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Lời nhắn cho Ban Tổ Chức</h2>
+        <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-300">
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Nhập lời nhắn của bạn cho Ban Tổ Chức (không bắt buộc)..."
+            className="w-full min-h-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-y"
+            rows={4}
+          />
+          <p className="text-sm text-gray-500 mt-2">
+            Bạn có thể gửi lời nhắn, câu hỏi hoặc yêu cầu đặc biệt cho Ban Tổ Chức tại đây.
+          </p>
+        </div>
+      </div>
+
       {/* Navigation */}
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between">
         <Button variant="outline" className="font-form order-2 sm:order-1" onClick={() => {
@@ -284,6 +303,7 @@ export default function PaymentPage() {
           className="font-form order-1 sm:order-2"
           disabled={!canProceed}
           onClick={() => {
+            updateFormData({ message });
             setStep(5);
             router.push("/event-ticket");
           }}

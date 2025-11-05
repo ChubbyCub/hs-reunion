@@ -6,6 +6,7 @@ import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/stores/app-store";
 import { useEffect, useState } from 'react';
+import { countries } from '@/data/countries';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,8 @@ const formSchema = z.object({
   class: z.string().min(1, { message: "Vui lòng chọn lớp học của bạn." }),
   occupation: z.string().optional(),
   workplace: z.string().optional(),
+  address: z.string().optional(),
+  country: z.string().min(1, { message: "Vui lòng chọn quốc gia." }),
 });
 
 export default function RegisterPage() {
@@ -49,6 +52,8 @@ export default function RegisterPage() {
       class: formData.class || '',
       occupation: formData.occupation || '',
       workplace: formData.workplace || '',
+      address: formData.address || '',
+      country: formData.country || '',
     },
   });
 
@@ -61,6 +66,8 @@ export default function RegisterPage() {
         class: formData.class || '',
         occupation: formData.occupation || '',
         workplace: formData.workplace || '',
+        address: formData.address || '',
+        country: formData.country || '',
       });
     }
   }, [hasHydrated, form, formData]);
@@ -285,6 +292,42 @@ export default function RegisterPage() {
                 <FormLabel className="font-form">Nơi công tác</FormLabel>
                 <FormControl>
                   <Input className="font-form" placeholder="Nơi công tác của bạn (không bắt buộc)" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-form">Địa chỉ</FormLabel>
+                <FormControl>
+                  <Input className="font-form" placeholder="Địa chỉ của bạn (không bắt buộc)" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-form">Quốc gia</FormLabel>
+                <FormControl>
+                  <select
+                    {...field}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 font-form text-base md:text-sm"
+                  >
+                    <option value="">Chọn quốc gia</option>
+                    {countries.map((country) => (
+                      <option key={country.code} value={country.name}>
+                        {country.name}
+                      </option>
+                    ))}
+                  </select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
