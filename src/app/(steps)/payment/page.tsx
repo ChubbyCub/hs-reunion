@@ -92,7 +92,9 @@ export default function PaymentPage() {
         }
     };
 
-    const canProceed = (uploadStatus === 'success' || cart.length === 0) && (cart.length > 0 || donationAmount > 0);
+    // User must upload payment proof if they have any cart items or donation amount
+    const hasPaymentRequired = cart.length > 0 || donationAmount > 0;
+    const canProceed = hasPaymentRequired ? uploadStatus === 'success' : true;
 
     const handleCompleteRegistration = async () => {
         // Save message to formData
