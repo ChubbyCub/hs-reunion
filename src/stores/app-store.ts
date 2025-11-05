@@ -95,12 +95,19 @@ export const useAppStore = create<AppState>()(
               body: qrFormData,
             });
 
-            const qrUploadResult = await qrUploadResponse.json();
-
             if (!qrUploadResponse.ok) {
-              throw new Error(qrUploadResult.error || 'Failed to upload QR code');
+              const errorText = await qrUploadResponse.text();
+              let errorMessage = 'Failed to upload QR code';
+              try {
+                const errorJson = JSON.parse(errorText);
+                errorMessage = errorJson.error || errorMessage;
+              } catch {
+                errorMessage = errorText || errorMessage;
+              }
+              throw new Error(errorMessage);
             }
 
+            const qrUploadResult = await qrUploadResponse.json();
             qrCodeUrl = qrUploadResult.url;
 
             // Store QR code URL in state to prevent re-upload
@@ -116,11 +123,19 @@ export const useAppStore = create<AppState>()(
             body: JSON.stringify({ ...formData, qrCodeUrl }),
           });
 
-          const attendeeResult = await attendeeResponse.json();
-          
           if (!attendeeResponse.ok) {
-            throw new Error(attendeeResult.error || 'Failed to save attendee to database');
+            const errorText = await attendeeResponse.text();
+            let errorMessage = 'Failed to save attendee to database';
+            try {
+              const errorJson = JSON.parse(errorText);
+              errorMessage = errorJson.error || errorMessage;
+            } catch {
+              errorMessage = errorText || errorMessage;
+            }
+            throw new Error(errorMessage);
           }
+
+          const attendeeResult = await attendeeResponse.json();
           
           const attendeeId = attendeeResult.data?.id;
           if (!attendeeId) {

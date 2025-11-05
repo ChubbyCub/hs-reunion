@@ -1,24 +1,22 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Calendar } from "lucide-react";
+import { Calendar, FileText, Home } from "lucide-react";
+import { useAppStore } from "@/stores/app-store";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function CompletePage() {
-  const router = useRouter();
-
-  const handleGoHome = () => {
-    router.push("/");
-  };
+  const { formData } = useAppStore();
 
   const handleAddToCalendar = () => {
     // Event details
     const title = "Họp mặt cựu học sinh LHP khóa 2003-2006";
     const location = "Trường THPT Chuyên Lê Hồng Phong, 235 Đường Nguyễn Văn Cừ, Hồ Chí Minh";
     const description = "Buổi họp mặt 20 năm tốt nghiệp - Lê Hồng Phong khóa 2003-2006";
-    const startDate = "20260201T080000"; // Feb 1, 2026, 8:00 AM
-    const endDate = "20260201T130000"; // Feb 1, 2026, 1:00 PM
+    const startDate = "20260201T073000"; // Feb 1, 2026, 7:30 AM
+    const endDate = "20260201T120000"; // Feb 1, 2026, 12:00 PM
 
     // Generate Google Calendar URL
     const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(location)}`;
@@ -64,79 +62,79 @@ export default function CompletePage() {
             </motion.p>
           </motion.div>
 
-          {/* Success Summary */}
-          <motion.div 
-            className="bg-white rounded-lg shadow-lg p-8 mb-8"
+          {/* Next Steps Box */}
+          <motion.div
+            className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
           >
-            <motion.h2 
-              className="text-2xl font-semibold text-gray-800 mb-6 text-center"
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 1.0 }}
             >
-              🎫 Vé đã được đặt thành công
-            </motion.h2>
-            
-            <motion.div 
-              className="text-center p-4 bg-blue-50 rounded-lg max-w-md mx-auto"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 1.2 }}
-            >
-              <div className="text-3xl mb-2">📱</div>
-              <h3 className="font-semibold text-blue-800 mb-2">Lưu vé</h3>
-              <p className="text-blue-700 text-sm">
-                Lưu vé vào điện thoại để dễ dàng check-in
+              <p className="text-green-800 text-base mb-4">
+                Cảm ơn bạn đã &ldquo;trả lời cuộc gọi thanh xuân&rdquo;.
               </p>
+              <p className="text-green-700 text-base mb-4">
+                Sau khi xác minh thông tin, BTC sẽ gửi vé và mã QR tham dự đến email <span className="font-semibold">{formData.email}</span>.
+              </p>
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                <p className="text-yellow-800 text-sm">
+                  <span className="font-semibold">Lưu ý:</span> Vui lòng kiểm tra hộp thư đến. Nếu sau 24 giờ làm việc chưa nhận được email, hãy{' '}
+                  <Link href="/contact" className="text-blue-600 hover:text-blue-800 underline font-semibold">
+                    liên hệ BTC
+                  </Link>
+                  .
+                </p>
+              </div>
             </motion.div>
           </motion.div>
 
           {/* Important Information */}
-          <motion.div 
+          <motion.div
             className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.6 }}
+            transition={{ duration: 0.6, delay: 1.2 }}
           >
-            <motion.h3 
+            <motion.h3
               className="text-xl font-semibold text-blue-800 mb-4 text-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 1.8 }}
+              transition={{ duration: 0.5, delay: 1.4 }}
             >
               📋 Thông tin quan trọng
             </motion.h3>
-            
+
             <div className="space-y-4">
-              <motion.div 
+              <motion.div
                 className="flex items-start space-x-3"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 2.0 }}
+                transition={{ duration: 0.5, delay: 1.6 }}
               >
                 <div className="text-blue-600 text-lg mt-1">📍</div>
                 <div>
                   <h4 className="font-semibold text-blue-800">Địa điểm</h4>
-                  <p className="text-blue-700">Trường Trung Học Phổ Thông Chuyên Lê Hồng Phong, 235 Đường Nguyễn Văn Cừ, Hồ Chí Minh</p>
+                  <p className="text-blue-700">Trường Trung Học Phổ Thông Chuyên Lê Hồng Phong, 235 Đường Nguyễn Văn Cừ, Phường Chợ Quán, TP. Hồ Chí Minh</p>
                 </div>
               </motion.div>
-              
-              <motion.div 
+
+              <motion.div
                 className="flex items-start space-x-3"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 2.2 }}
+                transition={{ duration: 0.5, delay: 1.8 }}
               >
                 <div className="text-blue-600 text-lg mt-1">📅</div>
                 <div>
                   <h4 className="font-semibold text-blue-800">Thời gian</h4>
-                  <p className="text-blue-700">Chủ nhật, 01/02/2026 · 8:00 AM - 1:00 PM GMT+7</p>
+                  <p className="text-blue-700">Chủ nhật, 01/02/2026 · 7:30 AM - 12:00 PM GMT+7</p>
                 </div>
               </motion.div>
-              
+
             </div>
 
             {/* Add to Calendar Button */}
@@ -144,7 +142,7 @@ export default function CompletePage() {
               className="mt-6 text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 2.6 }}
+              transition={{ duration: 0.5, delay: 2.0 }}
             >
               <Button
                 onClick={handleAddToCalendar}
@@ -157,31 +155,87 @@ export default function CompletePage() {
             </motion.div>
           </motion.div>
 
+          {/* Sharing Events With Friends */}
+          <motion.div
+            className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-8"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 2.2 }}
+          >
+            <motion.h3
+              className="text-xl font-semibold text-purple-800 mb-4 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 2.4 }}
+            >
+              📢 Chia sẻ sự kiện với bạn bè
+            </motion.h3>
+
+            <motion.div
+              className="flex flex-col items-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 2.6 }}
+            >
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <Image
+                  src="/sharing_event_qr.png"
+                  alt="QR Code chia sẻ sự kiện"
+                  width={300}
+                  height={300}
+                  className="w-64 h-auto sm:w-80"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
 
           {/* Action Buttons */}
-          <motion.div 
+          <motion.div
             className="text-center space-y-4"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 4.2 }}
+            transition={{ duration: 0.6, delay: 2.8 }}
           >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button 
-                onClick={handleGoHome}
-                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg touch-manipulation"
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                🏠 Về trang chủ
-              </Button>
-            </motion.div>
-            
-            <motion.div 
-              className="text-sm text-gray-500"
+                <Link href="/" className="block">
+                  <Button
+                    className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-base"
+                  >
+                    <Home className="w-5 h-5 mr-2" />
+                    Về trang chủ
+                  </Button>
+                </Link>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <a
+                  href="https://drive.google.com/file/d/1bX5ecaMj5Azb901-4LGva_D9LLt_bzpM/view"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <Button
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6 text-base"
+                  >
+                    <FileText className="w-5 h-5 mr-2" />
+                    Xem Thư Ngỏ
+                  </Button>
+                </a>
+              </motion.div>
+            </div>
+
+            <motion.div
+              className="text-sm text-gray-500 mt-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 4.4 }}
+              transition={{ duration: 0.5, delay: 2.6 }}
             >
               Cảm ơn bạn đã tham gia! Hẹn gặp lại tại buổi họp mặt! 👋
             </motion.div>

@@ -9,13 +9,15 @@ import Image from "next/image";
 
 export default function PaymentPage() {
     const router = useRouter();
-    const { setStep, formData, cart, updateFormData } = useAppStore();
+    const { setStep, formData, cart, updateFormData, saveEverythingToDatabase } = useAppStore();
     const donationAmount = formData.donationAmount || 0;
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [uploadMessage, setUploadMessage] = useState('');
     const [message, setMessage] = useState(formData.message || '');
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveError, setSaveError] = useState('');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const getMerchandiseTotal = () => {
@@ -90,7 +92,30 @@ export default function PaymentPage() {
         }
     };
 
-    const canProceed = uploadStatus === 'success' || cart.length === 0;
+    const canProceed = (uploadStatus === 'success' || cart.length === 0) && (cart.length > 0 || donationAmount > 0);
+
+    const handleCompleteRegistration = async () => {
+        // Save message to formData
+        updateFormData({ message });
+
+        setIsSaving(true);
+        setSaveError('');
+
+        try {
+            const result = await saveEverythingToDatabase();
+            if (result.success) {
+                // Redirect to success page
+                router.push("/complete");
+            } else {
+                setSaveError(`Lỗi khi lưu dữ liệu: ${result.error}`);
+                setIsSaving(false);
+            }
+        } catch (error) {
+            setSaveError("Lỗi không xác định khi lưu dữ liệu.");
+            setIsSaving(false);
+            console.error('Registration error:', error);
+        }
+    };
 
   return (
     <div className="container mx-auto p-4 sm:p-6 max-w-4xl">
@@ -291,24 +316,27 @@ export default function PaymentPage() {
         </div>
       </div>
 
+      {/* Error Message */}
+      {saveError && (
+        <div className="mb-4 p-4 rounded-lg border-l-4 bg-red-50 border-red-400 text-red-800">
+          <p className="font-semibold">{saveError}</p>
+        </div>
+      )}
+
       {/* Navigation */}
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between">
         <Button variant="outline" className="font-form order-2 sm:order-1" onClick={() => {
             setStep(3);
             router.push("/donation");
-        }}>
+        }} disabled={isSaving}>
           Quay lại
         </Button>
         <Button
-          className="font-form order-1 sm:order-2"
-          disabled={!canProceed}
-          onClick={() => {
-            updateFormData({ message });
-            setStep(5);
-            router.push("/event-ticket");
-          }}
+          className="font-form bg-green-600 hover:bg-green-700 order-1 sm:order-2"
+          disabled={!canProceed || isSaving}
+          onClick={handleCompleteRegistration}
         >
-          Tiếp theo
+          {isSaving ? "Đang lưu..." : "Hoàn thành đăng ký"}
         </Button>
       </div>
     </div>

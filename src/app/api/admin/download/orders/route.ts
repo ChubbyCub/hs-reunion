@@ -8,10 +8,10 @@ const supabase = createClient(
 
 export async function GET() {
   try {
-    // Fetch all Order table data
+    // Fetch all Order table data with attendee information
     const { data: orders, error } = await supabase
       .from('Order')
-      .select('*')
+      .select('*, Attendees(full_name, email, phone_number)')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -22,8 +22,8 @@ export async function GET() {
       );
     }
 
-    // Convert to CSV format - raw table data
-    const headers = ['ID', 'Created At', 'Updated At', 'ID Attendee', 'Order Status'];
+    // Convert to CSV format - raw table data with attendee info
+    const headers = ['ID', 'Created At', 'Updated At', 'ID Attendee', 'Attendee Name', 'Attendee Email', 'Attendee Phone', 'Order Status'];
     const csvRows = [headers.join(',')];
 
     orders?.forEach(order => {
@@ -32,6 +32,9 @@ export async function GET() {
         new Date(order.created_at).toISOString(),
         new Date(order.updated_at).toISOString(),
         order.id_attendee,
+        `"${order.Attendees?.full_name || ''}"`,
+        `"${order.Attendees?.email || ''}"`,
+        `"${order.Attendees?.phone_number || ''}"`,
         `"${order.order_status || ''}"`
       ];
       csvRows.push(row.join(','));

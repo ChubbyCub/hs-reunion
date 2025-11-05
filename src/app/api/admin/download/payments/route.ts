@@ -8,10 +8,10 @@ const supabase = createClient(
 
 export async function GET() {
   try {
-    // Fetch all Payment table data
+    // Fetch all Payment table data with attendee information
     const { data: payments, error } = await supabase
       .from('Payment')
-      .select('*')
+      .select('*, Attendees(full_name, email, phone_number)')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -22,8 +22,8 @@ export async function GET() {
       );
     }
 
-    // Convert to CSV format - exact table structure
-    const headers = ['ID', 'Created At', 'Updated At', 'ID Attendee', 'URL Confirmation', 'ID Order'];
+    // Convert to CSV format - exact table structure with attendee info
+    const headers = ['ID', 'Created At', 'Updated At', 'ID Attendee', 'Attendee Name', 'Attendee Email', 'Attendee Phone', 'URL Confirmation', 'ID Order'];
     const csvRows = [headers.join(',')];
 
     payments?.forEach(payment => {
@@ -32,6 +32,9 @@ export async function GET() {
         new Date(payment.created_at).toISOString(),
         new Date(payment.updated_at).toISOString(),
         payment.id_attendee,
+        `"${payment.Attendees?.full_name || ''}"`,
+        `"${payment.Attendees?.email || ''}"`,
+        `"${payment.Attendees?.phone_number || ''}"`,
         `"${payment.url_confirmation || ''}"`,
         payment.id_order || ''
       ];

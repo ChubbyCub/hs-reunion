@@ -8,10 +8,10 @@ const supabase = createClient(
 
 export async function GET() {
   try {
-    // Fetch all Donation table data
+    // Fetch all Donation table data with attendee information
     const { data: donations, error } = await supabase
       .from('Donation')
-      .select('*')
+      .select('*, Attendees(full_name, email, phone_number)')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -22,8 +22,8 @@ export async function GET() {
       );
     }
 
-    // Convert to CSV format - raw table data
-    const headers = ['ID', 'Created At', 'Updated At', 'Amount', 'ID Attendee'];
+    // Convert to CSV format - raw table data with attendee info
+    const headers = ['ID', 'Created At', 'Updated At', 'Amount', 'ID Attendee', 'Attendee Name', 'Attendee Email', 'Attendee Phone'];
     const csvRows = [headers.join(',')];
 
     donations?.forEach(donation => {
@@ -32,7 +32,10 @@ export async function GET() {
         new Date(donation.created_at).toISOString(),
         donation.updated_at ? new Date(donation.updated_at).toISOString() : '',
         donation.amount,
-        donation.id_attendee || ''
+        donation.id_attendee || '',
+        `"${donation.Attendees?.full_name || ''}"`,
+        `"${donation.Attendees?.email || ''}"`,
+        `"${donation.Attendees?.phone_number || ''}"`
       ];
       csvRows.push(row.join(','));
     });

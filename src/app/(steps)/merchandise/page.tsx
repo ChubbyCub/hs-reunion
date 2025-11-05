@@ -46,21 +46,21 @@ export default function MerchandisePage() {
     }
   };
 
-  const addToCart = (item: Merchandise) => {
-    const existingItem = cart.find(cartItem => 
+  const addToCart = (item: Merchandise, quantity: number = 1) => {
+    const existingItem = cart.find(cartItem =>
       cartItem.merchandiseId === item.id
     );
 
     if (existingItem) {
-      updateCart(cart.map(cartItem => 
-        cartItem.merchandiseId === item.id 
-          ? { ...cartItem, quantity: cartItem.quantity + 1 }
+      updateCart(cart.map(cartItem =>
+        cartItem.merchandiseId === item.id
+          ? { ...cartItem, quantity: cartItem.quantity + quantity }
           : cartItem
       ));
     } else {
       updateCart([...cart, {
         merchandiseId: item.id,
-        quantity: 1,
+        quantity: quantity,
         name: item.name,
         price: item.price,
         gender: item.gender,
@@ -71,19 +71,17 @@ export default function MerchandisePage() {
 
   const addTshirtToCart = () => {
     if (!selectedGender || !selectedSize) return;
-    
+
     // Find the T-shirt with selected gender and size
-    const tshirt = merchandise.find(item => 
-      item.name.toLowerCase() === 'áo thun' && 
-      item.gender === selectedGender && 
+    const tshirt = merchandise.find(item =>
+      item.name.toLowerCase() === 'áo thun' &&
+      item.gender === selectedGender &&
       item.size === selectedSize
     );
-    
+
     if (tshirt) {
       // Add the selected quantity of T-shirts
-      for (let i = 0; i < tshirtQuantity; i++) {
-        addToCart(tshirt);
-      }
+      addToCart(tshirt, tshirtQuantity);
       // Reset selection
       setSelectedGender('');
       setSelectedSize('');
@@ -296,12 +294,10 @@ export default function MerchandisePage() {
             </Button>
           </div>
           
-          <Button 
+          <Button
             onClick={() => {
               const quantity = itemQuantities[item.id] || 1;
-              for (let i = 0; i < quantity; i++) {
-                addToCart(item);
-              }
+              addToCart(item, quantity);
               setItemQuantities(prev => ({ ...prev, [item.id]: 1 }));
             }}
             className="h-12 w-full sm:w-auto"
