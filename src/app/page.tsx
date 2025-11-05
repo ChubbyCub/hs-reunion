@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useEffect, useState, useMemo } from "react";
+import { useAppStore } from "@/stores/app-store";
 
 export default function Home() {
   const eventDate = useMemo(() => new Date("2026-02-01T08:00:00"), []);
@@ -14,6 +15,12 @@ export default function Home() {
     seconds: 0,
   });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { reset } = useAppStore();
+
+  useEffect(() => {
+    // Clear the store when user visits homepage
+    reset();
+  }, [reset]);
 
   useEffect(() => {
     function updateCountdown() {

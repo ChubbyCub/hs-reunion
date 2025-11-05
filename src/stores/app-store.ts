@@ -227,11 +227,10 @@ export const useAppStore = create<AppState>()(
               // Don't fail the entire process if payment proof upload fails
             }
           }
-          
-          // Clear local storage after successful save
-          set(initialState);
-          localStorage.removeItem('app-store');
-          
+
+          // Don't clear local storage yet - keep data until user navigates to homepage
+          // This allows the complete page to display the email
+
           return {
             success: true,
             attendeeId,
