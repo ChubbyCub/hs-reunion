@@ -25,10 +25,10 @@ export async function PATCH(
     }
 
     // Validate status - using actual enum values from database
-    const validStatuses = ['pending', 'complete'];
+    const validStatuses = ['pending', 'paid', 'complete'];
     if (!validStatuses.includes(order_status)) {
       return NextResponse.json(
-        { error: 'Invalid order_status. Must be one of: pending, complete' },
+        { error: 'Invalid order_status. Must be one of: pending, paid, complete' },
         { status: 400 }
       );
     }

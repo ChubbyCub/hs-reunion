@@ -3,12 +3,11 @@
 import { useState, Fragment } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Search, RefreshCw, ChevronDown, ChevronUp, ChevronsUpDown, Download } from "lucide-react";
+import { Search, RefreshCw, ChevronDown, ChevronUp, Download } from "lucide-react";
 import AdminLayout from "@/components/AdminLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -78,27 +77,7 @@ export default function OrdersPage() {
     return amount.toLocaleString("vi-VN") + " VND";
   };
 
-  const getNextStatus = (currentStatus: string): string => {
-    const statuses = ['pending', 'complete'];
-    const currentIndex = statuses.indexOf(currentStatus || 'pending');
-    const nextIndex = (currentIndex + 1) % statuses.length;
-    return statuses[nextIndex];
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'complete':
-      case 'completed':
-        return 'success';
-      case 'pending':
-      default:
-        return 'secondary';
-    }
-  };
-
-  const updateOrderStatus = async (orderId: number, currentStatus: string) => {
-    const newStatus = getNextStatus(currentStatus);
-
+  const updateOrderStatus = async (orderId: number, newStatus: string) => {
     try {
       const response = await fetch(`/api/admin/orders/${orderId}`, {
         method: 'PATCH',
@@ -190,6 +169,7 @@ export default function OrdersPage() {
             >
               <option value="">Tất cả trạng thái</option>
               <option value="pending">Pending</option>
+              <option value="paid">Paid</option>
               <option value="complete">Complete</option>
             </Select>
             <Select
@@ -244,21 +224,24 @@ export default function OrdersPage() {
                           <div className="text-xs text-gray-500">{order.Attendees.email}</div>
                         </TableCell>
                         <TableCell>
-                          <button
-                            onClick={(e) => {
+                          <select
+                            value={order.order_status || "pending"}
+                            onChange={(e) => {
                               e.stopPropagation();
-                              updateOrderStatus(order.id, order.order_status);
+                              updateOrderStatus(order.id, e.target.value);
                             }}
-                            className="focus:outline-none"
+                            className={`px-3 py-1.5 rounded-md text-sm font-medium border focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer ${
+                              (order.order_status || "pending") === "complete"
+                                ? "bg-green-100 text-green-800 border-green-200 focus:ring-green-500"
+                                : (order.order_status || "pending") === "paid"
+                                ? "bg-blue-100 text-blue-800 border-blue-200 focus:ring-blue-500"
+                                : "bg-gray-100 text-gray-800 border-gray-200 focus:ring-gray-500"
+                            }`}
                           >
-                            <Badge
-                              variant={getStatusColor(order.order_status || "pending")}
-                              className="cursor-pointer hover:opacity-80 flex items-center gap-1"
-                            >
-                              {order.order_status || "pending"}
-                              <ChevronsUpDown className="w-3 h-3" />
-                            </Badge>
-                          </button>
+                            <option value="pending">pending</option>
+                            <option value="paid">paid</option>
+                            <option value="complete">complete</option>
+                          </select>
                         </TableCell>
                         <TableCell className="text-right font-semibold">
                           {formatVND(order.amount)}

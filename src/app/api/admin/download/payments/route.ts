@@ -23,7 +23,7 @@ export async function GET() {
     }
 
     // Convert to CSV format - exact table structure with attendee info
-    const headers = ['ID', 'Created At', 'Updated At', 'ID Attendee', 'Attendee Name', 'Attendee Email', 'Attendee Phone', 'URL Confirmation', 'ID Order'];
+    const headers = ['ID', 'Created At', 'Updated At', 'ID Attendee', 'Attendee Name', 'Attendee Email', 'Attendee Phone', 'Confirmed', 'URL Confirmation', 'ID Order'];
     const csvRows = [headers.join(',')];
 
     payments?.forEach(payment => {
@@ -35,6 +35,7 @@ export async function GET() {
         `"${payment.Attendees?.full_name || ''}"`,
         `"${payment.Attendees?.email || ''}"`,
         `"${payment.Attendees?.phone_number || ''}"`,
+        payment.confirmed ? 'TRUE' : 'FALSE',
         `"${payment.url_confirmation || ''}"`,
         payment.id_order || ''
       ];
