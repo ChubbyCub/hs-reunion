@@ -32,14 +32,22 @@ import {
 
 interface Attendee {
   id: number;
+  created_at: string;
+  updated_at: string;
+  first_name: string;
+  last_name: string;
   full_name: string;
   email: string;
   phone_number: string;
   class: string;
   occupation: string | null;
   employer: string | null;
+  address: string | null;
+  country: string | null;
+  message: string | null;
   checked_in: boolean;
-  created_at: string;
+  invite_sent: boolean;
+  qr_code_url: string | null;
 }
 
 interface AttendeesResponse {
@@ -94,6 +102,28 @@ export default function AttendeesPage() {
     },
   });
 
+  // Toggle invite sent status
+  const toggleInviteSent = async (attendeeId: number, currentStatus: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/attendees/${attendeeId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ invite_sent: !currentStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update invite status');
+      }
+
+      await refetch();
+    } catch (error) {
+      console.error('Error updating invite status:', error);
+      alert('Không thể cập nhật trạng thái gửi thư mời. Vui lòng thử lại.');
+    }
+  };
+
   // Define columns
   const columns: ColumnDef<Attendee>[] = [
     {
@@ -130,6 +160,45 @@ export default function AttendeesPage() {
       ),
     },
     {
+      accessorKey: "occupation",
+      header: "Nghề nghiệp",
+      cell: ({ row }) => (
+        <div className="text-sm">{row.original.occupation || '-'}</div>
+      ),
+    },
+    {
+      accessorKey: "employer",
+      header: "Nơi làm việc",
+      cell: ({ row }) => (
+        <div className="text-sm">{row.original.employer || '-'}</div>
+      ),
+    },
+    {
+      accessorKey: "address",
+      header: "Địa chỉ",
+      cell: ({ row }) => (
+        <div className="text-sm max-w-xs truncate" title={row.original.address || ''}>
+          {row.original.address || '-'}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "country",
+      header: "Quốc gia",
+      cell: ({ row }) => (
+        <div className="text-sm">{row.original.country || '-'}</div>
+      ),
+    },
+    {
+      accessorKey: "message",
+      header: "Lời nhắn",
+      cell: ({ row }) => (
+        <div className="text-sm max-w-xs truncate" title={row.original.message || ''}>
+          {row.original.message || '-'}
+        </div>
+      ),
+    },
+    {
       accessorKey: "checked_in",
       header: "Check-in",
       cell: ({ row }) => (
@@ -139,11 +208,60 @@ export default function AttendeesPage() {
       ),
     },
     {
+      accessorKey: "invite_sent",
+      header: "Thư mời",
+      cell: ({ row }) => (
+        <button
+          onClick={() => toggleInviteSent(row.original.id, row.original.invite_sent)}
+          className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          style={{
+            backgroundColor: row.original.invite_sent ? '#16a34a' : '#d1d5db'
+          }}
+          title={row.original.invite_sent ? 'Đã gửi' : 'Chưa gửi'}
+        >
+          <span
+            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+              row.original.invite_sent ? 'translate-x-6' : 'translate-x-1'
+            }`}
+          />
+        </button>
+      ),
+    },
+    {
+      accessorKey: "qr_code_url",
+      header: "QR Code",
+      cell: ({ row }) => (
+        <div className="text-sm">
+          {row.original.qr_code_url ? (
+            <a
+              href={row.original.qr_code_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 underline"
+            >
+              Xem
+            </a>
+          ) : (
+            '-'
+          )}
+        </div>
+      ),
+    },
+    {
       accessorKey: "created_at",
       header: "Ngày đăng ký",
       cell: ({ row }) => (
         <div className="text-sm text-gray-600">
           {format(new Date(row.original.created_at), "dd/MM/yyyy HH:mm")}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "updated_at",
+      header: "Cập nhật",
+      cell: ({ row }) => (
+        <div className="text-sm text-gray-600">
+          {format(new Date(row.original.updated_at), "dd/MM/yyyy HH:mm")}
         </div>
       ),
     },

@@ -39,6 +39,7 @@ export async function GET() {
       'Country',
       'Message',
       'Checked In',
+      'Invite Sent',
       'QR Code URL'
     ];
     const csvRows = [headers.join(',')];
@@ -59,7 +60,8 @@ export async function GET() {
         `"${attendee.address || ''}"`,
         `"${attendee.country || ''}"`,
         `"${(attendee.message || '').replace(/"/g, '""')}"`, // Escape quotes in message
-        attendee.checked_in,
+        attendee.checked_in ? 'TRUE' : 'FALSE',
+        attendee.invite_sent ? 'TRUE' : 'FALSE',
         `"${attendee.qr_code_url || ''}"`
       ];
       csvRows.push(row.join(','));
