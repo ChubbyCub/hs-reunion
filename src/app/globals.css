@@ -78,6 +78,7 @@
     background-image: url('/background-mobile.webp');
     background-size: cover;
     background-position: center;
+    background-attachment: fixed;
   }
 }
 
