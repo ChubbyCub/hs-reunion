@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useEffect, useState, useMemo } from "react";
 import { useAppStore } from "@/stores/app-store";
+import { FileText } from "lucide-react";
 
 export default function Home() {
   const eventDate = useMemo(() => new Date("2026-02-01T08:00:00"), []);
@@ -241,23 +242,43 @@ export default function Home() {
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1.5, ease: "easeInOut", delay: 1 }}
-                    className="text-center mt-4"
+                    className="text-center mt-4 space-y-4"
                   >
-                    <Link
-                      href="/register"
-                      className="group inline-flex items-center text-2xl font-bold text-yellow-400 transition-all hover:text-yellow-500 border-0 md:border-2 md:border-white md:hover:border-yellow-100 bg-transparent reg-cta-bg px-6 py-3 rounded-lg"
+                    {/* Xem Thư Ngỏ Button */}
+                    <a
+                      href="https://drive.google.com/file/d/1bX5ecaMj5Azb901-4LGva_D9LLt_bzpM/view"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-center text-xl font-bold text-blue-400 transition-all hover:text-blue-500 border-0 md:border-2 md:border-white md:hover:border-blue-100 bg-transparent px-6 py-3 rounded-lg"
                     >
                       <motion.span
                         whileHover={{ scale: 1.05 }}
                         transition={{ type: "spring", stiffness: 300 }}
-                        className="inline-block"
+                        className="inline-flex items-center"
                       >
-                        Đăng ký ngay
+                        <FileText className="w-5 h-5 mr-2" />
+                        Xem Thư Ngỏ
                       </motion.span>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="ml-3 h-6 w-6 animate-nudgeRight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </Link>
+                    </a>
+
+                    {/* Đăng Ký Button */}
+                    <div>
+                      <Link
+                        href="/register"
+                        className="group inline-flex items-center text-2xl font-bold text-yellow-400 transition-all hover:text-yellow-500 border-0 md:border-2 md:border-white md:hover:border-yellow-100 bg-transparent reg-cta-bg px-6 py-3 rounded-lg"
+                      >
+                        <motion.span
+                          whileHover={{ scale: 1.05 }}
+                          transition={{ type: "spring", stiffness: 300 }}
+                          className="inline-block"
+                        >
+                          Đăng ký ngay
+                        </motion.span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="ml-3 h-6 w-6 animate-nudgeRight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </Link>
+                    </div>
                   </motion.div>
                 )}
               </div>
