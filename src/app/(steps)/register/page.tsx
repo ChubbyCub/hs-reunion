@@ -28,6 +28,7 @@ const formSchema = z.object({
   workplace: z.string().optional(),
   address: z.string().optional(),
   country: z.string().min(1, { message: "Vui lòng chọn quốc gia." }),
+  willAttendEvent: z.boolean(),
 });
 
 export default function RegisterPage() {
@@ -54,6 +55,7 @@ export default function RegisterPage() {
       workplace: formData.workplace || '',
       address: formData.address || '',
       country: formData.country || '',
+      willAttendEvent: formData.willAttendEvent !== undefined ? formData.willAttendEvent : true,
     },
   });
 
@@ -68,6 +70,7 @@ export default function RegisterPage() {
         workplace: formData.workplace || '',
         address: formData.address || '',
         country: formData.country || '',
+        willAttendEvent: formData.willAttendEvent !== undefined ? formData.willAttendEvent : true,
       });
     }
   }, [hasHydrated, form, formData]);
@@ -330,6 +333,30 @@ export default function RegisterPage() {
                   </select>
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="willAttendEvent"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 bg-blue-50">
+                <FormControl>
+                  <input
+                    type="checkbox"
+                    checked={field.value}
+                    onChange={field.onChange}
+                    className="h-4 w-4 mt-1 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500 cursor-pointer"
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel className="font-form font-semibold cursor-pointer">
+                    Tôi sẽ tham dự sự kiện trực tiếp
+                  </FormLabel>
+                  <p className="text-sm text-gray-600 font-form">
+                    Nếu bạn không thể tham dự trực tiếp, bạn có thể bỏ chọn ô này. Bạn vẫn có thể đặt hàng lưu niệm.
+                  </p>
+                </div>
               </FormItem>
             )}
           />

@@ -328,8 +328,14 @@ export default function PaymentPage() {
       {/* Navigation */}
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between">
         <Button variant="outline" className="font-form order-2 sm:order-1" onClick={() => {
-            setStep(3);
-            router.push("/donation");
+            // Go back to merchandise if not attending event, otherwise go to donation
+            if (!formData.willAttendEvent) {
+              setStep(2);
+              router.push("/merchandise");
+            } else {
+              setStep(3);
+              router.push("/donation");
+            }
         }} disabled={isSaving}>
           Quay lại
         </Button>

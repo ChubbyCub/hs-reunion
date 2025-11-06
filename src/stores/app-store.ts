@@ -37,6 +37,7 @@ const initialState: { currentStep: number; formData: FormData; cart: CartItem[];
     address: '',
     country: '',
     message: '',
+    willAttendEvent: true, // Default to true
     donationAmount: 0,
   },
   cart: [],
@@ -65,8 +66,8 @@ export const useAppStore = create<AppState>()(
           // Step 1: Generate and upload QR code only if not already done
           let qrCodeUrl = existingQrCodeUrl;
 
-          if (!qrCodeUrl) {
-            // Generate QR code
+          if (!qrCodeUrl && formData.willAttendEvent) {
+            // Generate QR code only if they will attend the event
             const qrPayload = JSON.stringify({ em: formData.email });
             const qrDataUrl = await QRCode.toDataURL(qrPayload, {
               errorCorrectionLevel: 'M',

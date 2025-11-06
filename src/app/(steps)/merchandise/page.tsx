@@ -12,7 +12,7 @@ import { X } from "lucide-react";
 
 export default function MerchandisePage() {
   const router = useRouter();
-  const { setStep, updateCart, cart } = useAppStore();
+  const { setStep, updateCart, cart, formData } = useAppStore();
   const [merchandise, setMerchandise] = useState<Merchandise[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -101,8 +101,15 @@ export default function MerchandisePage() {
   const handleContinue = () => {
     // Cart is already saved in local storage via the store
     // No need to save to database here - that will happen at the final step
-    setStep(3);
-    router.push("/donation");
+
+    // If user is not attending the event, skip donation and go straight to payment
+    if (!formData.willAttendEvent) {
+      setStep(4);
+      router.push("/payment");
+    } else {
+      setStep(3);
+      router.push("/donation");
+    }
   };
 
   const handleBack = () => {

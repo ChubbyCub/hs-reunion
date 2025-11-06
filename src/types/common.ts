@@ -9,6 +9,7 @@ export interface FormData {
   address?: string;
   country: string;
   message?: string;
+  willAttendEvent: boolean; // Whether they will attend the live event
   donationAmount: number; // Required donation amount in VND
   attendeeId?: number; // Store the attendee ID after saving to database
 }

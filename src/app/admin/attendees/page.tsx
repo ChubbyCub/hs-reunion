@@ -47,6 +47,7 @@ interface Attendee {
   message: string | null;
   checked_in: boolean;
   invite_sent: boolean;
+  attend_live_event: boolean;
   qr_code_url: string | null;
 }
 
@@ -225,6 +226,15 @@ export default function AttendeesPage() {
             }`}
           />
         </button>
+      ),
+    },
+    {
+      accessorKey: "attend_live_event",
+      header: "Tham dự trực tiếp",
+      cell: ({ row }) => (
+        <Badge variant={row.original.attend_live_event ? "success" : "outline"}>
+          {row.original.attend_live_event ? "Có" : "Không"}
+        </Badge>
       ),
     },
     {

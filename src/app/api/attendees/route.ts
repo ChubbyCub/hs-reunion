@@ -19,8 +19,8 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.json();
 
-    // Validate required fields
-    const requiredFields = ['fullName', 'email', 'phone', 'class', 'country', 'qrCodeUrl'];
+    // Validate required fields (qrCodeUrl is optional)
+    const requiredFields = ['fullName', 'email', 'phone', 'class', 'country'];
     for (const field of requiredFields) {
       if (!formData[field]) {
         return NextResponse.json(
@@ -43,7 +43,8 @@ export async function POST(request: NextRequest) {
         address: formData.address || null,
         country: formData.country,
         message: formData.message || null,
-        qr_code_url: formData.qrCodeUrl,
+        qr_code_url: formData.qrCodeUrl || null,
+        attend_live_event: formData.willAttendEvent !== undefined ? formData.willAttendEvent : true,
       }])
       .select('id')
       .single();

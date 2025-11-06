@@ -100,7 +100,11 @@ export default function CompletePage() {
                 Cảm ơn bạn đã &ldquo;trả lời cuộc gọi thanh xuân&rdquo;.
               </p>
               <p className="text-green-700 text-base mb-4">
-                Sau khi xác minh thông tin, BTC sẽ gửi vé và mã QR tham dự đến email <span className="font-semibold">{formData.email}</span>.
+                {formData.willAttendEvent ? (
+                  <>Sau khi xác minh thông tin, BTC sẽ gửi vé và mã QR tham dự đến email <span className="font-semibold">{formData.email}</span>.</>
+                ) : (
+                  <>Sau khi xác minh thông tin, BTC sẽ gửi email xác nhận đơn hàng đến <span className="font-semibold">{formData.email}</span>.</>
+                )}
               </p>
               <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
                 <p className="text-yellow-800 text-sm">

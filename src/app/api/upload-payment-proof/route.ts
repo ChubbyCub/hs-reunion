@@ -37,10 +37,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Must have both orderId and donationId (business rule: everyone orders + donates)
-    if (!orderId || !donationId) {
+    // Must have at least orderId or donationId
+    if (!orderId && !donationId) {
       return NextResponse.json(
-        { error: 'Must provide both orderId and donationId' },
+        { error: 'Must provide at least orderId or donationId' },
         { status: 400 }
       );
     }
@@ -72,19 +72,19 @@ export async function POST(request: NextRequest) {
       addRandomSuffix: false,
     });
 
-    // Prepare payment data
+    // Prepare payment data - donation_id is now optional
     const paymentData: {
       id_attendee: number;
       url_confirmation: string;
       amount: number;
-      id_order: number;
-      id_donation: number;
+      id_order: number | null;
+      id_donation: number | null;
     } = {
       id_attendee: parseInt(attendeeId),
       url_confirmation: blob.url,
       amount: parseFloat(amount),
-      id_order: orderId ? parseInt(orderId) : 0,
-      id_donation: donationId ? parseInt(donationId) : 0,
+      id_order: orderId ? parseInt(orderId) : null,
+      id_donation: donationId ? parseInt(donationId) : null,
     };
 
     // Store the blob URL in the Payment table
