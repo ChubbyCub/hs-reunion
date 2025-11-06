@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { MerchandiseService } from "@/services/database/merchandise";
 import type { Merchandise } from "@/types/common";
 import Image from "next/image";
+import { X } from "lucide-react";
 
 export default function MerchandisePage() {
   const router = useRouter();
@@ -15,12 +16,15 @@ export default function MerchandisePage() {
   const [merchandise, setMerchandise] = useState<Merchandise[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // T-shirt selection state
   const [selectedGender, setSelectedGender] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [tshirtQuantity, setTshirtQuantity] = useState(1);
-  
+
+  // Size guide modal state
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
+
   // Quantity state for other items
   const [itemQuantities, setItemQuantities] = useState<{[key: number]: number}>({});
 
@@ -173,7 +177,13 @@ export default function MerchandisePage() {
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                   <div>
                     <p className="text-lg sm:text-xl font-semibold mb-1">Áo Thun</p>
-                    <p className="text-sm sm:text-base text-gray-600">Chọn kiểu dáng và kích thước bạn thích</p>
+                    <p className="text-sm sm:text-base text-gray-600 mb-2">Chọn kiểu dáng và kích thước bạn thích</p>
+                    <button
+                      onClick={() => setShowSizeGuide(true)}
+                      className="text-blue-600 hover:text-blue-800 underline text-sm font-medium"
+                    >
+                      Xem Size Guide
+                    </button>
                   </div>
                   <div className="flex flex-col sm:items-end gap-3">
                     <p className="font-bold text-xl sm:text-2xl">
@@ -232,7 +242,7 @@ export default function MerchandisePage() {
                   </div>
                   
                   <div className="flex items-end justify-center sm:justify-end sm:col-span-2 lg:col-span-1">
-                    <Button 
+                    <Button
                       onClick={addTshirtToCart}
                       disabled={!selectedGender || !selectedSize}
                       size="lg"
@@ -242,20 +252,6 @@ export default function MerchandisePage() {
                     </Button>
                   </div>
                 </div>
-                
-                {selectedSize && (
-                  <div className="col-span-full mt-4">
-                    <p className="text-xs sm:text-sm text-gray-600 text-center">
-                      {selectedSize === "S" && "Kích thước S: 46cm x 66cm (rộng x dài)"}
-                      {selectedSize === "M" && "Kích thước M: 48cm x 68cm (rộng x dài)"}
-                      {selectedSize === "L" && "Kích thước L: 50cm x 70cm (rộng x dài)"}
-                      {selectedSize === "XL" && "Kích thước XL: 52cm x 72cm (rộng x dài)"}
-                      {selectedSize === "XXL" && "Kích thước XXL: 54cm x 74cm (rộng x dài)"}
-                      {selectedSize === "3XL" && "Kích thước 3XL: 56cm x 76cm (rộng x dài)"}
-                      {selectedSize === "4XL" && "Kích thước 4XL: 58cm x 78cm (rộng x dài)"}
-                    </p>
-                  </div>
-                )}
               </Card>
             </div>
           )}
@@ -422,6 +418,43 @@ export default function MerchandisePage() {
           Tiếp tục
         </Button>
       </div>
+
+      {/* Size Guide Modal */}
+      {showSizeGuide && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowSizeGuide(false)}
+        >
+          <div
+            className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Size Guide</h3>
+              <button
+                onClick={() => setShowSizeGuide(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-4">
+              <Image
+                src="/size_guide.jpg"
+                alt="Size Guide"
+                width={1200}
+                height={800}
+                className="w-full h-auto rounded-lg"
+              />
+            </div>
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 flex justify-end">
+              <Button variant="outline" onClick={() => setShowSizeGuide(false)}>
+                Đóng
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
