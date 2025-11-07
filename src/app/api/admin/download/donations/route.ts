@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { format } from 'date-fns';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,8 +30,8 @@ export async function GET() {
     donations?.forEach(donation => {
       const row = [
         donation.id,
-        new Date(donation.created_at).toISOString(),
-        donation.updated_at ? new Date(donation.updated_at).toISOString() : '',
+        format(new Date(donation.created_at), 'dd/MM/yyyy HH:mm:ss'),
+        donation.updated_at ? format(new Date(donation.updated_at), 'dd/MM/yyyy HH:mm:ss') : '',
         donation.amount,
         donation.id_attendee || '',
         `"${donation.Attendees?.full_name || ''}"`,

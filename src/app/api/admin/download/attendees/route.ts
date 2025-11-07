@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { format } from 'date-fns';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -48,8 +49,8 @@ export async function GET() {
     attendees?.forEach(attendee => {
       const row = [
         attendee.id,
-        new Date(attendee.created_at).toISOString(),
-        new Date(attendee.updated_at).toISOString(),
+        format(new Date(attendee.created_at), 'dd/MM/yyyy HH:mm:ss'),
+        format(new Date(attendee.updated_at), 'dd/MM/yyyy HH:mm:ss'),
         `"${attendee.first_name || ''}"`,
         `"${attendee.last_name || ''}"`,
         `"${attendee.full_name || ''}"`,
