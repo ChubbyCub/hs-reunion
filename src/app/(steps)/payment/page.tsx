@@ -12,7 +12,6 @@ export default function PaymentPage() {
     const { setStep, formData, cart, updateFormData, saveEverythingToDatabase } = useAppStore();
     const donationAmount = formData.donationAmount || 0;
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [isUploading, setIsUploading] = useState(false);
     const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [uploadMessage, setUploadMessage] = useState('');
     const [message, setMessage] = useState(formData.message || '');
@@ -35,51 +34,35 @@ export default function PaymentPage() {
             if (!file.type.startsWith('image/')) {
                 setUploadMessage('Chỉ chấp nhận file hình ảnh');
                 setUploadStatus('error');
+                setSelectedFile(null);
                 return;
             }
-            
+
             // Validate file size (5MB)
             if (file.size > 5 * 1024 * 1024) {
                 setUploadMessage('File phải nhỏ hơn 5MB');
                 setUploadStatus('error');
+                setSelectedFile(null);
                 return;
             }
-            
+
+            // File is valid - store it immediately
             setSelectedFile(file);
-            setUploadStatus('idle');
-            setUploadMessage('');
-        }
-    };
 
-    const handleUpload = async () => {
-        if (!selectedFile) return;
-
-        setIsUploading(true);
-        setUploadStatus('idle');
-        setUploadMessage('');
-
-        try {
-            // For now, just store the file info in the store
-            // The actual upload will happen during finish registration
+            // Store the file info in the store for later upload
             const fileInfo = {
-                file: selectedFile,
-                name: selectedFile.name,
-                size: selectedFile.size,
-                type: selectedFile.type,
+                file: file,
+                name: file.name,
+                size: file.size,
+                type: file.type,
                 uploadedAt: new Date().toISOString()
             };
 
-            // Store the actual file for later upload
             useAppStore.getState().setPaymentProofFile(fileInfo);
 
+            // Set success status
             setUploadStatus('success');
-            setUploadMessage('File đã được chọn! Sẽ được tải lên khi hoàn tất đăng ký.');
-        } catch (error) {
-            setUploadStatus('error');
-            setUploadMessage('Có lỗi xảy ra khi chọn file');
-            console.error('File selection error:', error);
-        } finally {
-            setIsUploading(false);
+            setUploadMessage('File đã sẵn sàng! Nhấn "Hoàn thành đăng ký" để tiếp tục.');
         }
     };
 
@@ -87,6 +70,8 @@ export default function PaymentPage() {
         setSelectedFile(null);
         setUploadStatus('idle');
         setUploadMessage('');
+        // Also clear from store
+        useAppStore.getState().setPaymentProofFile(undefined!);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -246,10 +231,8 @@ export default function PaymentPage() {
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <span className="text-gray-600 text-sm font-medium">
-                        {selectedFile.name.split('.').pop()?.toUpperCase()}
-                      </span>
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <CheckCircle className="h-5 w-5 text-green-600" />
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 text-sm sm:text-base">{selectedFile.name}</p>
@@ -267,14 +250,6 @@ export default function PaymentPage() {
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
-                
-                <Button
-                  onClick={handleUpload}
-                  disabled={isUploading}
-                  className="w-full font-form"
-                >
-                  {isUploading ? 'Đang tải lên...' : 'Tải lên xác nhận thanh toán'}
-                </Button>
               </div>
             )}
           </div>
