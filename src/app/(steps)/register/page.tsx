@@ -175,7 +175,7 @@ export default function RegisterPage() {
               <FormItem>
                 <FormLabel className="font-form">Họ và tên</FormLabel>
                 <FormControl>
-                  <Input className="font-form" placeholder="Nhập họ và tên của bạn" {...field} />
+                  <Input className="font-form" placeholder="Nhập họ và tên của bạn (Tiếng Việt có dấu)" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
