@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   useReactTable,
@@ -15,6 +15,7 @@ import {
   Download,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
 } from "lucide-react";
 import AdminLayout from "@/components/AdminLayout";
 import { Input } from "@/components/ui/input";
@@ -61,6 +62,14 @@ interface AttendeesResponse {
   };
 }
 
+const CLASS_OPTIONS = [
+  "12A1", "12A2", "12A3", "12A4", "12A5", "12A6", "12A7", "12A8",
+  "12B1", "12B2", "12B3", "12B4", "12B5",
+  "12C", "12CA", "12CH", "12CL", "12CS", "12CT", "12CTC", "12CTIN",
+  "12D1", "12D2", "12D3", "12D4", "12D5",
+  "12NT", "12SN1", "12SN2"
+];
+
 export default function AttendeesPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
@@ -68,6 +77,9 @@ export default function AttendeesPage() {
   const [classFilter, setClassFilter] = useState("");
   const [checkedInFilter, setCheckedInFilter] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [classDropdownOpen, setClassDropdownOpen] = useState(false);
+  const [classSearchTerm, setClassSearchTerm] = useState("");
+  const classDropdownRef = useRef<HTMLDivElement>(null);
 
   // Debounce search
   useEffect(() => {
@@ -77,6 +89,22 @@ export default function AttendeesPage() {
     }, 300);
     return () => clearTimeout(timer);
   }, [search]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (classDropdownRef.current && !classDropdownRef.current.contains(event.target as Node)) {
+        setClassDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Filter class options based on search term
+  const filteredClassOptions = CLASS_OPTIONS.filter(cls =>
+    cls.toLowerCase().includes(classSearchTerm.toLowerCase())
+  );
 
   // Fetch attendees
   const { data, isLoading, refetch } = useQuery<AttendeesResponse>({
@@ -347,31 +375,66 @@ export default function AttendeesPage() {
                 className="pl-9"
               />
             </div>
-            <Select
-              value={classFilter}
-              onChange={(e) => {
-                setClassFilter(e.target.value);
-                setPage(1);
-              }}
-            >
-              <option value="">Tất cả các lớp</option>
-              <option value="12A1">12A1</option>
-              <option value="12A2">12A2</option>
-              <option value="12A3">12A3</option>
-              <option value="12A4">12A4</option>
-              <option value="12A5">12A5</option>
-              <option value="12A6">12A6</option>
-              <option value="12A7">12A7</option>
-              <option value="12A8">12A8</option>
-              <option value="12B1">12B1</option>
-              <option value="12B2">12B2</option>
-              <option value="12B3">12B3</option>
-              <option value="12B4">12B4</option>
-              <option value="12B5">12B5</option>
-              <option value="12C">12C</option>
-              <option value="12CA">12CA</option>
-              <option value="12CH">12CH</option>
-            </Select>
+            <div className="relative" ref={classDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setClassDropdownOpen(!classDropdownOpen)}
+                className="w-full px-3 py-2 text-left border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white flex items-center justify-between"
+              >
+                <span className={classFilter ? "text-gray-900" : "text-gray-500"}>
+                  {classFilter || "Lọc theo lớp..."}
+                </span>
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+              </button>
+
+              {classDropdownOpen && (
+                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-80 overflow-hidden">
+                  <div className="p-2 border-b border-gray-200">
+                    <Input
+                      placeholder="Tìm lớp..."
+                      value={classSearchTerm}
+                      onChange={(e) => setClassSearchTerm(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      autoFocus
+                    />
+                  </div>
+                  <div className="max-h-60 overflow-y-auto">
+                    <button
+                      onClick={() => {
+                        setClassFilter("");
+                        setClassSearchTerm("");
+                        setClassDropdownOpen(false);
+                        setPage(1);
+                      }}
+                      className="w-full px-3 py-2 text-left hover:bg-gray-100 text-gray-500"
+                    >
+                      Tất cả các lớp
+                    </button>
+                    {filteredClassOptions.map((cls) => (
+                      <button
+                        key={cls}
+                        onClick={() => {
+                          setClassFilter(cls);
+                          setClassSearchTerm("");
+                          setClassDropdownOpen(false);
+                          setPage(1);
+                        }}
+                        className={`w-full px-3 py-2 text-left hover:bg-gray-100 ${
+                          classFilter === cls ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-900"
+                        }`}
+                      >
+                        {cls}
+                      </button>
+                    ))}
+                    {filteredClassOptions.length === 0 && (
+                      <div className="px-3 py-2 text-gray-500 text-sm">
+                        Không tìm thấy lớp nào
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             <Select
               value={checkedInFilter}
               onChange={(e) => {
