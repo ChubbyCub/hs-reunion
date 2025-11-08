@@ -19,6 +19,7 @@ import {
 
 interface MerchandiseItem {
   quantity: number;
+  notes: string | null;
   Merchandise: {
     id: number;
     name: string;
@@ -261,6 +262,7 @@ export default function OrdersPage() {
                                     <tr>
                                       <th className="text-left px-3 py-2 font-semibold text-gray-700">Item</th>
                                       <th className="text-left px-3 py-2 font-semibold text-gray-700">Details</th>
+                                      <th className="text-left px-3 py-2 font-semibold text-gray-700">Notes</th>
                                       <th className="text-center px-3 py-2 font-semibold text-gray-700">Quantity</th>
                                       <th className="text-right px-3 py-2 font-semibold text-gray-700">Unit Price</th>
                                       <th className="text-right px-3 py-2 font-semibold text-gray-700">Total</th>
@@ -279,6 +281,13 @@ export default function OrdersPage() {
                                             {item.Merchandise.gender && item.Merchandise.size
                                               ? `${item.Merchandise.gender} - ${item.Merchandise.size}`
                                               : '-'}
+                                          </td>
+                                          <td className="px-3 py-2 text-gray-600">
+                                            {item.notes ? (
+                                              <span className="text-green-700 font-medium">{item.notes}</span>
+                                            ) : (
+                                              '-'
+                                            )}
                                           </td>
                                           <td className="px-3 py-2 text-center">{item.quantity}</td>
                                           <td className="px-3 py-2 text-right">{formatVND(item.Merchandise.price)}</td>

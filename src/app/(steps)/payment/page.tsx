@@ -123,14 +123,21 @@ export default function PaymentPage() {
           <div className="mb-3 sm:mb-4">
             <h3 className="font-medium mb-2 text-sm sm:text-base">Đồ lưu niệm:</h3>
             <div className="space-y-2">
-              {cart.map((item) => {
+              {cart.map((item, index) => {
                 const itemTotal = item.price * item.quantity;
                 return (
-                  <div key={item.merchandiseId} className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                    <span className="text-sm sm:text-base">
-                      {item.name} {item.gender && item.size && `(${item.gender} - ${item.size})`} × {item.quantity}
-                    </span>
-                    <span className="text-sm sm:text-base font-medium">{itemTotal.toLocaleString()} VND</span>
+                  <div key={`${item.merchandiseId}-${index}`}>
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                      <span className="text-sm sm:text-base">
+                        {item.name} {item.gender && item.size && `(${item.gender} - ${item.size})`} × {item.quantity}
+                      </span>
+                      <span className="text-sm sm:text-base font-medium">{itemTotal.toLocaleString()} VND</span>
+                    </div>
+                    {item.nameTagCustomization && (
+                      <div className="ml-4 text-xs sm:text-sm text-green-700 italic">
+                        Bảng tên: {item.nameTagCustomization.displayName} - {item.nameTagCustomization.displayClass}
+                      </div>
+                    )}
                   </div>
                 );
               })}

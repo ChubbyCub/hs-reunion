@@ -70,6 +70,7 @@ export async function GET(request: NextRequest) {
           .from('Merch_Order')
           .select(`
             quantity,
+            notes,
             Merchandise!Merch_Order_id_merch_fkey (
               id,
               name,
@@ -109,6 +110,7 @@ export async function GET(request: NextRequest) {
         'Quantity',
         'Unit Price (VND)',
         'Item Total (VND)',
+        'Notes',
         'Order Date',
       ];
 
@@ -132,6 +134,7 @@ export async function GET(request: NextRequest) {
             item.quantity.toString(),
             item.Merchandise.price.toString(),
             (item.Merchandise.price * item.quantity).toString(),
+            item.notes || '',
             new Date(order.created_at).toLocaleString('vi-VN'),
           ]);
         });

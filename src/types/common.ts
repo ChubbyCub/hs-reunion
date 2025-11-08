@@ -58,4 +58,9 @@ export interface CartItem {
   price: number;
   gender: string;
   size: string;
+  // Name tag customization (only for name tag items)
+  nameTagCustomization?: {
+    displayName: string;
+    displayClass: string;
+  };
 }

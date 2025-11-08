@@ -28,6 +28,9 @@ export default function MerchandisePage() {
   // Quantity state for other items
   const [itemQuantities, setItemQuantities] = useState<{[key: number]: number}>({});
 
+  // Name tag customization state - array of {name, class} for each possible name tag
+  const [nameTagInputs, setNameTagInputs] = useState<Array<{name: string, class: string}>>([]);
+
   useEffect(() => {
     loadMerchandise();
   }, []);
@@ -98,6 +101,143 @@ export default function MerchandisePage() {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
+  const addNameTagToCart = (index: number) => {
+    const input = nameTagInputs[index];
+
+    // Validate inputs
+    if (!input.name.trim() || !input.class.trim()) {
+      alert('Vui lòng nhập đầy đủ tên và lớp');
+      return;
+    }
+
+    if (!nameTagItem) {
+      alert('Không tìm thấy sản phẩm bảng tên');
+      return;
+    }
+
+    // Check if this name tag already exists in cart
+    const existingNameTagIndex = cart.findIndex(item =>
+      item.nameTagCustomization &&
+      cart.indexOf(item) === getNameTagCartIndex(index)
+    );
+
+    if (existingNameTagIndex >= 0) {
+      // Update existing name tag
+      const newCart = [...cart];
+      newCart[existingNameTagIndex] = {
+        ...newCart[existingNameTagIndex],
+        nameTagCustomization: {
+          displayName: input.name.trim(),
+          displayClass: input.class.trim()
+        }
+      };
+      updateCart(newCart);
+    } else {
+      // Add new name tag to cart
+      updateCart([...cart, {
+        merchandiseId: nameTagItem.id,
+        quantity: 1,
+        name: nameTagItem.name,
+        price: nameTagItem.price,
+        gender: nameTagItem.gender || '',
+        size: nameTagItem.size || '',
+        nameTagCustomization: {
+          displayName: input.name.trim(),
+          displayClass: input.class.trim()
+        }
+      }]);
+    }
+  };
+
+  // Helper to get the cart index for a specific name tag slot
+  const getNameTagCartIndex = (slotIndex: number): number => {
+    const nameTags = cart
+      .map((item, idx) => ({ item, idx }))
+      .filter(({ item }) => item.name.toLowerCase().includes('bảng tên') || item.name.toLowerCase().includes('name tag'));
+
+    return nameTags[slotIndex]?.idx ?? -1;
+  };
+
+  // Check if a name tag slot is in the cart
+  const isNameTagInCart = (slotIndex: number): boolean => {
+    return getNameTagCartIndex(slotIndex) >= 0;
+  };
+
+  // Update name tag input
+  const updateNameTagInput = (index: number, field: 'name' | 'class', value: string) => {
+    const newInputs = [...nameTagInputs];
+    newInputs[index] = {
+      ...newInputs[index],
+      [field]: value
+    };
+    setNameTagInputs(newInputs);
+  };
+
+  const handleRemoveFromCart = (index: number) => {
+    const item = cart[index];
+    const isTshirt = item.name.toLowerCase() === 'áo thun';
+
+    if (item.quantity > 1) {
+      const newCart = [...cart];
+      newCart[index] = { ...newCart[index], quantity: newCart[index].quantity - 1 };
+
+      // If removing t-shirt, check and remove excess name tags
+      if (isTshirt) {
+        const newTshirtCount = newCart
+          .filter(i => i.name.toLowerCase() === 'áo thun')
+          .reduce((sum, i) => sum + i.quantity, 0);
+        const currentNameTagCount = newCart
+          .filter(i => i.name.toLowerCase().includes('bảng tên') || i.name.toLowerCase().includes('name tag'))
+          .length;
+
+        if (currentNameTagCount > newTshirtCount) {
+          // Remove the last name tag
+          const lastNameTagIndex = newCart.map((i, idx) =>
+            (i.name.toLowerCase().includes('bảng tên') || i.name.toLowerCase().includes('name tag')) ? idx : -1
+          ).filter(idx => idx !== -1).pop();
+
+          if (lastNameTagIndex !== undefined) {
+            newCart.splice(lastNameTagIndex, 1);
+          }
+        }
+      }
+
+      updateCart(newCart);
+    } else {
+      let newCart = cart.filter((_, i) => i !== index);
+
+      // If removing t-shirt, remove excess name tags
+      if (isTshirt) {
+        const newTshirtCount = newCart
+          .filter(i => i.name.toLowerCase() === 'áo thun')
+          .reduce((sum, i) => sum + i.quantity, 0);
+        const nameTagItems = newCart
+          .map((i, idx) => ({ item: i, index: idx }))
+          .filter(({ item }) => item.name.toLowerCase().includes('bảng tên') || item.name.toLowerCase().includes('name tag'));
+
+        // Remove name tags that exceed t-shirt count
+        const nameTagsToRemove = Math.max(0, nameTagItems.length - newTshirtCount);
+        if (nameTagsToRemove > 0) {
+          const indicesToRemove = nameTagItems.slice(-nameTagsToRemove).map(({ index }) => index);
+          newCart = newCart.filter((_, i) => !indicesToRemove.includes(i));
+        }
+      }
+
+      updateCart(newCart);
+    }
+  };
+
+  const handleEditNameTag = (cartIndex: number) => {
+    // Remove from cart to enable editing
+    updateCart(cart.filter((_, i) => i !== cartIndex));
+  };
+
+  const handleIncreaseQuantity = (index: number) => {
+    const newCart = [...cart];
+    newCart[index] = { ...newCart[index], quantity: newCart[index].quantity + 1 };
+    updateCart(newCart);
+  };
+
   const handleContinue = () => {
     // Cart is already saved in local storage via the store
     // No need to save to database here - that will happen at the final step
@@ -118,20 +258,62 @@ export default function MerchandisePage() {
   };
 
   // Separate T-shirts from other items
-  const tshirts = merchandise.filter(item => 
+  const tshirts = merchandise.filter(item =>
     item.name.toLowerCase() === 'áo thun'
   );
-  const otherItems = merchandise.filter(item => 
-    item.name.toLowerCase() !== 'áo thun'
+
+  // Separate name tags from other items
+  const nameTagItem = merchandise.find(item =>
+    item.name.toLowerCase().includes('bảng tên') || item.name.toLowerCase().includes('name tag')
   );
+
+  const otherItems = merchandise.filter(item =>
+    item.name.toLowerCase() !== 'áo thun' &&
+    !item.name.toLowerCase().includes('bảng tên') &&
+    !item.name.toLowerCase().includes('name tag')
+  );
+
+  // Count t-shirts in cart
+  const tshirtCount = cart
+    .filter(item => item.name.toLowerCase() === 'áo thun')
+    .reduce((sum, item) => sum + item.quantity, 0);
+
+  // Count name tags in cart - not currently used but kept for future reference
+  // const nameTagCount = cart
+  //   .filter(item => item.name.toLowerCase().includes('bảng tên') || item.name.toLowerCase().includes('name tag'))
+  //   .reduce((sum, item) => sum + item.quantity, 0);
 
   // Get unique genders and sizes from T-shirts
   const genders = [...new Set(tshirts.map(item => item.gender))];
   const sizes = [...new Set(tshirts.map(item => item.size))];
 
+  // Initialize name tag inputs when t-shirt count changes
+  useEffect(() => {
+    // Only update if t-shirt count changed
+    if (tshirtCount !== nameTagInputs.length) {
+      const newInputs: Array<{name: string, class: string}> = [];
+
+      // Preserve existing inputs
+      for (let i = 0; i < tshirtCount; i++) {
+        if (i < nameTagInputs.length) {
+          newInputs.push(nameTagInputs[i]);
+        } else {
+          // Pre-fill new rows with registration data
+          newInputs.push({
+            name: formData.fullName || '',
+            class: formData.class || ''
+          });
+        }
+      }
+
+      setNameTagInputs(newInputs);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tshirtCount, formData.fullName, formData.class]);
+
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6 max-w-4xl">
+      <div className="container mx-auto px-3 py-6 sm:p-6 max-w-4xl">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Đang tải đồ lưu niệm...</p>
@@ -142,7 +324,7 @@ export default function MerchandisePage() {
 
   if (error) {
     return (
-      <div className="container mx-auto p-6 max-w-4xl">
+      <div className="container mx-auto px-3 py-6 sm:p-6 max-w-4xl">
         <div className="text-center">
           <p className="text-red-600 mb-4">{error}</p>
           <Button onClick={loadMerchandise} variant="outline">
@@ -154,7 +336,7 @@ export default function MerchandisePage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <div className="container mx-auto px-3 py-6 sm:p-6 max-w-6xl">
       <h1 className="text-2xl font-title mb-6 text-center">Đồ Lưu Niệm</h1>
       <p className="font-legalese mb-6 text-center">
         Hãy ủng hộ sự kiện của chúng tôi bằng cách mua đồ lưu niệm!
@@ -263,6 +445,96 @@ export default function MerchandisePage() {
             </div>
           )}
 
+          {/* Name Tag Section - Only show if user has t-shirts in cart */}
+          {nameTagItem && tshirtCount > 0 && (
+            <div className="mb-8">
+              <Card className="p-6 border-2 border-green-500 bg-green-50">
+                {/* Name Tag Sample Image */}
+                <div className="mb-6 flex justify-center">
+                  <div className="relative w-full max-w-md">
+                    <Image
+                      src="/name_tag_sample.png"
+                      alt="Mẫu bảng tên"
+                      width={600}
+                      height={400}
+                      className="rounded-lg object-contain w-full h-auto"
+                    />
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <h3 className="font-semibold text-lg sm:text-xl">
+                      {nameTagItem.name}
+                    </h3>
+                    <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">
+                      MIỄN PHÍ
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Mỗi áo được tặng kèm 1 bảng tên cá nhân hóa. Vui lòng nhập thông tin cho từng bảng tên bên dưới.
+                  </p>
+
+                  {/* Name tag input rows */}
+                  <div className="space-y-3">
+                    {nameTagInputs.map((input, index) => {
+                      const inCart = isNameTagInCart(index);
+                      const cartIndex = getNameTagCartIndex(index);
+
+                      return (
+                        <div key={index} className={`grid grid-cols-1 sm:grid-cols-12 gap-3 p-3 rounded-md ${inCart ? 'bg-gray-100' : 'bg-white'} border border-gray-300`}>
+                          <div className="sm:col-span-1 flex items-center">
+                            <span className="font-medium text-sm text-gray-700">#{index + 1}</span>
+                          </div>
+                          <div className="sm:col-span-4">
+                            <input
+                              type="text"
+                              value={input.name}
+                              onChange={(e) => updateNameTagInput(index, 'name', e.target.value)}
+                              disabled={inCart}
+                              placeholder="Nhập tên"
+                              className={`w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm ${inCart ? 'bg-gray-200 cursor-not-allowed' : ''}`}
+                            />
+                          </div>
+                          <div className="sm:col-span-4">
+                            <input
+                              type="text"
+                              value={input.class}
+                              onChange={(e) => updateNameTagInput(index, 'class', e.target.value)}
+                              disabled={inCart}
+                              placeholder="Nhập lớp (VD: 12A1)"
+                              className={`w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm ${inCart ? 'bg-gray-200 cursor-not-allowed' : ''}`}
+                            />
+                          </div>
+                          <div className="sm:col-span-3 flex items-center gap-2">
+                            {inCart ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleEditNameTag(cartIndex)}
+                                className="w-full hover:bg-blue-500 hover:border-blue-500 hover:text-white"
+                              >
+                                Sửa
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                onClick={() => addNameTagToCart(index)}
+                                className="w-full bg-green-600 hover:bg-green-700"
+                              >
+                                OK
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </Card>
+            </div>
+          )}
+
           {/* Other Items Section */}
           {otherItems.length > 0 && (
             <div>
@@ -346,8 +618,8 @@ export default function MerchandisePage() {
             ) : (
               <>
                 <div className="space-y-3 mb-4">
-                  {cart.map((item) => (
-                    <div key={item.merchandiseId} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 p-3 bg-white rounded border">
+                  {cart.map((item, index) => (
+                    <div key={`${item.merchandiseId}-${index}`} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 p-3 bg-white rounded border">
                       <div className="flex-1">
                         <p className="font-medium text-sm sm:text-base">
                           {item.name}
@@ -357,45 +629,38 @@ export default function MerchandisePage() {
                             {item.gender} • {item.size}
                           </p>
                         )}
+                        {item.nameTagCustomization && (
+                          <p className="text-xs sm:text-sm text-green-700 font-medium">
+                            {item.nameTagCustomization.displayName} - {item.nameTagCustomization.displayClass}
+                          </p>
+                        )}
                         <p className="text-xs sm:text-sm text-gray-600">
                           {item.price.toLocaleString()} VND × {item.quantity}
                         </p>
                       </div>
                       
                       <div className="flex items-center gap-2 sm:ml-3 self-end sm:self-center">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            if (item.quantity > 1) {
-                              updateCart(cart.map(cartItem => 
-                                cartItem.merchandiseId === item.merchandiseId 
-                                  ? { ...cartItem, quantity: cartItem.quantity - 1 }
-                                  : cartItem
-                              ));
-                            } else {
-                              updateCart(cart.filter(cartItem => cartItem.merchandiseId !== item.merchandiseId));
-                            }
-                          }}
-                          className="w-8 h-8 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
-                        >
-                          -
-                        </Button>
-                        <span className="w-8 text-center font-medium">{item.quantity}</span>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            updateCart(cart.map(cartItem => 
-                              cartItem.merchandiseId === item.merchandiseId 
-                                ? { ...cartItem, quantity: cartItem.quantity + 1 }
-                                : cartItem
-                              ));
-                          }}
-                          className="w-8 h-8 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
-                        >
-                          +
-                        </Button>
+                        {!item.nameTagCustomization && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleRemoveFromCart(index)}
+                              className="w-8 h-8 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
+                            >
+                              -
+                            </Button>
+                            <span className="w-8 text-center font-medium">{item.quantity}</span>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleIncreaseQuantity(index)}
+                              className="w-8 h-8 hover:bg-blue-500 hover:border-blue-500 hover:text-white"
+                            >
+                              +
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -462,6 +727,7 @@ export default function MerchandisePage() {
           </div>
         </div>
       )}
+
     </div>
   );
 } 

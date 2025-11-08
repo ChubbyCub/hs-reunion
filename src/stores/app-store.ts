@@ -181,7 +181,8 @@ export const useAppStore = create<AppState>()(
               attendeeId: attendeeId,
               items: cart.map(item => ({
                 merchandiseId: item.merchandiseId,
-                quantity: item.quantity
+                quantity: item.quantity,
+                nameTagCustomization: item.nameTagCustomization
               })),
               amount: orderAmount
             };

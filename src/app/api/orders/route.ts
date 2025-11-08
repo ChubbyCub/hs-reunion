@@ -83,7 +83,10 @@ export async function POST(request: NextRequest) {
     const merchOrderItems = items.map(item => ({
       id_order: order.id,
       id_merch: item.merchandiseId,
-      quantity: item.quantity
+      quantity: item.quantity,
+      notes: item.nameTagCustomization
+        ? `${item.nameTagCustomization.displayName} - ${item.nameTagCustomization.displayClass}`
+        : null
       // Note: price comes from the original Merchandise table, but quantity is needed for Merch_Order
     }));
 
@@ -118,6 +121,7 @@ export async function POST(request: NextRequest) {
 
     if (merchOrderError) {
       console.error('Error creating merchandise orders:', merchOrderError);
+      console.error('Merchandise order items:', JSON.stringify(merchOrderItems, null, 2));
       // Try to delete the order if merchandise orders fail
       try {
         await supabase.from('Order').delete().eq('id', order.id);
@@ -125,7 +129,7 @@ export async function POST(request: NextRequest) {
         await supabase.from('"Order"').delete().eq('id', order.id);
       }
       return NextResponse.json(
-        { error: 'Failed to create merchandise orders', details: merchOrderError },
+        { error: `Failed to create merchandise orders: ${merchOrderError.message || JSON.stringify(merchOrderError)}`, details: merchOrderError },
         { status: 500 }
       );
     }
