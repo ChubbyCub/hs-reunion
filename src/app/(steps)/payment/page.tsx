@@ -4,7 +4,7 @@ import { useAppStore } from "@/stores/app-store";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState, useRef } from "react";
-import { Upload, CheckCircle, AlertCircle, X } from "lucide-react";
+import { Upload, CheckCircle, AlertCircle, X, ZoomIn } from "lucide-react";
 import Image from "next/image";
 
 export default function PaymentPage() {
@@ -17,6 +17,7 @@ export default function PaymentPage() {
     const [message, setMessage] = useState(formData.message || '');
     const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState('');
+    const [isQRModalOpen, setIsQRModalOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const getMerchandiseTotal = () => {
@@ -187,14 +188,24 @@ export default function PaymentPage() {
             </div>
             <div className="flex justify-center md:justify-end">
               <div className="bg-white p-2 rounded-lg border border-blue-300">
-                <Image
-                  src="/bank-qr.jpeg"
-                  alt="QR Code chuyển khoản ngân hàng"
-                  width={200}
-                  height={200}
-                  className="w-40 h-auto sm:w-48"
-                />
-                <p className="text-center text-xs text-blue-600 mt-1">Quét mã QR để chuyển khoản</p>
+                <div
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => setIsQRModalOpen(true)}
+                >
+                  <Image
+                    src="/bank-qr.jpeg"
+                    alt="QR Code chuyển khoản ngân hàng"
+                    width={200}
+                    height={200}
+                    className="w-40 h-auto sm:w-48"
+                  />
+                  <div className="flex items-center justify-center gap-1 mt-2">
+                    <ZoomIn className="h-3 w-3 text-blue-500" />
+                    <p className="text-center text-xs text-blue-500 hover:text-blue-700">
+                      Nhấn để phóng to
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -329,6 +340,37 @@ export default function PaymentPage() {
           {isSaving ? "Đang lưu..." : "Hoàn thành đăng ký"}
         </Button>
       </div>
+
+      {/* QR Code Modal */}
+      {isQRModalOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+          onClick={() => setIsQRModalOpen(false)}
+        >
+          <div className="relative bg-white rounded-lg p-4 max-w-2xl w-full">
+            <button
+              onClick={() => setIsQRModalOpen(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 bg-white rounded-full p-2 shadow-lg"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <div className="flex flex-col items-center">
+              <h3 className="text-xl font-semibold mb-4 text-center">QR Code Chuyển Khoản</h3>
+              <Image
+                src="/bank-qr.jpeg"
+                alt="QR Code chuyển khoản ngân hàng - Phóng to"
+                width={500}
+                height={500}
+                className="w-full max-w-md h-auto"
+              />
+              <div className="mt-4 text-sm text-gray-700 text-center">
+                <p className="font-medium">Nội dung chuyển khoản:</p>
+                <p className="text-blue-600 font-semibold">{formData.email}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
