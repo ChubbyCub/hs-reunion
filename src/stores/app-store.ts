@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { FormData, CartItem } from '../types/common';
 import QRCode from 'qrcode';
+import { fetchWithRetry, postJsonWithRetry, postFormDataWithRetry } from '../lib/retry';
 
 // Define the shape of your store
 interface AppState {
@@ -91,10 +92,7 @@ export const useAppStore = create<AppState>()(
             qrFormData.append('file', qrBlob, `${formData.email}.png`);
             qrFormData.append('email', formData.email);
 
-            const qrUploadResponse = await fetch('/api/upload-qr-code', {
-              method: 'POST',
-              body: qrFormData,
-            });
+            const qrUploadResponse = await postFormDataWithRetry('/api/upload-qr-code', qrFormData);
 
             if (!qrUploadResponse.ok) {
               const errorText = await qrUploadResponse.text();
@@ -116,13 +114,7 @@ export const useAppStore = create<AppState>()(
           }
 
           // Step 2: Save the attendee with QR code URL
-          const attendeeResponse = await fetch('/api/attendees', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ ...formData, qrCodeUrl }),
-          });
+          const attendeeResponse = await postJsonWithRetry('/api/attendees', { ...formData, qrCodeUrl });
 
           if (!attendeeResponse.ok) {
             const errorText = await attendeeResponse.text();
@@ -151,15 +143,9 @@ export const useAppStore = create<AppState>()(
           // Save donation if amount is provided
           let donationId = null;
           if (formData.donationAmount && formData.donationAmount > 0) {
-            const donationResponse = await fetch('/api/donations', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                amount: formData.donationAmount,
-                attendeeId: attendeeId,
-              }),
+            const donationResponse = await postJsonWithRetry('/api/donations', {
+              amount: formData.donationAmount,
+              attendeeId: attendeeId,
             });
 
             const donationResult = await donationResponse.json();
@@ -187,13 +173,7 @@ export const useAppStore = create<AppState>()(
               amount: orderAmount
             };
 
-            const orderResponse = await fetch('/api/orders', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(orderData),
-            });
+            const orderResponse = await postJsonWithRetry('/api/orders', orderData);
 
             const orderResult = await orderResponse.json();
 
@@ -217,10 +197,7 @@ export const useAppStore = create<AppState>()(
             formDataToSend.append('donationId', donationId ? donationId.toString() : '');
             formDataToSend.append('amount', totalAmount.toString());
 
-            const uploadResponse = await fetch('/api/upload-payment-proof', {
-              method: 'POST',
-              body: formDataToSend,
-            });
+            const uploadResponse = await postFormDataWithRetry('/api/upload-payment-proof', formDataToSend);
 
             const uploadResult = await uploadResponse.json();
 
