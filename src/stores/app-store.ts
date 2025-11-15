@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { FormData, CartItem } from '../types/common';
 import QRCode from 'qrcode';
-import { fetchWithRetry, postJsonWithRetry, postFormDataWithRetry } from '../lib/retry';
+import { postJsonWithRetry, postFormDataWithRetry } from '../lib/retry';
 
 // Define the shape of your store
 interface AppState {
