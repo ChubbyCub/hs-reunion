@@ -143,14 +143,14 @@ export default function RegisterPage() {
       // Update form data first - no database save here
       updateFormData(values);
 
-      // Proceed to next step - everything will be saved at the final step
+      // Proceed to next step (donation) - skip merchandise
       setStep(2);
-      router.push("/merchandise");
+      router.push("/donation");
     } catch (error) {
       console.error('Error updating form data:', error);
       // Still proceed to next step
       setStep(2);
-      router.push("/merchandise");
+      router.push("/donation");
     }
   }
 
@@ -354,7 +354,7 @@ export default function RegisterPage() {
                     Tôi sẽ tham dự sự kiện trực tiếp
                   </FormLabel>
                   <p className="text-sm text-gray-600 font-form">
-                    Nếu bạn không thể tham dự trực tiếp, bạn có thể bỏ chọn ô này. Bạn vẫn có thể đặt hàng lưu niệm.
+                    Đánh dấu vào đây nếu bạn sẽ tham dự sự kiện trực tiếp vào ngày 1 tháng 2 năm 2026.
                   </p>
                 </div>
               </FormItem>

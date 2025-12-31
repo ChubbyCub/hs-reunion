@@ -64,13 +64,13 @@ export default function DonationPage() {
     setValidationError('');
     // Save donation amount to store
     updateFormData({ donationAmount: finalAmount });
-    setStep(4);
+    setStep(3);
     router.push("/payment");
   };
 
   const handleBack = () => {
-    setStep(2);
-    router.push("/merchandise");
+    setStep(1);
+    router.push("/register");
   };
 
   return (
