@@ -12,7 +12,6 @@ interface QRScannerProps {
 type ScannerState = 'idle' | 'scanning' | 'processing' | 'success' | 'error';
 
 export default function QRScanner({ onScan, onError }: QRScannerProps) {
-  const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
   const [scannerState, setScannerState] = useState<ScannerState>('idle');
   const [isMobile, setIsMobile] = useState(false);
   const [resultMessage, setResultMessage] = useState<string>('');
@@ -76,7 +75,6 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
         // Create new scanner instance
         const scanner = new Html5Qrcode("qr-reader");
         scannerRef.current = scanner;
-        setHtml5QrCode(scanner);
 
         await scanner.start(
           { facingMode: "environment" }, // back camera
@@ -92,8 +90,8 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
             try {
               await scanner.stop();
               await scanner.clear();
-            } catch (e) {
-              console.log('Error stopping scanner:', e);
+            } catch {
+              console.log('Error stopping scanner');
             }
 
             // Process the check-in
@@ -136,8 +134,7 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
         }
         await scannerRef.current.clear();
         scannerRef.current = null;
-        setHtml5QrCode(null);
-      } catch (e) {
+      } catch {
         console.log('Clearing previous scanner instance');
       }
     }
@@ -156,7 +153,6 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
       await scannerRef.current.stop();
       await scannerRef.current.clear();
       scannerRef.current = null;
-      setHtml5QrCode(null);
       setScannerState('idle');
       setResultMessage('');
       setShouldInitScanner(false);

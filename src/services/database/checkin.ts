@@ -10,7 +10,7 @@ export class CheckInService {
   /**
    * Check in an attendee using their QR code data
    */
-  static async checkInAttendee(qrData: string): Promise<{ success: boolean; error?: string }> {
+  static async checkInAttendee(qrData: string): Promise<{ success: boolean; error?: string; data?: { fullName: string } }> {
     try {
       let attendeeEmail: string;
 
@@ -27,23 +27,23 @@ export class CheckInService {
       if (!attendeeEmail || !attendeeEmail.includes('@')) {
         return { success: false, error: 'Invalid email format' };
       }
-      
+
       // Find attendee by email
       const { data: attendee, error: findError } = await supabase
         .from('Attendees')
         .select('id, checked_in, full_name, class')
         .eq('email', attendeeEmail)
         .single();
-      
+
       if (findError || !attendee) {
         return { success: false, error: 'Attendee not found' };
       }
-      
+
       // Check if already checked in
       if (attendee.checked_in) {
         return { success: false, error: 'Attendee is already checked in' };
       }
-      
+
       // Perform check-in
       const { error: updateError } = await supabase
         .from('Attendees')
@@ -51,17 +51,17 @@ export class CheckInService {
           checked_in: true,
         })
         .eq('id', attendee.id);
-      
+
       if (updateError) {
         return { success: false, error: updateError.message };
       }
-      
-      return { success: true };
-      
+
+      return { success: true, data: { fullName: attendee.full_name } };
+
     } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error during check-in' 
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error during check-in'
       };
     }
   }
