@@ -61,8 +61,35 @@ export default function CheckInPage() {
     }
   };
 
-  const handleQRScan = (data: string) => {
-    handleCheckIn(data);
+  const handleQRScan = async (data: string): Promise<{ success: boolean; message: string }> => {
+    if (!data.trim()) {
+      return { success: false, message: 'Dữ liệu QR không hợp lệ' };
+    }
+
+    try {
+      const result = await CheckInService.checkInAttendee(data);
+
+      if (result.success) {
+        // Reload stats after successful check-in
+        await loadStats();
+        return {
+          success: true,
+          message: result.data?.fullName
+            ? `${result.data.fullName} đã được check-in`
+            : 'Check-in thành công!'
+        };
+      } else {
+        return {
+          success: false,
+          message: result.error || 'Check-in thất bại'
+        };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: `Lỗi: ${error instanceof Error ? error.message : 'Unknown error'}`
+      };
+    }
   };
 
   const handleScannerError = (error: string) => {
@@ -98,29 +125,6 @@ export default function CheckInPage() {
         </div>
         </div>
 
-        {/* Message Display */}
-        {message && (
-          <div className={`p-4 rounded-lg mb-4 sm:mb-6 ${
-            message.type === 'success'
-              ? 'bg-green-100 border border-green-400 text-green-800'
-              : message.type === 'error'
-              ? 'bg-red-100 border border-red-400 text-red-800'
-              : 'bg-blue-100 border border-blue-400 text-blue-800'
-          }`}>
-            <div className="flex justify-between items-center">
-              <span>{message.text}</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearMessage}
-                className="text-gray-600 hover:text-gray-800 touch-manipulation p-2"
-              >
-                ✕
-              </Button>
-            </div>
-          </div>
-        )}
-
         {/* Check-in Methods */}
         <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-4 sm:mb-6">
           <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Check-in Attendee</h2>
@@ -133,12 +137,44 @@ export default function CheckInPage() {
             />
           </div>
 
+          {/* Divider */}
+          <div className="my-6 flex items-center">
+            <div className="flex-1 border-t border-gray-300"></div>
+            <span className="px-4 text-sm text-gray-500">hoặc</span>
+            <div className="flex-1 border-t border-gray-300"></div>
+          </div>
+
           {/* Manual Email Input */}
           <div className="space-y-4">
+            <h3 className="text-md font-semibold">Check-in bằng Email</h3>
+
+            {/* Message Display for manual check-in */}
+            {message && (
+              <div className={`p-4 rounded-lg ${
+                message.type === 'success'
+                  ? 'bg-green-100 border border-green-400 text-green-800'
+                  : message.type === 'error'
+                  ? 'bg-red-100 border border-red-400 text-red-800'
+                  : 'bg-blue-100 border border-blue-400 text-blue-800'
+              }`}>
+                <div className="flex justify-between items-center">
+                  <span>{message.text}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearMessage}
+                    className="text-gray-600 hover:text-gray-800 touch-manipulation p-2"
+                  >
+                    ✕
+                  </Button>
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Input
                 type="email"
-                placeholder="Enter email"
+                placeholder="Nhập địa chỉ email bạn dùng đăng ký cho buổi họp mặt"
                 value={qrData}
                 onChange={(e) => setQrData(e.target.value)}
                 className="flex-1 text-sm sm:text-base py-3"
@@ -154,10 +190,6 @@ export default function CheckInPage() {
                 Check-in
               </Button>
             </div>
-
-            <p className="text-sm text-gray-600">
-              Enter email address to check-in attendee manually.
-            </p>
           </div>
         </div>
       </div>

@@ -1,18 +1,23 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Html5Qrcode } from 'html5-qrcode';
 
 interface QRScannerProps {
-  onScan: (data: string) => void;
+  onScan: (data: string) => Promise<{ success: boolean; message: string }>;
   onError: (error: string) => void;
 }
 
+type ScannerState = 'idle' | 'scanning' | 'processing' | 'success' | 'error';
+
 export default function QRScanner({ onScan, onError }: QRScannerProps) {
   const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
-  const [scanning, setScanning] = useState(false);
+  const [scannerState, setScannerState] = useState<ScannerState>('idle');
   const [isMobile, setIsMobile] = useState(false);
+  const [resultMessage, setResultMessage] = useState<string>('');
+  const [shouldInitScanner, setShouldInitScanner] = useState(false);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
 
   useEffect(() => {
     // Check if device is mobile
@@ -25,17 +30,18 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
   // Cleanup scanner on unmount and page visibility change
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.hidden && html5QrCode) {
+      if (document.hidden && scannerRef.current) {
         // Stop scanner when page becomes hidden (user navigates away)
-        html5QrCode.stop().catch(() => {});
-        setScanning(false);
+        scannerRef.current.stop().catch(() => {});
+        setScannerState('idle');
+        setShouldInitScanner(false);
       }
     };
 
     const handleBeforeUnload = () => {
-      if (html5QrCode) {
+      if (scannerRef.current) {
         // Stop scanner when user is about to leave the page
-        html5QrCode.stop().catch(() => {});
+        scannerRef.current.stop().catch(() => {});
       }
     };
 
@@ -45,56 +51,115 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleBeforeUnload);
-      if (html5QrCode) {
-        html5QrCode.stop().catch(() => {});
+      if (scannerRef.current) {
+        scannerRef.current.stop().catch(() => {});
       }
     };
-  }, [html5QrCode]);
+  }, []);
+
+  // Effect to initialize scanner when state changes to 'scanning'
+  useEffect(() => {
+    if (scannerState !== 'scanning' || !shouldInitScanner) return;
+
+    const initScanner = async () => {
+      try {
+        console.log('Initializing HTML5 QR Scanner...');
+
+        // Wait for DOM to be ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Verify element exists
+        if (!document.getElementById("qr-reader")) {
+          throw new Error("QR reader element not found in DOM");
+        }
+
+        // Create new scanner instance
+        const scanner = new Html5Qrcode("qr-reader");
+        scannerRef.current = scanner;
+        setHtml5QrCode(scanner);
+
+        await scanner.start(
+          { facingMode: "environment" }, // back camera
+          { fps: 10, qrbox: 250 },       // scan settings
+          async (decodedText) => {
+            console.log('QR Code detected:', decodedText);
+
+            // Immediately set to processing to prevent double scans
+            setScannerState('processing');
+            setShouldInitScanner(false);
+
+            // Stop the scanner immediately
+            try {
+              await scanner.stop();
+              await scanner.clear();
+            } catch (e) {
+              console.log('Error stopping scanner:', e);
+            }
+
+            // Process the check-in
+            const result = await onScan(decodedText);
+
+            if (result.success) {
+              setScannerState('success');
+              setResultMessage(result.message);
+            } else {
+              setScannerState('error');
+              setResultMessage(result.message);
+            }
+          },
+          (errorMessage) => {
+            // optional scan errors - ignore most of them as they're normal
+            console.warn("Scan error:", errorMessage);
+          }
+        );
+        console.log('HTML5 QR Scanner started successfully');
+      } catch (err) {
+        console.error("Unable to start scanning:", err);
+        const errorMessage = err instanceof Error ? err.message : 'Unknown scanner error';
+        onError(`Failed to start scanner: ${errorMessage}`);
+        setScannerState('idle');
+        setShouldInitScanner(false);
+      }
+    };
+
+    initScanner();
+  }, [scannerState, shouldInitScanner, onScan, onError]);
 
   const startScanning = async () => {
-    try {
-      console.log('Starting HTML5 QR Scanner...');
-      
-      // Set scanning state first to render the DOM element
-      setScanning(true);
-      
-      // Wait for React to re-render and create the DOM element
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Now initialize scanner when DOM element exists
-      const scanner = new Html5Qrcode("qr-reader");
-      setHtml5QrCode(scanner);
-      
-      await scanner.start(
-        { facingMode: "environment" }, // back camera
-        { fps: 10, qrbox: 250 },       // scan settings
-        async (decodedText) => {
-          console.log('QR Code detected:', decodedText);
-          onScan(decodedText);
-          await stopScanning();
-        },
-        (errorMessage) => {
-          // optional scan errors - ignore most of them as they're normal
-          console.warn("Scan error:", errorMessage);
+    console.log('Starting HTML5 QR Scanner...');
+
+    // If there's an existing scanner, try to clear it first
+    if (scannerRef.current) {
+      try {
+        if (scannerRef.current.isScanning) {
+          await scannerRef.current.stop();
         }
-      );
-      console.log('HTML5 QR Scanner started successfully');
-    } catch (err) {
-      console.error("Unable to start scanning:", err);
-      const errorMessage = err instanceof Error ? err.message : 'Unknown scanner error';
-      onError(`Failed to start scanner: ${errorMessage}`);
-      // Reset scanning state on error
-      setScanning(false);
+        await scannerRef.current.clear();
+        scannerRef.current = null;
+        setHtml5QrCode(null);
+      } catch (e) {
+        console.log('Clearing previous scanner instance');
+      }
     }
+
+    // Set state to trigger scanner initialization in useEffect
+    setResultMessage('');
+    setScannerState('scanning');
+    setShouldInitScanner(true);
   };
 
   const stopScanning = async () => {
-    if (!html5QrCode) return;
+    if (!scannerRef.current) return;
 
     try {
       console.log('Stopping HTML5 QR Scanner...');
-      await html5QrCode.stop();
-      setScanning(false);
+      await scannerRef.current.stop();
+      await scannerRef.current.clear();
+      scannerRef.current = null;
+      setHtml5QrCode(null);
+      setScannerState('idle');
+      setResultMessage('');
+      setShouldInitScanner(false);
     } catch (err) {
       console.error("Unable to stop scanning:", err);
     }
@@ -103,48 +168,80 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
 
   return (
     <div className="space-y-4">
-      {!scanning ? (
+      {/* Idle State - Ready to scan */}
+      {scannerState === 'idle' && (
         <div className="text-center">
           <Button onClick={startScanning} className="w-full py-3 text-base touch-manipulation">
-            📱 Start Camera Scanner
+            📱 Bật Camera để Quét QR
           </Button>
-          
+
           {isMobile && (
             <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800">
-                📱 <strong>Mobile Device Detected</strong><br/>
-                Make sure to allow camera permissions when prompted<br/>
-                Using HTML5-QR-Code library for better mobile support!
+                📱 <strong>Thiết bị di động được phát hiện</strong><br/>
+                Hãy cho phép truy cập camera khi được hỏi
               </p>
             </div>
           )}
         </div>
-      ) : (
+      )}
+
+      {/* Scanning State - Camera is active */}
+      {scannerState === 'scanning' && (
         <div className="space-y-4">
           {/* Scanner container */}
           <div id="qr-reader" style={{ width: "100%" }} />
-          
+
           <div className="text-center space-y-2">
             <p className="text-sm text-gray-600">
-              Position QR code within the frame
+              📷 Đặt mã QR vào khung hình để quét
             </p>
             <Button onClick={stopScanning} variant="outline" className="py-2 px-4 touch-manipulation">
-              Stop Scanner
+              Dừng quét
             </Button>
           </div>
         </div>
       )}
-      
-      <div className="text-xs text-gray-500 text-center">
-        <p>📱 Best viewed on mobile devices</p>
-        <p>🔍 Scanner will automatically detect QR codes</p>
-        {isMobile && (
-          <>
-            <p>📷 Make sure to allow camera permissions when prompted</p>
-            <p>✅ Using HTML5-QR-Code library for better mobile support</p>
-          </>
-        )}
-      </div>
+
+      {/* Processing State - Validating QR code */}
+      {scannerState === 'processing' && (
+        <div className="text-center p-8 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="animate-spin text-4xl mb-4">⏳</div>
+          <p className="text-lg font-semibold text-yellow-800">Đang xử lý...</p>
+          <p className="text-sm text-yellow-600 mt-2">Vui lòng đợi trong giây lát</p>
+        </div>
+      )}
+
+      {/* Success State - Check-in successful */}
+      {scannerState === 'success' && (
+        <div className="text-center p-8 bg-green-50 border border-green-200 rounded-lg">
+          <div className="text-6xl mb-4">✅</div>
+          <p className="text-xl font-bold text-green-800 mb-2">Check-in thành công!</p>
+          <p className="text-sm text-green-600 mb-6">{resultMessage}</p>
+          <Button
+            onClick={startScanning}
+            className="w-full py-3 text-base touch-manipulation bg-green-600 hover:bg-green-700"
+          >
+            ✨ Quét mã QR tiếp theo
+          </Button>
+        </div>
+      )}
+
+      {/* Error State - Check-in failed */}
+      {scannerState === 'error' && (
+        <div className="text-center p-8 bg-red-50 border border-red-200 rounded-lg">
+          <div className="text-6xl mb-4">❌</div>
+          <p className="text-xl font-bold text-red-800 mb-2">Check-in thất bại</p>
+          <p className="text-sm text-red-600 mb-6">{resultMessage}</p>
+          <Button
+            onClick={startScanning}
+            className="w-full py-3 text-base touch-manipulation"
+          >
+            🔄 Thử lại
+          </Button>
+        </div>
+      )}
+
     </div>
   );
 }
