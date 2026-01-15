@@ -75,6 +75,10 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Only apply background images to non-homepage pages */
+  body:not(:has(main[data-homepage])) {
     background-image: url('/background-mobile.webp');
     background-size: cover;
     background-position: center;
@@ -83,7 +87,7 @@
 }
 
 @media (min-width: 768px) {
-  body {
+  body:not(:has(main[data-homepage])) {
     background-image: url('/background-desktop.webp');
   }
   .reg-cta-bg {

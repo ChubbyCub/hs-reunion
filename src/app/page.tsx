@@ -21,6 +21,8 @@ export default function Home() {
   const [showRegistration, setShowRegistration] = useState(true);
   const [isNightMode, setIsNightMode] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
   const { reset } = useAppStore();
   const confettiTriggered = useRef(false);
 
@@ -33,11 +35,20 @@ export default function Home() {
     // Clear the store when user visits homepage
     reset();
 
+    // Check night mode on mount
+    const currentHour = new Date().getHours();
+    const nightMode = !(currentHour >= 6 && currentHour < 18);
+    setIsNightMode(nightMode);
+
     // Detect if mobile
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
     checkMobile();
+
+    // Mark as mounted to show background
+    setMounted(true);
+
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, [reset]);
@@ -265,14 +276,18 @@ export default function Home() {
 
   return (
       <main
+        data-homepage
         className="flex min-h-screen flex-col items-center justify-center p-24 uppercase md:justify-between"
         style={{
-          backgroundImage: isNightMode
-            ? (isMobile ? 'url(/background_mobile_night.png)' : 'url(/background_desktop_night.png)')
-            : (isMobile ? 'url(/background-mobile.webp)' : 'url(/background-desktop.webp)'),
+          backgroundImage: mounted
+            ? isNightMode
+              ? (isMobile ? 'url(/background_mobile_night.png)' : 'url(/background_desktop_night.png)')
+              : (isMobile ? 'url(/background-mobile.webp)' : 'url(/background-desktop.webp)')
+            : 'none',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundAttachment: 'fixed'
+          backgroundAttachment: 'fixed',
+          backgroundColor: mounted ? 'transparent' : '#1a1a2e'
         }}
       >
         {/* Logos Container - Centered on all screen sizes */}
