@@ -3,9 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useAppStore } from "@/stores/app-store";
 import { FileText } from "lucide-react";
+import MusicPlayer from "@/components/MusicPlayer";
+import confetti from "canvas-confetti";
 
 export default function Home() {
   const eventDate = useMemo(() => new Date("2026-02-01T08:00:00"), []);
@@ -16,7 +18,9 @@ export default function Home() {
     seconds: 0,
   });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showRegistration, setShowRegistration] = useState(true);
   const { reset } = useAppStore();
+  const confettiTriggered = useRef(false);
 
   useEffect(() => {
     // Clear the store when user visits homepage
@@ -36,6 +40,55 @@ export default function Home() {
       } else {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
+
+      // Check if registration should be shown
+      // Hide after midnight Jan 15, 2026 (Vietnam time)
+      // Show again at 7:00 AM Feb 1, 2026 (Vietnam time)
+      const registrationCloseDate = new Date("2026-01-16T00:00:00+07:00"); // Midnight Jan 16 (after Jan 15)
+      const registrationReopenDate = new Date("2026-02-01T07:00:00+07:00"); // 7 AM Feb 1
+
+      if (now >= registrationCloseDate && now < registrationReopenDate) {
+        setShowRegistration(false);
+
+        // Trigger confetti once when registration closes (at midnight)
+        if (!confettiTriggered.current) {
+          confettiTriggered.current = true;
+
+          // Celebration confetti burst!
+          const duration = 5 * 1000; // 5 seconds
+          const animationEnd = Date.now() + duration;
+          const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+          function randomInRange(min: number, max: number) {
+            return Math.random() * (max - min) + min;
+          }
+
+          const interval: NodeJS.Timeout = setInterval(function() {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+              clearInterval(interval);
+              return;
+            }
+
+            const particleCount = 50 * (timeLeft / duration);
+
+            // Since particles fall down, start a bit higher than random
+            confetti({
+              ...defaults,
+              particleCount,
+              origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+            });
+            confetti({
+              ...defaults,
+              particleCount,
+              origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+            });
+          }, 250);
+        }
+      } else {
+        setShowRegistration(true);
+      }
     }
     updateCountdown();
     const timer = setInterval(updateCountdown, 1000);
@@ -51,6 +104,8 @@ export default function Home() {
   };
 
   return (
+      <>
+      <MusicPlayer />
       <main className="flex min-h-screen flex-col items-center justify-center p-24 uppercase md:justify-between md:bg-transparent">
         {/* Logos Container - Centered on all screen sizes */}
         <div className="absolute top-4 md:top-8 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 md:gap-1">
@@ -162,15 +217,32 @@ export default function Home() {
             transition={{ duration: 1.5, ease: "easeInOut" }}
             className="text-center text-white mb-8"
           >
-            <h1 className="text-4xl md:text-5xl font-bold tracking-wide mb-4 txt-with-bg pad-02em blk-txt">
-              Hành trình 20 năm
-            </h1><br />
-            <p className="text-2xl md:text-3xl font-semibold tracking-wide text-yellow-400 mb-3 txt-with-bg pad-02em blk-txt">
-              Ngày 1 tháng 2 năm 2026
-            </p><br />
-            <p className="text-xl md:text-2xl tracking-wide text-yellow-100 max-w-4xl mx-auto leading-relaxed txt-with-bg pad-02em blk-txt">
-              Từ ngôi trường mang tên Lê Hồng Phong, chúng ta trở lại nơi từng ghi dấu những ngày thanh xuân tươi đẹp...
-            </p>
+            {!showRegistration ? (
+              // Show this message after registration closes (after midnight Jan 15)
+              <>
+                <h1 className="text-3xl md:text-4xl font-bold tracking-wide mb-4 txt-with-bg pad-02em blk-txt">
+                  Cảm ơn bạn đã bắt máy Cuộc gọi Thanh xuân #Reply0306!
+                </h1><br />
+                <p className="text-xl md:text-2xl tracking-wide text-yellow-100 max-w-4xl mx-auto leading-relaxed txt-with-bg pad-02em blk-txt">
+                  BTC xin thông báo:<br />
+                  Cổng đăng ký đã chính thức đóng.<br />
+                  Hẹn gặp bạn ngày 01/02/2026 tại sân trường Lê Hồng Phong nhé 💙
+                </p>
+              </>
+            ) : (
+              // Show original message before registration closes
+              <>
+                <h1 className="text-4xl md:text-5xl font-bold tracking-wide mb-4 txt-with-bg pad-02em blk-txt">
+                  Hành trình 20 năm
+                </h1><br />
+                <p className="text-2xl md:text-3xl font-semibold tracking-wide text-yellow-400 mb-3 txt-with-bg pad-02em blk-txt">
+                  Ngày 1 tháng 2 năm 2026
+                </p><br />
+                <p className="text-xl md:text-2xl tracking-wide text-yellow-100 max-w-4xl mx-auto leading-relaxed txt-with-bg pad-02em blk-txt">
+                  Từ ngôi trường mang tên Lê Hồng Phong, chúng ta trở lại nơi từng ghi dấu những ngày thanh xuân tươi đẹp...
+                </p>
+              </>
+            )}
           </motion.div>
 
           <motion.div
@@ -261,24 +333,26 @@ export default function Home() {
                       </motion.span>
                     </a>
 
-                    {/* Đăng Ký Button */}
-                    <div>
-                      <Link
-                        href="/register"
-                        className="group inline-flex items-center text-2xl font-bold text-yellow-400 transition-all hover:text-yellow-500 border-0 md:border-2 md:border-white md:hover:border-yellow-100 bg-transparent reg-cta-bg px-6 py-3 rounded-lg"
-                      >
-                        <motion.span
-                          whileHover={{ scale: 1.05 }}
-                          transition={{ type: "spring", stiffness: 300 }}
-                          className="inline-block"
+                    {/* Đăng Ký Button - Only show if registration is open */}
+                    {showRegistration && (
+                      <div>
+                        <Link
+                          href="/register"
+                          className="group inline-flex items-center text-2xl font-bold text-yellow-400 transition-all hover:text-yellow-500 border-0 md:border-2 md:border-white md:hover:border-yellow-100 bg-transparent reg-cta-bg px-6 py-3 rounded-lg"
                         >
-                          Đăng ký ngay
-                        </motion.span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="ml-3 h-6 w-6 animate-nudgeRight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </Link>
-                    </div>
+                          <motion.span
+                            whileHover={{ scale: 1.05 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            className="inline-block"
+                          >
+                            Đăng ký ngay
+                          </motion.span>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="ml-3 h-6 w-6 animate-nudgeRight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          </svg>
+                        </Link>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </div>
@@ -286,5 +360,6 @@ export default function Home() {
           </motion.div>
         </div>
       </main>
+      </>
   );
 }

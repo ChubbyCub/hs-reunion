@@ -185,13 +185,13 @@ export default function ContactPage() {
                             <Mail className="h-5 w-5 text-red-500 mr-2" />
                             <h4 className="font-semibold text-gray-900 text-sm">Email BTC</h4>
                           </div>
-                          <a 
-                            href="mailto:lhp0306@gmail.com"
+                          <a
+                            href="mailto:lhp20032006@gmail.com"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary hover:text-primary/80 transition-colors text-sm break-all"
                           >
-                            lhp0306@gmail.com
+                            lhp20032006@gmail.com
                           </a>
                         </CardContent>
                       </Card>
