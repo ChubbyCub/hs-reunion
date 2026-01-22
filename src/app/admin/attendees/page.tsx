@@ -23,14 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { supabase } from "@/services/database/supabase";
 
 interface Attendee {
   id: number;
@@ -50,6 +43,7 @@ interface Attendee {
   checked_in: boolean;
   invite_sent: boolean;
   attend_live_event: boolean;
+  have_lunch: boolean;
   qr_code_url: string | null;
 }
 
@@ -154,6 +148,52 @@ export default function AttendeesPage() {
     }
   };
 
+  // Toggle lunch status
+  const toggleHaveLunch = async (attendeeId: number, currentStatus: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/attendees/${attendeeId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ have_lunch: !currentStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update lunch status');
+      }
+
+      await refetch();
+    } catch (error) {
+      console.error('Error updating lunch status:', error);
+      alert('Không thể cập nhật trạng thái ăn trưa. Vui lòng thử lại.');
+    }
+  };
+
+  // Subscribe to realtime changes on Attendees table
+  useEffect(() => {
+    const channel = supabase
+      .channel('attendees-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'Attendees',
+        },
+        (payload) => {
+          console.log('Realtime update received:', payload);
+          // Refetch data when changes occur
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetch]);
+
   // Define columns
   const columns: ColumnDef<Attendee>[] = [
     {
@@ -200,14 +240,16 @@ export default function AttendeesPage() {
       accessorKey: "employer",
       header: "Nơi làm việc",
       cell: ({ row }) => (
-        <div className="text-sm">{row.original.employer || '-'}</div>
+        <div className="text-sm max-w-[150px] truncate" title={row.original.employer || ''}>
+          {row.original.employer || '-'}
+        </div>
       ),
     },
     {
       accessorKey: "address",
       header: "Địa chỉ",
       cell: ({ row }) => (
-        <div className="text-sm max-w-xs truncate" title={row.original.address || ''}>
+        <div className="text-sm max-w-[150px] truncate" title={row.original.address || ''}>
           {row.original.address || '-'}
         </div>
       ),
@@ -255,6 +297,26 @@ export default function AttendeesPage() {
         <Badge variant={row.original.attend_live_event ? "success" : "outline"}>
           {row.original.attend_live_event ? "Có" : "Không"}
         </Badge>
+      ),
+    },
+    {
+      accessorKey: "have_lunch",
+      header: "Ăn trưa tại trường",
+      cell: ({ row }) => (
+        <button
+          onClick={() => toggleHaveLunch(row.original.id, row.original.have_lunch)}
+          className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          style={{
+            backgroundColor: row.original.have_lunch ? '#16a34a' : '#d1d5db'
+          }}
+          title={row.original.have_lunch ? 'Có ăn trưa' : 'Không ăn trưa'}
+        >
+          <span
+            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+              row.original.have_lunch ? 'translate-x-6' : 'translate-x-1'
+            }`}
+          />
+        </button>
       ),
     },
     {
@@ -454,59 +516,59 @@ export default function AttendeesPage() {
 
         {/* Table */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
+          <div className="overflow-auto max-h-[calc(100vh-300px)]">
+            <table className="w-full caption-bottom text-sm relative">
+              <thead className="sticky top-0 z-10 bg-gray-50 shadow-sm">
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
+                  <tr key={headerGroup.id} className="border-b">
                     {headerGroup.headers.map((header) => (
-                      <TableHead key={header.id}>
+                      <th key={header.id} className="h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-gray-50">
                         {flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                      </TableHead>
+                      </th>
                     ))}
-                  </TableRow>
+                  </tr>
                 ))}
-              </TableHeader>
-              <TableBody>
+              </thead>
+              <tbody>
                 {isLoading ? (
-                  <TableRow>
-                    <TableCell
+                  <tr className="border-b transition-colors hover:bg-muted/50">
+                    <td
                       colSpan={columns.length}
-                      className="h-24 text-center"
+                      className="h-24 text-center p-4 align-middle"
                     >
                       <div className="flex items-center justify-center">
                         <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
                       </div>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ) : table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id}>
+                    <tr key={row.id} className="border-b transition-colors hover:bg-muted/50">
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                        <td key={cell.id} className="p-4 align-middle">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()
                           )}
-                        </TableCell>
+                        </td>
                       ))}
-                    </TableRow>
+                    </tr>
                   ))
                 ) : (
-                  <TableRow>
-                    <TableCell
+                  <tr className="border-b transition-colors hover:bg-muted/50">
+                    <td
                       colSpan={columns.length}
-                      className="h-24 text-center"
+                      className="h-24 text-center p-4 align-middle"
                     >
                       Không tìm thấy dữ liệu
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 )}
-              </TableBody>
-            </Table>
+              </tbody>
+            </table>
           </div>
 
           {/* Pagination */}

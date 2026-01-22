@@ -22,19 +22,42 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { invite_sent } = body;
+    const { invite_sent, have_lunch } = body;
 
-    if (typeof invite_sent !== 'boolean') {
+    // Build update object based on which fields are provided
+    const updates: { invite_sent?: boolean; have_lunch?: boolean } = {};
+
+    if (invite_sent !== undefined) {
+      if (typeof invite_sent !== 'boolean') {
+        return NextResponse.json(
+          { error: 'invite_sent field must be a boolean' },
+          { status: 400 }
+        );
+      }
+      updates.invite_sent = invite_sent;
+    }
+
+    if (have_lunch !== undefined) {
+      if (typeof have_lunch !== 'boolean') {
+        return NextResponse.json(
+          { error: 'have_lunch field must be a boolean' },
+          { status: 400 }
+        );
+      }
+      updates.have_lunch = have_lunch;
+    }
+
+    if (Object.keys(updates).length === 0) {
       return NextResponse.json(
-        { error: 'invite_sent field must be a boolean' },
+        { error: 'No valid fields to update' },
         { status: 400 }
       );
     }
 
-    // Update the attendee invite_sent status
+    // Update the attendee
     const { data, error } = await supabase
       .from('Attendees')
-      .update({ invite_sent })
+      .update(updates)
       .eq('id', attendeeId)
       .select()
       .single();

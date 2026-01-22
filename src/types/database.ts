@@ -10,6 +10,7 @@ export interface Attendee {
   occupation: string | null;
   employer: string | null;
   checked_in: boolean;
+  have_lunch: boolean;
 }
 
 // Insert/Update types (without auto-generated fields)
@@ -20,8 +21,10 @@ export interface CreateAttendeeData {
   class: string;
   occupation?: string | null;
   employer?: string | null;
+  have_lunch?: boolean;
 }
 
 export interface UpdateAttendeeData {
   checked_in?: boolean;
+  have_lunch?: boolean;
 }
