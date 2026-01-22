@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
+  Check,
 } from "lucide-react";
 import AdminLayout from "@/components/AdminLayout";
 import { Input } from "@/components/ui/input";
@@ -219,21 +220,12 @@ export default function AttendeesPage() {
       ),
     },
     {
-      accessorKey: "message",
-      header: "Lời nhắn",
-      cell: ({ row }) => (
-        <div className="text-sm max-w-xs truncate" title={row.original.message || ''}>
-          {row.original.message || '-'}
-        </div>
-      ),
-    },
-    {
       accessorKey: "checked_in",
       header: "Check-in",
       cell: ({ row }) => (
-        <Badge variant={row.original.checked_in ? "success" : "outline"}>
-          {row.original.checked_in ? "Đã check-in" : "Chưa check-in"}
-        </Badge>
+        <div className="flex items-center justify-center">
+          <Check className={`w-5 h-5 ${row.original.checked_in ? 'text-green-600' : 'text-gray-300'}`} />
+        </div>
       ),
     },
     {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { normalizeVietnamese } from '@/lib/utils';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -24,10 +25,8 @@ export async function GET(request: NextRequest) {
       .from('Attendees')
       .select('*', { count: 'exact' });
 
-    // Apply search filter (name, email, or phone)
-    if (search) {
-      query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,phone_number.ilike.%${search}%`);
-    }
+    // Don't apply search filter in SQL when we have a search term
+    // We'll do Vietnamese accent-insensitive filtering in JavaScript instead
 
     // Apply class filter
     if (classFilter) {
@@ -42,13 +41,20 @@ export async function GET(request: NextRequest) {
     // Apply sorting
     query = query.order(sortBy, { ascending: sortOrder === 'asc' });
 
-    // Apply pagination
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
-    query = query.range(from, to);
+    // When searching, fetch all records (up to a reasonable limit) for client-side filtering
+    // Otherwise, apply normal pagination
+    if (search) {
+      // Fetch more records for filtering - adjust this limit based on your data size
+      query = query.range(0, 9999);
+    } else {
+      // Apply pagination normally when not searching
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+      query = query.range(from, to);
+    }
 
     // Execute query
-    const { data, error, count } = await query;
+    const { data: rawData, error, count: rawCount } = await query;
 
     if (error) {
       console.error('Error fetching attendees:', error);
@@ -56,6 +62,34 @@ export async function GET(request: NextRequest) {
         { error: 'Failed to fetch attendees' },
         { status: 500 }
       );
+    }
+
+    let data = rawData || [];
+    let count = rawCount || 0;
+
+    // Apply client-side Vietnamese accent-insensitive filtering
+    if (search) {
+      const normalizedSearch = normalizeVietnamese(search).toLowerCase();
+
+      data = data.filter((attendee) => {
+        const normalizedName = normalizeVietnamese(attendee.full_name || '').toLowerCase();
+        const normalizedEmail = normalizeVietnamese(attendee.email || '').toLowerCase();
+        const normalizedPhone = normalizeVietnamese(attendee.phone_number || '').toLowerCase();
+
+        return (
+          normalizedName.includes(normalizedSearch) ||
+          normalizedEmail.includes(normalizedSearch) ||
+          normalizedPhone.includes(normalizedSearch)
+        );
+      });
+
+      // Update count to reflect filtered results
+      count = data.length;
+
+      // Apply pagination to filtered results
+      const from = (page - 1) * limit;
+      const to = from + limit;
+      data = data.slice(from, to);
     }
 
     // Calculate pagination metadata

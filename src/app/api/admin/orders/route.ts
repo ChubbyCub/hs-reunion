@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { normalizeVietnamese } from '@/lib/utils';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -88,14 +89,20 @@ export async function GET(request: NextRequest) {
       })
     );
 
-    // Apply search filter if needed (client-side)
+    // Apply search filter if needed (client-side with Vietnamese accent-insensitive search)
     let filteredOrders = ordersWithMerchandise;
     if (search) {
+      const normalizedSearch = normalizeVietnamese(search).toLowerCase();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      filteredOrders = ordersWithMerchandise.filter((order: any) =>
-        order.Attendees?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-        order.Attendees?.email?.toLowerCase().includes(search.toLowerCase())
-      );
+      filteredOrders = ordersWithMerchandise.filter((order: any) => {
+        const normalizedName = normalizeVietnamese(order.Attendees?.full_name || '').toLowerCase();
+        const normalizedEmail = normalizeVietnamese(order.Attendees?.email || '').toLowerCase();
+
+        return (
+          normalizedName.includes(normalizedSearch) ||
+          normalizedEmail.includes(normalizedSearch)
+        );
+      });
     }
 
     // Return CSV format if requested
