@@ -95,6 +95,18 @@ export async function GET(request: NextRequest) {
     // Calculate pagination metadata
     const totalPages = count ? Math.ceil(count / limit) : 0;
 
+    // Get total checked-in count (without filters)
+    const { count: totalCheckedInCount } = await supabase
+      .from('Attendees')
+      .select('*', { count: 'exact', head: true })
+      .eq('checked_in', true);
+
+    // Get total lunch count (without filters)
+    const { count: totalLunchCount } = await supabase
+      .from('Attendees')
+      .select('*', { count: 'exact', head: true })
+      .eq('have_lunch', true);
+
     return NextResponse.json({
       data,
       pagination: {
@@ -102,6 +114,10 @@ export async function GET(request: NextRequest) {
         limit,
         total: count || 0,
         totalPages,
+      },
+      stats: {
+        totalCheckedIn: totalCheckedInCount || 0,
+        totalLunch: totalLunchCount || 0,
       },
     });
   } catch (error) {

@@ -55,6 +55,10 @@ interface AttendeesResponse {
     total: number;
     totalPages: number;
   };
+  stats: {
+    totalCheckedIn: number;
+    totalLunch: number;
+  };
 }
 
 const CLASS_OPTIONS = [
@@ -414,6 +418,30 @@ export default function AttendeesPage() {
               <Download className="w-4 h-4 mr-2" />
               Tải CSV
             </Button>
+          </div>
+        </div>
+
+        {/* Check-in Statistics */}
+        <div className="bg-gradient-to-r from-green-50 to-orange-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Đã check-in</p>
+                <p className="text-3xl font-bold text-green-600">{data?.stats?.totalCheckedIn || 0}</p>
+              </div>
+              <div className="h-12 w-px bg-gray-300"></div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Ăn trưa</p>
+                <p className="text-3xl font-bold text-orange-600">{data?.stats?.totalLunch || 0}</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-gray-500">Cập nhật trực tiếp</p>
+              <div className="flex items-center gap-1 text-green-600 mt-1">
+                <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
+                <span className="text-xs font-medium">Live</span>
+              </div>
+            </div>
           </div>
         </div>
 
