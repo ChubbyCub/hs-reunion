@@ -107,6 +107,18 @@ export async function GET(request: NextRequest) {
       .select('*', { count: 'exact', head: true })
       .eq('have_lunch', true);
 
+    // Get total attending live event count (without filters)
+    const { count: totalAttendLiveCount } = await supabase
+      .from('Attendees')
+      .select('*', { count: 'exact', head: true })
+      .eq('attend_live_event', true);
+
+    // Get total NOT attending live event count (without filters)
+    const { count: totalNotAttendLiveCount } = await supabase
+      .from('Attendees')
+      .select('*', { count: 'exact', head: true })
+      .eq('attend_live_event', false);
+
     return NextResponse.json({
       data,
       pagination: {
@@ -118,6 +130,8 @@ export async function GET(request: NextRequest) {
       stats: {
         totalCheckedIn: totalCheckedInCount || 0,
         totalLunch: totalLunchCount || 0,
+        totalAttendLive: totalAttendLiveCount || 0,
+        totalNotAttendLive: totalNotAttendLiveCount || 0,
       },
     });
   } catch (error) {

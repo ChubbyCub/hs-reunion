@@ -58,6 +58,8 @@ interface AttendeesResponse {
   stats: {
     totalCheckedIn: number;
     totalLunch: number;
+    totalAttendLive: number;
+    totalNotAttendLive: number;
   };
 }
 
@@ -520,7 +522,7 @@ export default function AttendeesPage() {
         </div>
 
         {/* Check-in Statistics */}
-        <div className="bg-gradient-to-r from-green-50 to-orange-50 border border-green-200 rounded-lg p-4">
+        <div className="bg-gradient-to-r from-green-50 to-purple-50 border border-green-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <div>
@@ -531,6 +533,16 @@ export default function AttendeesPage() {
               <div>
                 <p className="text-sm text-gray-600 mb-1">Ăn trưa</p>
                 <p className="text-3xl font-bold text-orange-600">{data?.stats?.totalLunch || 0}</p>
+              </div>
+              <div className="h-12 w-px bg-gray-300"></div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Tham dự trực tiếp</p>
+                <p className="text-3xl font-bold text-blue-600">{data?.stats?.totalAttendLive || 0}</p>
+              </div>
+              <div className="h-12 w-px bg-gray-300"></div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Không tham dự</p>
+                <p className="text-3xl font-bold text-purple-600">{data?.stats?.totalNotAttendLive || 0}</p>
               </div>
             </div>
             <div className="text-right">
