@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   useReactTable,
   getCoreRowModel,
@@ -79,6 +79,7 @@ export default function AttendeesPage() {
   const [classDropdownOpen, setClassDropdownOpen] = useState(false);
   const [classSearchTerm, setClassSearchTerm] = useState("");
   const classDropdownRef = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
 
   // Debounce search
   useEffect(() => {
@@ -130,48 +131,145 @@ export default function AttendeesPage() {
     },
   });
 
-  // Toggle invite sent status
-  const toggleInviteSent = async (attendeeId: number, currentStatus: boolean) => {
-    try {
+  // Mutation for invite status with optimistic updates
+  const inviteMutation = useMutation({
+    mutationFn: async ({ attendeeId, newStatus }: { attendeeId: number; newStatus: boolean }) => {
       const response = await fetch(`/api/admin/attendees/${attendeeId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ invite_sent: !currentStatus }),
+        body: JSON.stringify({ invite_sent: newStatus }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to update invite status');
       }
 
-      await refetch();
-    } catch (error) {
-      console.error('Error updating invite status:', error);
+      return response.json();
+    },
+    onMutate: async ({ attendeeId, newStatus }) => {
+      await queryClient.cancelQueries({ queryKey: ["attendees"] });
+
+      const previousData = queryClient.getQueryData<AttendeesResponse>([
+        "attendees",
+        page,
+        limit,
+        debouncedSearch,
+        classFilter,
+        checkedInFilter,
+      ]);
+
+      if (previousData) {
+        queryClient.setQueryData<AttendeesResponse>(
+          ["attendees", page, limit, debouncedSearch, classFilter, checkedInFilter],
+          {
+            ...previousData,
+            data: previousData.data.map((attendee) =>
+              attendee.id === attendeeId
+                ? { ...attendee, invite_sent: newStatus }
+                : attendee
+            ),
+          }
+        );
+      }
+
+      return { previousData };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          ["attendees", page, limit, debouncedSearch, classFilter, checkedInFilter],
+          context.previousData
+        );
+      }
+      console.error('Error updating invite status:', err);
       alert('Không thể cập nhật trạng thái gửi thư mời. Vui lòng thử lại.');
-    }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["attendees"] });
+    },
+  });
+
+  // Toggle invite sent status
+  const toggleInviteSent = (attendeeId: number, currentStatus: boolean) => {
+    inviteMutation.mutate({ attendeeId, newStatus: !currentStatus });
   };
 
-  // Toggle lunch status
-  const toggleHaveLunch = async (attendeeId: number, currentStatus: boolean) => {
-    try {
+  // Mutation for lunch status with optimistic updates
+  const lunchMutation = useMutation({
+    mutationFn: async ({ attendeeId, newStatus }: { attendeeId: number; newStatus: boolean }) => {
       const response = await fetch(`/api/admin/attendees/${attendeeId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ have_lunch: !currentStatus }),
+        body: JSON.stringify({ have_lunch: newStatus }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to update lunch status');
       }
 
-      await refetch();
-    } catch (error) {
-      console.error('Error updating lunch status:', error);
+      return response.json();
+    },
+    onMutate: async ({ attendeeId, newStatus }) => {
+      // Cancel any outgoing refetches to prevent them from overwriting our optimistic update
+      await queryClient.cancelQueries({ queryKey: ["attendees"] });
+
+      // Snapshot the previous value
+      const previousData = queryClient.getQueryData<AttendeesResponse>([
+        "attendees",
+        page,
+        limit,
+        debouncedSearch,
+        classFilter,
+        checkedInFilter,
+      ]);
+
+      // Optimistically update the data
+      if (previousData) {
+        queryClient.setQueryData<AttendeesResponse>(
+          ["attendees", page, limit, debouncedSearch, classFilter, checkedInFilter],
+          {
+            ...previousData,
+            data: previousData.data.map((attendee) =>
+              attendee.id === attendeeId
+                ? { ...attendee, have_lunch: newStatus }
+                : attendee
+            ),
+            stats: {
+              ...previousData.stats,
+              totalLunch: newStatus
+                ? previousData.stats.totalLunch + 1
+                : previousData.stats.totalLunch - 1,
+            },
+          }
+        );
+      }
+
+      return { previousData };
+    },
+    onError: (err, variables, context) => {
+      // If mutation fails, roll back to the previous value
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          ["attendees", page, limit, debouncedSearch, classFilter, checkedInFilter],
+          context.previousData
+        );
+      }
+      console.error('Error updating lunch status:', err);
       alert('Không thể cập nhật trạng thái ăn trưa. Vui lòng thử lại.');
-    }
+    },
+    onSettled: () => {
+      // Refetch to ensure we're in sync with the server
+      queryClient.invalidateQueries({ queryKey: ["attendees"] });
+    },
+  });
+
+  // Toggle lunch status
+  const toggleHaveLunch = (attendeeId: number, currentStatus: boolean) => {
+    lunchMutation.mutate({ attendeeId, newStatus: !currentStatus });
   };
 
   // Subscribe to realtime changes on Attendees table
