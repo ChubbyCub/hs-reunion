@@ -378,20 +378,9 @@ export default function AttendeesPage() {
       accessorKey: "invite_sent",
       header: "Thư mời",
       cell: ({ row }) => (
-        <button
-          onClick={() => toggleInviteSent(row.original.id, row.original.invite_sent)}
-          className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-          style={{
-            backgroundColor: row.original.invite_sent ? '#16a34a' : '#d1d5db'
-          }}
-          title={row.original.invite_sent ? 'Đã gửi' : 'Chưa gửi'}
-        >
-          <span
-            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-              row.original.invite_sent ? 'translate-x-6' : 'translate-x-1'
-            }`}
-          />
-        </button>
+        <div className="flex items-center justify-center">
+          <Check className={`w-5 h-5 ${row.original.invite_sent ? 'text-green-600' : 'text-gray-300'}`} />
+        </div>
       ),
     },
     {
