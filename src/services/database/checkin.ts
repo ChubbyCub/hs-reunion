@@ -10,7 +10,7 @@ export class CheckInService {
   /**
    * Check in an attendee using their QR code data
    */
-  static async checkInAttendee(qrData: string): Promise<{ success: boolean; error?: string; data?: { fullName: string } }> {
+  static async checkInAttendee(qrData: string): Promise<{ success: boolean; error?: string; data?: { fullName: string; email: string } }> {
     try {
       let attendeeEmail: string;
 
@@ -31,7 +31,7 @@ export class CheckInService {
       // Find attendee by email
       const { data: attendee, error: findError } = await supabase
         .from('Attendees')
-        .select('id, checked_in, full_name, class')
+        .select('id, checked_in, full_name, email, class')
         .eq('email', attendeeEmail)
         .single();
 
@@ -56,7 +56,7 @@ export class CheckInService {
         return { success: false, error: updateError.message };
       }
 
-      return { success: true, data: { fullName: attendee.full_name } };
+      return { success: true, data: { fullName: attendee.full_name, email: attendee.email } };
 
     } catch (error) {
       return {

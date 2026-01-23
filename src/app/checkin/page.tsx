@@ -7,6 +7,7 @@ import { CheckInService } from "@/services/database/checkin";
 import type { CheckInStats } from "@/types/common";
 import QRScanner from "@/components/QRScanner";
 import AdminLayout from "@/components/AdminLayout";
+import { supabase } from "@/services/database/supabase";
 
 export default function CheckInPage() {
   const [qrData, setQrData] = useState("");
@@ -18,6 +19,29 @@ export default function CheckInPage() {
     loadStats();
   }, []);
 
+  // Subscribe to realtime changes on Attendees table
+  useEffect(() => {
+    const channel = supabase
+      .channel('checkin-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'Attendees',
+        },
+        (payload) => {
+          console.log('Realtime update received:', payload);
+          // Reload stats when changes occur
+          loadStats();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const loadStats = async () => {
     setIsLoadingStats(true);
@@ -38,25 +62,28 @@ export default function CheckInPage() {
 
     try {
       const result = await CheckInService.checkInAttendee(data);
-      
+
       if (result.success) {
-        setMessage({ 
-          type: 'success', 
-          text: 'Check-in thành công!' 
+        const successMessage = result.data?.fullName && result.data?.email
+          ? `${result.data.fullName}\n${result.data.email}\nđã được check-in thành công!`
+          : 'Check-in thành công!';
+        setMessage({
+          type: 'success',
+          text: successMessage
         });
         setQrData("");
         // Reload data
         await loadStats();
       } else {
-        setMessage({ 
-          type: 'error', 
-          text: `Check-in thất bại: ${result.error}` 
+        setMessage({
+          type: 'error',
+          text: `Check-in thất bại: ${result.error}`
         });
       }
     } catch (error) {
-      setMessage({ 
-        type: 'error', 
-        text: `Lỗi không xác định trong quá trình check-in: ${error instanceof Error ? error.message : 'Unknown error'}` 
+      setMessage({
+        type: 'error',
+        text: `Lỗi không xác định trong quá trình check-in: ${error instanceof Error ? error.message : 'Unknown error'}`
       });
     }
   };
@@ -74,8 +101,8 @@ export default function CheckInPage() {
         await loadStats();
         return {
           success: true,
-          message: result.data?.fullName
-            ? `${result.data.fullName} đã được check-in`
+          message: result.data?.fullName && result.data?.email
+            ? `${result.data.fullName}\n${result.data.email}\nđã được check-in thành công!`
             : 'Check-in thành công!'
         };
       } else {
