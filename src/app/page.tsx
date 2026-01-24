@@ -115,10 +115,9 @@ export default function Home() {
       }
 
       // Check if registration should be shown
-      // Hide after midnight Jan 15, 2026 (Vietnam time)
-      // Show again at 7:00 AM Feb 1, 2026 (Vietnam time)
-      const registrationCloseDate = new Date("2026-01-16T00:00:00+07:00"); // Midnight Jan 16 (after Jan 15)
-      const registrationReopenDate = new Date("2026-02-01T07:00:00+07:00"); // 7 AM Feb 1
+      // Show from 12:00 PM Jan 24, 2026 to 12:00 PM Jan 25, 2026 (Vietnam time)
+      const registrationOpenDate = new Date("2026-01-24T12:00:00+07:00"); // 12 PM Jan 24
+      const registrationCloseDate = new Date("2026-01-25T12:00:00+07:00"); // 12 PM Jan 25
 
       // Check for day/night mode (6 AM to 6 PM is day, otherwise night)
       const currentHour = now.getHours();
@@ -126,10 +125,11 @@ export default function Home() {
       const nightMode = !isDayTime;
       setIsNightMode(nightMode);
 
-      if (now >= registrationCloseDate && now < registrationReopenDate) {
-        setShowRegistration(false);
+      if (now >= registrationOpenDate && now < registrationCloseDate) {
+        setShowRegistration(true);
 
-        // Trigger animation once when registration closes (at midnight)
+        // Trigger animation once when registration closes
+        // This triggers when we're OUTSIDE the registration window (button is hidden)
         if (!confettiTriggered.current) {
           confettiTriggered.current = true;
 
@@ -257,8 +257,6 @@ export default function Home() {
             }, 250);
           }
         }
-      } else {
-        setShowRegistration(true);
       }
     }
     updateCountdown();
