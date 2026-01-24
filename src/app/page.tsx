@@ -18,7 +18,7 @@ export default function Home() {
     seconds: 0,
   });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showRegistration, setShowRegistration] = useState(true);
+  const [showRegistration, setShowRegistration] = useState(false);
   const [isNightMode, setIsNightMode] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -127,10 +127,12 @@ export default function Home() {
 
       if (now >= registrationOpenDate && now < registrationCloseDate) {
         setShowRegistration(true);
+      } else {
+        setShowRegistration(false);
 
         // Trigger animation once when registration closes
         // This triggers when we're OUTSIDE the registration window (button is hidden)
-        if (!confettiTriggered.current) {
+        if (!confettiTriggered.current && now >= registrationCloseDate) {
           confettiTriggered.current = true;
 
           const duration = 5 * 1000; // 5 seconds
