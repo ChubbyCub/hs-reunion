@@ -18,7 +18,7 @@ export default function Home() {
     seconds: 0,
   });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showRegistration, setShowRegistration] = useState(false);
+  const [showRegistration, setShowRegistration] = useState(true);
   const [isNightMode, setIsNightMode] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -115,8 +115,7 @@ export default function Home() {
       }
 
       // Check if registration should be shown
-      // Show from 12:00 PM Jan 24, 2026 to 12:00 PM Jan 25, 2026 (Vietnam time)
-      const registrationOpenDate = new Date("2026-01-24T12:00:00+07:00"); // 12 PM Jan 24
+      // Show immediately and hide at 12:00 PM Jan 25, 2026 (Vietnam time)
       const registrationCloseDate = new Date("2026-01-25T12:00:00+07:00"); // 12 PM Jan 25
 
       // Check for day/night mode (6 AM to 6 PM is day, otherwise night)
@@ -125,7 +124,7 @@ export default function Home() {
       const nightMode = !isDayTime;
       setIsNightMode(nightMode);
 
-      if (now >= registrationOpenDate && now < registrationCloseDate) {
+      if (now < registrationCloseDate) {
         setShowRegistration(true);
       } else {
         setShowRegistration(false);
