@@ -133,6 +133,71 @@ export default function AttendeesPage() {
     },
   });
 
+  // Mutation for invite status with optimistic updates
+  const inviteMutation = useMutation({
+    mutationFn: async ({ attendeeId, newStatus }: { attendeeId: number; newStatus: boolean }) => {
+      const response = await fetch(`/api/admin/attendees/${attendeeId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ invite_sent: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update invite status');
+      }
+
+      return response.json();
+    },
+    onMutate: async ({ attendeeId, newStatus }) => {
+      await queryClient.cancelQueries({ queryKey: ["attendees"] });
+
+      const previousData = queryClient.getQueryData<AttendeesResponse>([
+        "attendees",
+        page,
+        limit,
+        debouncedSearch,
+        classFilter,
+        checkedInFilter,
+      ]);
+
+      if (previousData) {
+        queryClient.setQueryData<AttendeesResponse>(
+          ["attendees", page, limit, debouncedSearch, classFilter, checkedInFilter],
+          {
+            ...previousData,
+            data: previousData.data.map((attendee) =>
+              attendee.id === attendeeId
+                ? { ...attendee, invite_sent: newStatus }
+                : attendee
+            ),
+          }
+        );
+      }
+
+      return { previousData };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          ["attendees", page, limit, debouncedSearch, classFilter, checkedInFilter],
+          context.previousData
+        );
+      }
+      console.error('Error updating invite status:', err);
+      alert('Không thể cập nhật trạng thái gửi thư mời. Vui lòng thử lại.');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["attendees"] });
+    },
+  });
+
+  // Toggle invite sent status
+  const toggleInviteSent = (attendeeId: number, currentStatus: boolean) => {
+    inviteMutation.mutate({ attendeeId, newStatus: !currentStatus });
+  };
+
   // Mutation for lunch status with optimistic updates
   const lunchMutation = useMutation({
     mutationFn: async ({ attendeeId, newStatus }: { attendeeId: number; newStatus: boolean }) => {
@@ -313,9 +378,20 @@ export default function AttendeesPage() {
       accessorKey: "invite_sent",
       header: "Thư mời",
       cell: ({ row }) => (
-        <div className="flex items-center justify-center">
-          <Check className={`w-5 h-5 ${row.original.invite_sent ? 'text-green-600' : 'text-gray-300'}`} />
-        </div>
+        <button
+          onClick={() => toggleInviteSent(row.original.id, row.original.invite_sent)}
+          className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          style={{
+            backgroundColor: row.original.invite_sent ? '#16a34a' : '#d1d5db'
+          }}
+          title={row.original.invite_sent ? 'Đã gửi' : 'Chưa gửi'}
+        >
+          <span
+            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+              row.original.invite_sent ? 'translate-x-6' : 'translate-x-1'
+            }`}
+          />
+        </button>
       ),
     },
     {
