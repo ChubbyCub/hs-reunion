@@ -9,10 +9,11 @@ const supabase = createClient(
 
 export async function GET() {
   try {
-    // Fetch attendees data
+    // Fetch attendees data - only those attending live event
     const { data: attendees, error } = await supabase
       .from('Attendees')
       .select('*')
+      .eq('attend_live_event', true)
       .order('created_at', { ascending: false });
 
     if (error) {
